@@ -32,6 +32,17 @@ class MemcacheCache extends DefaultCache {
 
 	}
 
+    /**
+     * Get memcache
+     *
+     * @return \Memcache
+     */
+    public function getMemcache() {
+
+        return $this->memcache;
+
+    }
+
 	/**
 	 * Add a server
 	 *
@@ -43,6 +54,28 @@ class MemcacheCache extends DefaultCache {
 		$this->memcache->addServer($host, $port);
 
 	}
+
+    /**
+     * Check if the write/read operations work
+     *
+     * @throws \Exception
+     */
+    public function checkService() {
+
+        $check = $this->memcache->get('memcached-check');
+
+        if(!$check) {
+
+            $this->memcache->set('memcached-check', 1, 3600);
+            $check = $this->memcache->get('memcached-check');
+
+        }
+
+        if(!$check) {
+            throw new \Exception('The Memcached servers are not accessible.');
+        }
+
+    }
 
 	/**
 	 * Get value

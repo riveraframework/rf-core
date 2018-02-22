@@ -13,6 +13,7 @@ namespace Rf\Core\Cache;
 use Rf\Core\Cache\Handlers\DiskCache;
 use Rf\Core\Cache\Handlers\MemcacheCache;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
+use Rf\Core\Cache\Handlers\MemcachedCache;
 use Rf\Core\Cache\Interfaces\CacheInterface;
 
 /**
@@ -78,8 +79,40 @@ class CacheService {
 
 					}
 
+                    // Check that the memcached server support the common operations
+                    $memcache->checkService();
+
 					$this->caches[] = $memcache;
 					break;
+
+                // Create Memcached handler
+                case self::HANDLER_TYPE_MEMCACHED:
+
+                    $memcached = new MemcachedCache();
+                    $memcached->setIdentifier($handlerIdentifier);
+
+                    // Check if the Memcached server list is empty
+                    $servers = $handlerConfig['servers'];
+                    if(empty($servers)) {
+                        throw new CacheConfigurationException('Cache setup error: the Memcached server list is empty');
+                    }
+
+                    // Add listed server to the Memcached handler
+                    foreach($servers as $server) {
+
+                        if(empty($server['host']) || empty($server['port'])) {
+                            throw new CacheConfigurationException('Cache setup error: the Memcached configuration is invalid');
+                        }
+
+                        $memcached->addServer($server['host'], $server['port']);
+
+                    }
+
+                    // Check that the memcached server support the common operations
+                    $memcached->checkService();
+
+                    $this->caches[] = $memcached;
+                    break;
 
 				// Create disk handler
 				case self::HANDLER_TYPE_DISK:
