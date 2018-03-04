@@ -10,8 +10,6 @@
 
 namespace Rf\Core\Search\Solr;
 
-use PHPMailer\PHPMailer\Exception;
-
 /**
  * Class SolrService
  *
@@ -26,19 +24,19 @@ class SolrService {
 	 *
 	 * @param array $options
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
     public function __construct(array $options)
     {
 
     	if(!class_exists('\SolrClient')) {
-    		throw new Exception('The Solr pecl extension is not installed');
+    		throw new \Exception('The Solr pecl extension is not installed');
 	    }
 
     	try {
 		    $this->client = new \SolrClient($options);
 	    } catch(\SolrIllegalArgumentException $e) {
-		    throw new Exception('Unable to init Solr');
+		    throw new \Exception('Unable to init Solr');
 	    }
 
     }
