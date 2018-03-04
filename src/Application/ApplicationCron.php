@@ -28,7 +28,7 @@ use Rf\Core\Uri\Uri;
  *
  * @package Rf\Core\Application
  */
-class ApplicationCron extends GlobalSingleton {
+class ApplicationCron extends Application {
     
     /**
      * @var string Application name
@@ -50,6 +50,9 @@ class ApplicationCron extends GlobalSingleton {
      * @var ApplicationDirectories Current Directories object
      */
     protected $directories;
+
+    /** @var ServiceProvider ServiceProvider intance */
+    protected $serviceProvider;
     
     /**
      * @var Architect Current architect object
@@ -68,6 +71,9 @@ class ApplicationCron extends GlobalSingleton {
      * @param Autoload $autoload Directories object to set
      */
     public function init($autoload) {
+
+        // Register the service provider
+        $this->serviceProvider = new ServiceProvider();
         
         // Register directories in current context
         $this->directories = $autoload->getDirectories();
@@ -117,6 +123,17 @@ class ApplicationCron extends GlobalSingleton {
     public function setConfigurationFile($path) {
 
         $this->configurationFile = $path;
+
+    }
+
+    /**
+     * Get the current service provider
+     *
+     * @return ServiceProvider
+     */
+    public function getServiceProvider() {
+
+        return $this->serviceProvider;
 
     }
 
