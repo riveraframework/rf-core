@@ -55,8 +55,8 @@ abstract class Json {
 
 		$decodedJson = json_decode($jsonString, true, $depth, $options);
 
-		if(!$decodedJson) {
-			throw new JsonDecodeException(json_last_error_msg(), json_last_error());
+		if($decodedJson === false) {
+			throw new JsonDecodeException($jsonString, json_last_error_msg(), json_last_error());
 		}
 
 		return $decodedJson;
@@ -77,8 +77,8 @@ abstract class Json {
 
 		$decodedJson = json_decode($jsonString, false, $depth, $options);
 
-		if(!$decodedJson) {
-			throw new JsonDecodeException(json_last_error_msg(), json_last_error());
+		if(!$decodedJson === false) {
+			throw new JsonDecodeException($jsonString, json_last_error_msg(), json_last_error());
 		}
 
 		return $decodedJson;
