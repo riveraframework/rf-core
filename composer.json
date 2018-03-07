@@ -1,0 +1,16 @@
+{
+    "name": "riveraframework/rf-core",
+    "description": "Core repository for the Rivera Framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pierre-Julien MAZENOT",
+            "email": "pj.mazenot@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.6.0"
+    }
+}
