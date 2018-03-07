@@ -31,5 +31,5 @@ use Rf\Core\Uri\Uri;
  * @package Rf\Core\Application
  */
 class Application extends GlobalSingleton {
-
+    
 }

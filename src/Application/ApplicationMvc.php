@@ -12,13 +12,12 @@ namespace Rf\Core\Application;
 
 use Rf\Core\Api\Api;
 use Rf\Core\Authentication\Authentication;
-use Rf\Core\Autoload;
 use Rf\Core\Base\ErrorHandler;
-use Rf\Core\Base\GlobalSingleton;
 use Rf\Core\Cache\CacheService;
-use Rf\Core\Cache\CacheHelpers;
+use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Entity\Architect;
 use Rf\Core\Exception\BaseException;
+use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\Exception\ErrorMessageException;
 use Rf\Core\Http\Request;
 use Rf\Core\I18n\I18n;
@@ -86,15 +85,19 @@ class ApplicationMvc extends Application {
     /**
      * Start the application init process
      *
-     * @param Autoload $autoload Directories object to set
+     * @throws ConfigurationException
+     * @throws CacheConfigurationException
      */
-    public function init($autoload) {
+    public function init() {
+
+        // Register directories in current context
+        $this->directories = new ApplicationDirectories();
+
+        // Init helpers and app classes autoload
+        Autoload::init();
 
         // Register the service provider
         $this->serviceProvider = new ServiceProvider();
-
-        // Register directories in current context
-        $this->directories = $autoload->getDirectories();
         
         // Register application configuration
         if(!empty($this->configurationFile)) {
@@ -105,7 +108,6 @@ class ApplicationMvc extends Application {
         $this->configuration = $configuration;
 
         // Load cache handler
-	    CacheHelpers::init();
 	    if(!rf_empty(rf_config('cache'))) {
 	    	$this->cacheService = new CacheService(rf_config('cache')->toArray());
 	    }
