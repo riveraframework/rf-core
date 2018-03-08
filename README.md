@@ -28,7 +28,7 @@ This project has been tested on Linux/Unix and Windows using PHP 7+ but should b
 
 Using composer:
 
-    SOON
+    composer require riveraframework/rf-core:dev-develop
 
 ## Documentation
 
