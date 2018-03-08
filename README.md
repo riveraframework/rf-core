@@ -36,5 +36,8 @@ SOON
 
 ## Examples
 
-Skeleton application available soon at:
-https://github.com/riveraframework/rf-skeleton
+Skeleton application available at:
+https://github.com/riveraframework/example-skeleton
+
+REST API application available soon at:
+https://github.com/riveraframework/example-rest-api
