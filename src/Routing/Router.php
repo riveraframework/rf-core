@@ -159,17 +159,8 @@ class Router {
             } else {
                 // @TODO: Set flag or add errors route ton config
                 // @TODO: Get Error type from above conditions -> 401 vs 404
-                $this->currentRoute = [
-                    'name' => 'error',
-                    'pattern' => '/error',
-                    'controller' => 'App\Modules\Errors\ErrorsController',
-                    'action' => 'render404',
-                    'defaults' => [
-                        'language' => 'en',
-                    ]
-                ];
-
-                $this->buildRequestQuery($this->currentRoute);
+                $response = new Response(404);
+                $response->send();
             }
 
         }
