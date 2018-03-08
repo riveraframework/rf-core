@@ -43,7 +43,7 @@ class DataValidationException extends BaseException {
 	 *
 	 * @return array
 	 */
-	public function getData(): array {
+	public function getData() {
 
 		return $this->data;
 

@@ -111,7 +111,7 @@ class ParameterSet {
      *
      * @return bool
      */
-    public function exists($key): bool {
+    public function exists($key) {
 
         return isset($this->vars[$key]);
 

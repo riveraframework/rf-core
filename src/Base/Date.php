@@ -219,7 +219,7 @@ class Date extends DateTime {
      *
      * @return string 
      */
-    public function getYear($digits = 4): string {
+    public function getYear($digits = 4) {
 
         return $digits == 2 ? $this->format('y') : $this->format('Y');
 
@@ -411,7 +411,7 @@ class Date extends DateTime {
      *
      * @return string
      */
-    public function compare(Date $date, bool $short = true, string $afterYd = 'date', bool $withTime = false): string {
+    public function compare(Date $date, $short = true, $afterYd = 'date', $withTime = false) {
 
 	    $return = '';
 

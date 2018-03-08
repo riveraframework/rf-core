@@ -10,11 +10,8 @@
 
 namespace Rf\Core\Mvc;
 
-use App\Modules\Errors\ErrorsController;
 use Rf\Core\Exception\BaseException;
 use Rf\Core\Exception\ControllerPermissionsException;
-use Rf\Core\Http\Response;
-use Rf\Core\I18n\I18n;
 
 /**
  * Class Controller
@@ -85,6 +82,8 @@ abstract class Controller {
 
     /**
      * Create a new controller
+     *
+     * @throws BaseException
      */
     public function __construct() {
 
@@ -379,7 +378,7 @@ abstract class Controller {
      *
      * @return bool
      */
-    protected function loadCache(): bool {
+    protected function loadCache() {
 
     	if(!rf_config('options.cache')) {
     		return false;

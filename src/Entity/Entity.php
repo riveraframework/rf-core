@@ -273,7 +273,7 @@ abstract class Entity {
      *
      * @return bool
      */
-    public static function isForeignKeyNew(string $fieldName): bool {
+    public static function isForeignKeyNew($fieldName) {
 
     	if(strpos($fieldName, '_id') && class_exists(Name::fkToClass($fieldName))) {
 

@@ -22,7 +22,7 @@ trait TranslatableTrait {
 	 *
 	 * @return array
 	 */
-	public static function getTranslations(): array {
+	public static function getTranslations() {
 
 		// Build the translation repository class name
 		$transClassName = substr_replace(static::class, '\Translations\\', strrpos(static::class, '\\'), 1) . 'Translations';

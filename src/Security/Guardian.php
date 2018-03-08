@@ -151,7 +151,7 @@ abstract class Guardian {
 	 *
 	 * @return string
 	 */
-    public static function generateSecurityKeyNew(int $length = 16, array $masks): string {
+    public static function generateSecurityKeyNew($length = 16, array $masks) {
 
     	$masksArray = [
     		self::MASK_NUMBERS => '0123456789',
