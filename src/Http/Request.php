@@ -236,6 +236,50 @@ class Request {
     }
 
     /**
+     * Get FILES data
+     *
+     * @return ParameterSet
+     */
+    public function getFilesData() {
+
+        return $this->files;
+
+    }
+
+    /**
+     * Get SERVER data
+     *
+     * @return ParameterSet
+     */
+    public function getServerData() {
+
+        return $this->server;
+
+    }
+
+    /**
+     * Get SESSION data
+     *
+     * @return ParameterSet
+     */
+    public function getSessionData() {
+
+        return $this->session;
+
+    }
+
+    /**
+     * Get COOKIE data
+     *
+     * @return ParameterSet
+     */
+    public function getCookieData() {
+
+        return $this->cookie;
+
+    }
+
+    /**
      * Get request information
      */
     private function getRequestInformation() {
