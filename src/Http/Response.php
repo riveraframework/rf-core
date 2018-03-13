@@ -91,7 +91,7 @@ class Response {
      *
      * @param int $httpCode Response HTTP version
      */
-    public function __construct($httpCode) {
+    public function __construct($httpCode = 200) {
 
         $this->httpCode = $httpCode;
 
