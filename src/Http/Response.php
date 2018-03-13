@@ -98,6 +98,17 @@ class Response {
     }
 
     /**
+     * Change the code of the response
+     *
+     * @param int $httpCode
+     */
+    public function changeCode($httpCode) {
+
+        $this->httpCode = $httpCode;
+
+    }
+
+    /**
      * Add a header to the response
      *
      * @param string $option Header name
@@ -114,7 +125,7 @@ class Response {
      *
      * @param string $contentType Response content type
      */
-    public function setContentType(string $contentType) {
+    public function setContentType($contentType) {
 
         $this->addHeader('Content-Type:', $contentType);
 
@@ -133,15 +144,13 @@ class Response {
 
     /**
      * Send the response
-     *
-     * @return void
      */
     public function send() {
 
         if(!empty($this->httpCode) && in_array($this->httpCode, array_keys(self::$availableHttpCodes))) {
             header('HTTP/' . self::$defaultHttpVersion . ' ' . $this->httpCode . ' ' . self::$availableHttpCodes[$this->httpCode]);
         } else {
-            return false;
+            return;
         }
 
         foreach ($this->headers as $option => $value) {
