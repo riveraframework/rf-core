@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Routing;
 
+use Rf\Core\Base\ParameterSet;
 use Rf\Core\Http\QueryParameterSet;
 use Rf\Core\Http\Response;
 use Rf\Core\I18n\I18n;
@@ -282,13 +283,18 @@ class Router {
      */
     public function testDomain() {
 
-	    $availableDomainsList = rf_config('app.available-domains');
+        /** @var false|string|ParameterSet $availableDomainsList */
+        $availableDomainsList = rf_config('app.available-domains');
 
         if (!$availableDomainsList) {
             return;
         }
 
-        $availableDomains = explode(',', $availableDomainsList);
+        if(is_string($availableDomainsList)) {
+            $availableDomains = explode(',', $availableDomainsList);
+        } else {
+            $availableDomains = $availableDomainsList->toArray();
+        }
         $currentDomain = CurrentUri::getDomain();
 
         foreach ($availableDomains as $domain) {
@@ -300,9 +306,9 @@ class Router {
         }
 
         $response = new Response(403);
-	    $response->setBody(
-	    	'Unavailable domain: ' . $currentDomain . '<br/>' .
-	        'Available domains: ' . $availableDomainsList);
+        $response->setBody(
+            'Unavailable domain: ' . $currentDomain . '<br/>' .
+            'Available domains: ' . $availableDomainsList);
         $response->send();
 
     }
