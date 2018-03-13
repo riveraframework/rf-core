@@ -29,7 +29,7 @@ abstract class Cache {
      *
      * @return string|bool
      */
-    public static function get(string $fileName, $maxDuration = 0) {
+    public static function get($fileName, $maxDuration = 0) {
 
         $filePath = rf_dir('cache') . $fileName;
 
@@ -49,7 +49,7 @@ abstract class Cache {
 	 *
 	 * @return int
 	 */
-    public static function write(string $fileName, string $content) {
+    public static function write($fileName, $content) {
 
 	    $filePath = rf_dir('cache') . $fileName;
 

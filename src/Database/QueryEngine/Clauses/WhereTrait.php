@@ -32,7 +32,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-    protected function addWhereClauseEngine(string $field, string $type, $value = 0, $field2 = null, $operator = null) {
+    protected function addWhereClauseEngine($field, $type, $value = 0, $field2 = null, $operator = null) {
 
         // Clause type
         $validTypes = [
@@ -149,7 +149,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function where(string $whereClause, array $values = []) {
+	public function where($whereClause, array $values = []) {
 
 		$this->whereClause      .= $whereClause;
 		$this->whereClauseValues = array_merge($this->whereClauseValues, $values);
@@ -167,7 +167,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereLike(string $field, string $pattern) {
+	public function whereLike($field, $pattern) {
 
 		$this->whereClause .= $field .' LIKE ? ';
 		$this->whereClauseValues[] = $pattern;
@@ -184,7 +184,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereNotLike(string $field, string $pattern) {
+	public function whereNotLike($field, $pattern) {
 
 		$this->whereClause .= $field .' NOT LIKE ? ';
 		$this->whereClauseValues[] = $pattern;
@@ -202,7 +202,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereBetween(string $field, $value1, $value2) {
+	public function whereBetween($field, $value1, $value2) {
 
 		$this->whereClause .= $field . ' BETWEEN ? AND ? ';
 
@@ -220,7 +220,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereIsNull(string $field) {
+	public function whereIsNull($field) {
 
 		$this->whereClause .= $field .' IS NULL';
 
@@ -235,7 +235,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereIsNotNull(string $field) {
+	public function whereIsNotNull($field) {
 
 		$this->whereClause .= $field .' IS NOT NULL';
 
@@ -294,7 +294,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-    public function whereSuperiorEqual(string $field1, $value, string $field2 = null) {
+    public function whereSuperiorEqual($field1, $value, $field2 = null) {
 
 	    if($field2 == null) {
 		    $this->whereClause .= $field1 . ' >= ' . '?';
@@ -335,7 +335,7 @@ trait WhereTrait {
 	 *
 	 * @return $this
 	 */
-	public function whereInferiorEqual(string $field1, $value, string $field2 = null) {
+	public function whereInferiorEqual($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->whereClause .= $field1 . ' <= ' . '?';

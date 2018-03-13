@@ -79,7 +79,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function having(string $havingClause, array $values = []) {
+	public function having($havingClause, array $values = []) {
 
 		$this->havingClause      .= $havingClause;
 		$this->havingClauseValues = array_merge($this->havingClauseValues, $values);
@@ -97,7 +97,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingLike(string $field, string $pattern) {
+	public function havingLike($field, $pattern) {
 
 		$this->havingClause .= $field . ' LIKE ?';
 		$this->havingClauseValues[] = $pattern;
@@ -114,7 +114,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingNotLike(string $field, string $pattern) {
+	public function havingNotLike($field, $pattern) {
 
 		$this->havingClause .= $field . ' NOT LIKE ?';
 		$this->havingClauseValues[] = $pattern;
@@ -132,7 +132,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingBetween(string $field, $value1, $value2) {
+	public function havingBetween($field, $value1, $value2) {
 
 		$this->havingClause .= $field . ' BETWEEN ? AND ?';
 
@@ -150,7 +150,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingIsNull(string $field) {
+	public function havingIsNull($field) {
 
 		$this->havingClause .= $field .' IS NULL';
 
@@ -165,7 +165,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingIsNotNull(string $field) {
+	public function havingIsNotNull($field) {
 
 		$this->havingClause .= $field .' IS NOT NULL';
 
@@ -182,7 +182,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingSuperior(string $field1, $value, string $field2 = null) {
+	public function havingSuperior($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' > ?';
@@ -204,7 +204,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingSuperiorEqual(string $field1, $value, string $field2 = null) {
+	public function havingSuperiorEqual($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' >= ?';
@@ -226,7 +226,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingEqual(string $field1, $value, string $field2 = null) {
+	public function havingEqual($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' = ?';
@@ -248,7 +248,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingInferiorEqual(string $field1, $value, string $field2 = null) {
+	public function havingInferiorEqual($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' <= ?';
@@ -270,7 +270,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingInferior(string $field1, $value, string $field2 = null) {
+	public function havingInferior($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' < ?';
@@ -292,7 +292,7 @@ trait HavingTrait {
 	 *
 	 * @return $this
 	 */
-	public function havingDifferent(string $field1, $value, string $field2 = null) {
+	public function havingDifferent($field1, $value, $field2 = null) {
 
 		if($field2 == null) {
 			$this->havingClause .= $field1 . ' != ?';

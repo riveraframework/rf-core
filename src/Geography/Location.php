@@ -153,7 +153,7 @@ class Location {
     /**
      * @param string $id
      */
-    public function setId(string $id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -169,7 +169,7 @@ class Location {
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType($type)
     {
         $this->type = $type;
     }
@@ -281,7 +281,7 @@ class Location {
     /**
      * @param int $administrativeAreaLevelMax
      */
-    public function setAdministrativeAreaLevelMax(int $administrativeAreaLevelMax)
+    public function setAdministrativeAreaLevelMax($administrativeAreaLevelMax)
     {
         $this->administrativeAreaLevelMax = $administrativeAreaLevelMax;
     }

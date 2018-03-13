@@ -25,7 +25,7 @@ class UploadedFileFromUrl extends UploadedFile {
 	 * @param string $url
 	 * @param mixed $key
 	 */
-	public function __construct(string $url, $key = null) {
+	public function __construct($url, $key = null) {
 
 		$this->key = $key;
 

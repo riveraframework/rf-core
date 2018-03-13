@@ -28,7 +28,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    protected function joinEngine(string $type, string $table, $direction = null, $fields = null) {
+    protected function joinEngine($type, $table, $direction = null, $fields = null) {
 
         if($type == 'natural') {
             $this->joinClause .= 'NATURAL JOIN '.$table;
@@ -75,7 +75,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    public function joinNatural(string $table, $fields = null) {
+    public function joinNatural($table, $fields = null) {
 
 	    return $this->joinEngine('natural', $table, null, $fields);
 
@@ -87,7 +87,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    public function joinInner(string $table, $fields = null) {
+    public function joinInner($table, $fields = null) {
 
 	    return $this->joinEngine('inner', $table, null, $fields);
 
@@ -99,7 +99,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    public function joinOn(string $table, $fields = null) {
+    public function joinOn($table, $fields = null) {
 
         return $this->joinEngine('on', $table, null, $fields);
 
@@ -111,7 +111,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    public function joinOuterLeft(string $table, $fields = null) {
+    public function joinOuterLeft($table, $fields = null) {
 
 	    return $this->joinEngine('outer', $table, 'LEFT', $fields);
 
@@ -123,7 +123,7 @@ trait JoinTrait {
 	 *
 	 * @return $this
 	 */
-    public function joinUsing(string $table, $fields = null) {
+    public function joinUsing($table, $fields = null) {
 
 	    return $this->joinEngine('using', $table, null, $fields);
 

@@ -503,7 +503,7 @@ abstract class Entity {
 	 *
 	 * @return null|static
 	 */
-    public static function findFirstBy(string $where, array $options = []) {
+    public static function findFirstBy($where, array $options = []) {
 
     	$options['limit'] = 1;
 
@@ -525,7 +525,7 @@ abstract class Entity {
 	 *
 	 * @return static[]
 	 */
-    public static function findBy(string $where = '', array $options = []) {
+    public static function findBy($where = '', array $options = []) {
 
 		return static::findByEngine($where, $options);
 
@@ -539,7 +539,7 @@ abstract class Entity {
 	 *
 	 * @return static[]
 	 */
-    protected static function findByEngine(string $where, array $options) {
+    protected static function findByEngine($where, array $options) {
 
     	// Build query
 		$getEntities = static::select();
@@ -810,7 +810,7 @@ abstract class Entity {
 	 *
 	 * @return Select
 	 */
-    public static function select(string $alias = '') {
+    public static function select($alias = '') {
 
         $select = new Select(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
         $select->setConnection(ConnectionRepository::getConnection(static::conn_name));
@@ -826,7 +826,7 @@ abstract class Entity {
 	 *
 	 * @return Update
 	 */
-    public static function update(string $alias = '') {
+    public static function update($alias = '') {
 
         $update = new Update(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
         $update->setConnection(ConnectionRepository::getConnection(static::conn_name));
@@ -842,7 +842,7 @@ abstract class Entity {
 	 *
 	 * @return Delete
 	 */
-    public static function delete(string $alias = '') {
+    public static function delete($alias = '') {
 
         $delete = new Delete(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
         $delete->setConnection(ConnectionRepository::getConnection(static::conn_name));

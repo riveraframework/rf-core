@@ -36,7 +36,7 @@ class Curl {
 	 *
 	 * @param string $url
 	 */
-	public function __construct(string $url) {
+	public function __construct($url) {
 
 		$this->ch = curl_init();
 
@@ -67,7 +67,7 @@ class Curl {
 
 	}
 
-	public function setMethod(string $method) {
+	public function setMethod($method) {
 
 		switch (strtolower($method)) {
 
@@ -99,7 +99,7 @@ class Curl {
 
 	}
 
-	public function setOption(string $name, $value) {
+	public function setOption($name, $value) {
 
 		curl_setopt($this->ch, $name, $value);
 
