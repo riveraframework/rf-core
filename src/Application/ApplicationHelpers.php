@@ -29,17 +29,14 @@ namespace Rf\Core\Application {
 
 namespace {
 
-	use App\Entities\User;
 	use Rf\Core\Application\Application;
 	use Rf\Core\Application\ApplicationConfigurationParameterSet;
 	use Rf\Core\Application\ApplicationCron;
     use Rf\Core\Application\ServiceProvider;
-    use Rf\Core\Authentication\Authentication;
 	use Rf\Core\Html\Breadcrumbs;
     use Rf\Core\Http\QueryParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
-    use Rf\Core\Routing\Router;
 
     /**
      * Get service provider
@@ -449,17 +446,6 @@ namespace {
         if(rf_config('options.debug')) {
             Application::getInstance()->addDebugVar($var);
         }
-
-    }
-
-	/**
-	 * Get the current user
-	 *
-	 * @return false|User
-	 */
-    function rf_current_user() {
-
-    	return Authentication::getUserConnected();
 
     }
 

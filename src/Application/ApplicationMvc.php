@@ -11,7 +11,6 @@
 namespace Rf\Core\Application;
 
 use Rf\Core\Api\Api;
-use Rf\Core\Authentication\Authentication;
 use Rf\Core\Base\ErrorHandler;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
@@ -130,9 +129,6 @@ class ApplicationMvc extends Application {
         if($this->request->isApiFollow()) {
             Api::handleRequest();
         }
-
-        // Init auth
-	    Authentication::init();
         
         // Load Architect
         $this->architect = new Architect();
