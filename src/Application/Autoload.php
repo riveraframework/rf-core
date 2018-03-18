@@ -35,6 +35,11 @@ abstract class Autoload
         CacheHelpers::init();
         SystemHelpers::init();
 
+        // Rf modules
+        if(class_exists('\Rf\OAuth2\OAuth2Helpers')) {
+            \Rf\OAuth2\OAuth2Helpers::init();
+        }
+
     }
 
     /**
