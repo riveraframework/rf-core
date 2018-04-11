@@ -19,145 +19,161 @@ use Rf\Core\Http\Exceptions\CurlException;
  */
 class Curl {
 
-	/** @var string  */
-	protected $url;
+    /** @var string  */
+    protected $url;
 
-	/** @var resource  */
-	protected $ch;
+    /** @var resource  */
+    protected $ch;
 
-	/** @var string  */
-	protected $error;
+    /** @var string  */
+    protected $error;
 
-	/** @var int  */
-	protected $errno;
+    /** @var int  */
+    protected $errno;
 
-	/**
-	 * Curl constructor.
-	 *
-	 * @param string $url
-	 */
-	public function __construct($url) {
+    /** @var int  */
+    protected $responseHttpCode;
 
-		$this->ch = curl_init();
+    /**
+     * Curl constructor.
+     *
+     * @param string $url
+     */
+    public function __construct($url) {
 
-		$this->url = $url;
-		$this->setOption(CURLOPT_URL, $url);
+        $this->ch = curl_init();
 
-	}
+        $this->url = $url;
+        $this->setOption(CURLOPT_URL, $url);
 
-	/**
-	 * Get the last curl error
-	 *
-	 * @return string
-	 */
-	public function getError() {
+    }
 
-		return $this->error;
+    /**
+     * Get the last curl error
+     *
+     * @return string
+     */
+    public function getError() {
 
-	}
+        return $this->error;
 
-	/**
-	 * Get the last curl error no
-	 *
-	 * @return string
-	 */
-	public function getErrno() {
+    }
 
-		return $this->errno;
+    /**
+     * Get the last curl error no
+     *
+     * @return string
+     */
+    public function getErrno() {
 
-	}
+        return $this->errno;
 
-	public function setMethod($method) {
+    }
 
-		switch (strtolower($method)) {
+    /**
+     * Get the response http code
+     *
+     * @return int
+     */
+    public function getResponseHttpCode() {
 
-			case 'head':
-				$this->setOption(CURLOPT_NOBODY, true);
-				break;
+        return $this->responseHttpCode;
 
-			case 'get':
-				$this->setOption(CURLOPT_HTTPGET, true);
-				break;
+    }
 
-			case 'post':
-				$this->setOption(CURLOPT_POST, true);
-				break;
+    public function setMethod($method) {
 
-			case 'put':
-				$this->setOption(CURLOPT_CUSTOMREQUEST, 'PUT');
-				break;
+        switch (strtolower($method)) {
 
-			case 'delete':
-				$this->setOption(CURLOPT_CUSTOMREQUEST, 'DELETE');
-				break;
+            case 'head':
+                $this->setOption(CURLOPT_NOBODY, true);
+                break;
 
-			default:
-			break;
+            case 'get':
+                $this->setOption(CURLOPT_HTTPGET, true);
+                break;
 
-		}
+            case 'post':
+                $this->setOption(CURLOPT_POST, true);
+                break;
+
+            case 'put':
+                $this->setOption(CURLOPT_CUSTOMREQUEST, 'PUT');
+                break;
+
+            case 'delete':
+                $this->setOption(CURLOPT_CUSTOMREQUEST, 'DELETE');
+                break;
+
+            default:
+                break;
+
+        }
 
 
-	}
+    }
 
-	public function setOption($name, $value) {
+    public function setOption($name, $value) {
 
-		curl_setopt($this->ch, $name, $value);
+        curl_setopt($this->ch, $name, $value);
 
-	}
+    }
 
-	public function setOptions(array $options) {
+    public function setOptions(array $options) {
 
-		foreach ($options as $name => $value) {
-			$this->setOption($name, $value);
-		}
+        foreach ($options as $name => $value) {
+            $this->setOption($name, $value);
+        }
 
-	}
+    }
 
-	public function setPostData(array $postData) {
+    public function setPostData(array $postData) {
 
-		$this->setOption(CURLOPT_POSTFIELDS, $postData);
+        $this->setOption(CURLOPT_POSTFIELDS, $postData);
 
-	}
+    }
 
-	/**
-	 * Disable SSL check
-	 */
-	public function disableSslCheck() {
+    /**
+     * Disable SSL check
+     */
+    public function disableSslCheck() {
 
-		$this->setOption(CURLOPT_SSL_VERIFYPEER, false);
-		$this->setOption(CURLOPT_SSL_VERIFYHOST, false);
+        $this->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        $this->setOption(CURLOPT_SSL_VERIFYHOST, false);
 
-	}
+    }
 
-	/**
-	 * Get curl results or curl error
-	 *
-	 * @return string|false
-	 * @throws CurlException
-	 */
-	public function getResults() {
+    /**
+     * Get curl results or curl error
+     *
+     * @return string|false
+     * @throws CurlException
+     */
+    public function getResults() {
 
-		$this->setOption(CURLOPT_RETURNTRANSFER, 1);
-		$this->setOption(CURLOPT_TIMEOUT, 20);
-		$result = curl_exec($this->ch);
+        $this->setOption(CURLOPT_RETURNTRANSFER, 1);
+        $this->setOption(CURLOPT_TIMEOUT, 20);
+        $result = curl_exec($this->ch);
 
-		if($result === false) {
+        $this->responseHttpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
-			$this->error = curl_error($this->ch);
-			$this->errno = curl_errno($this->ch);
+        if($result === false) {
 
-			curl_close($this->ch);
+            $this->error = curl_error($this->ch);
+            $this->errno = curl_errno($this->ch);
 
-			throw new CurlException($this, $this->error, $this->errno);
+            curl_close($this->ch);
 
-		} else {
+            throw new CurlException($this, $this->error, $this->errno);
 
-			curl_close($this->ch);
+        } else {
 
-			return $result;
+            curl_close($this->ch);
 
-		}
+            return $result;
 
-	}
+        }
+
+    }
 
 }
