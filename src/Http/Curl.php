@@ -25,6 +25,9 @@ class Curl {
     /** @var resource  */
     protected $ch;
 
+    /** @var array  */
+    protected $headers = [];
+
     /** @var string  */
     protected $error;
 
@@ -81,6 +84,11 @@ class Curl {
 
     }
 
+    /**
+     * Set the method
+     *
+     * @param string $method
+     */
     public function setMethod($method) {
 
         switch (strtolower($method)) {
@@ -113,12 +121,34 @@ class Curl {
 
     }
 
+    /**
+     * Add a header
+     *
+     * @param string $header
+     */
+    public function addHeader($header) {
+
+        $this->headers[] = $header;
+
+    }
+
+    /**
+     * Set an option
+     *
+     * @param string $name
+     * @param string $value
+     */
     public function setOption($name, $value) {
 
         curl_setopt($this->ch, $name, $value);
 
     }
 
+    /**
+     * Set multiple options
+     *
+     * @param array $options
+     */
     public function setOptions(array $options) {
 
         foreach ($options as $name => $value) {
@@ -127,7 +157,7 @@ class Curl {
 
     }
 
-    public function setPostData(array $postData) {
+    public function setPostData($postData) {
 
         $this->setOption(CURLOPT_POSTFIELDS, $postData);
 
@@ -151,6 +181,7 @@ class Curl {
      */
     public function getResults() {
 
+        $this->setOption(CURLOPT_HTTPHEADER, $this->headers);
         $this->setOption(CURLOPT_RETURNTRANSFER, 1);
         $this->setOption(CURLOPT_TIMEOUT, 20);
         $result = curl_exec($this->ch);
