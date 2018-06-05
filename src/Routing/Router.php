@@ -182,6 +182,13 @@ class Router {
             rf_request_query()->set($name, $value);
         }
 
+        // Force language using the GET parameter
+        // @TODO: As an option?
+        if(!rf_empty(rf_request()->getGetData()->get('language'))) {
+            I18n::setCurrentLanguage(rf_request()->getGetData()->get('language'));
+            rf_request_query()->set($name, rf_request()->getGetData()->get('language'));
+        }
+
         foreach ($args as $name => $value) {
             rf_request_query()->set($name, $value);
         }
