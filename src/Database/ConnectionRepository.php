@@ -36,10 +36,10 @@ class ConnectionRepository {
 
         if(empty(self::$connections[$connectionName])) {
 
-            // Get available connnection configurations
+            // Get available connection configurations
             $availableConnections = rf_config('databases')->toArray();
 
-            // Check if the requested connnection configuration exists
+            // Check if the requested connection configuration exists
             if(empty($availableConnections[$connectionName])) {
                 throw new \Exception('The connection has not been configured');
             }
@@ -65,7 +65,7 @@ class ConnectionRepository {
 
             } catch(\PDOException $e) {
 
-                throw new \Exception('Unable to connect to the database');
+                throw new \Exception('Unable to connect to the database: ' . $e->getMessage());
 
             }
 
@@ -79,6 +79,7 @@ class ConnectionRepository {
 	 * Get the default connection
 	 *
 	 * @return PDO
+     * @throws \Exception
 	 */
     public static function getDefaultConnection() {
 
