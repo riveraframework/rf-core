@@ -31,17 +31,17 @@ use Rf\Core\Exception\BaseException;
  */
 abstract class Entity {
 
-	/** @var string Connection name */
-	const conn_name = '';
+    /** @var string Connection name */
+    const conn_name = '';
 
-	/** @var string Table name */
-	const table_name = '';
+    /** @var string Table name */
+    const table_name = '';
 
-	/** @var array Table structure */
-	const table_structure = [];
+    /** @var array Table structure */
+    const table_structure = [];
 
-	/** @var int */
-	protected $id;
+    /** @var int */
+    protected $id;
 
     /**
      * @var \Rf\Core\Entity\Entity $backup Clone of the entity at his initial state (new|get)
@@ -53,7 +53,7 @@ abstract class Entity {
 
     /** @var array $dbStructureExceptions */
     protected static $dbStructureExceptions = [];
-    
+
     /**
      * Create an entity
      *
@@ -118,7 +118,7 @@ abstract class Entity {
      */
     public function createBackup() {
 
-	    $this->backup = clone $this;
+        $this->backup = clone $this;
         $this->backup->setBackup(null);
 
     }
@@ -131,6 +131,18 @@ abstract class Entity {
     public static function getTableName() {
 
         return static::table_name;
+
+    }
+
+    /**
+     * Get connection
+     *
+     * @return \Rf\Core\Database\PDO
+     * @throws \Exception
+     */
+    public static function getConnection() {
+
+        return ConnectionRepository::getConnection(static::conn_name);
 
     }
 
@@ -198,7 +210,7 @@ abstract class Entity {
     public static function setDbStructureException($tableName, $colName, $field, $value) {
 
         Entity::$dbStructureExceptions[$tableName][$colName][$field] = $value;
-        
+
     }
 
     /**
@@ -275,13 +287,13 @@ abstract class Entity {
      */
     public static function isForeignKeyNew($fieldName) {
 
-    	if(strpos($fieldName, '_id') && class_exists(Name::fkToClass($fieldName))) {
+        if(strpos($fieldName, '_id') && class_exists(Name::fkToClass($fieldName))) {
 
-		    return true;
+            return true;
 
-	    }
+        }
 
-	    return false;
+        return false;
 
     }
 
@@ -293,11 +305,11 @@ abstract class Entity {
      * @return void
      */
     public function unsetProperty($propertyName) {
-        
+
         unset($this->{$propertyName});
-        
+
     }
-    
+
     /**
      * Get the primary key(s)
      *
@@ -306,7 +318,7 @@ abstract class Entity {
     public function getPrimaryKeys() {
 
         $pri = [];
-        
+
         foreach(get_object_vars($this) as $key => $value) {
 
             if($this->isPrimaryKey(Name::propertyToField($key))) {
@@ -315,9 +327,9 @@ abstract class Entity {
             }
 
         }
-        
+
         return count($pri) === 1 ? $pri[$last] : $pri;
-        
+
     }
 
     /**
@@ -326,7 +338,7 @@ abstract class Entity {
      * @return mixed
      */
     private function getPublicFields() {
-        
+
         $getPublicFields = function($obj) { return get_object_vars($obj); };
 
         return $getPublicFields($this);
@@ -340,11 +352,11 @@ abstract class Entity {
      *
      * @param bool $forceId (default:false)
      *
-     * @return array 
+     * @return array
      */
     private function getParamsForSave($forceId = false) {
 
-    	// Get list of field to check
+        // Get list of field to check
         $vars = $this->getPublicFields();
 
         // Remove the ID except if we want to force it
@@ -365,11 +377,11 @@ abstract class Entity {
             $object = false;
             // @TODO: gestion INT = 0
             if(
-            	!isset($vars[$key])
-	            || is_object($vars[$key])
-	            || (!is_object($vars[$key]) && is_object($this->backup->$key))
-	            || $vars[$key] != $this->backup->$key
-	            || (!$vars[$key] && !isset($this->backup->$key))
+                !isset($vars[$key])
+                || is_object($vars[$key])
+                || (!is_object($vars[$key]) && is_object($this->backup->$key))
+                || $vars[$key] != $this->backup->$key
+                || (!$vars[$key] && !isset($this->backup->$key))
             ) {
 
                 if(is_object($vars[$key])) {
@@ -495,128 +507,128 @@ abstract class Entity {
         }
     }
 
-	/**
-	 * Get the first entity matching the given criteria
-	 *
-	 * @param string $where
-	 * @param array $options
-	 *
-	 * @return null|static
-	 */
+    /**
+     * Get the first entity matching the given criteria
+     *
+     * @param string $where
+     * @param array $options
+     *
+     * @return null|static
+     */
     public static function findFirstBy($where, array $options = []) {
 
-    	$options['limit'] = 1;
+        $options['limit'] = 1;
 
-		$results = static::findBy($where, $options);
+        $results = static::findBy($where, $options);
 
-	    if(!empty($results)) {
-	    	return $results[0];
-	    } else {
-	    	return null;
-	    }
+        if(!empty($results)) {
+            return $results[0];
+        } else {
+            return null;
+        }
 
     }
 
-	/**
-	 * Get entities by criteria
-	 *
-	 * @param string $where
-	 * @param array $options
-	 *
-	 * @return static[]
-	 */
+    /**
+     * Get entities by criteria
+     *
+     * @param string $where
+     * @param array $options
+     *
+     * @return static[]
+     */
     public static function findBy($where = '', array $options = []) {
 
-		return static::findByEngine($where, $options);
+        return static::findByEngine($where, $options);
 
     }
 
-	/**
-	 * Internal engine to get entities
-	 *
-	 * @param string $where
-	 * @param array $options [limit => null, offset => null, depth => null]
-	 *
-	 * @return static[]
-	 */
+    /**
+     * Internal engine to get entities
+     *
+     * @param string $where
+     * @param array $options [limit => null, offset => null, depth => null]
+     *
+     * @return static[]
+     */
     protected static function findByEngine($where, array $options) {
 
-    	// Build query
-		$getEntities = static::select();
-	    $getEntities->where($where);
+        // Build query
+        $getEntities = static::select();
+        $getEntities->where($where);
 
-	    // Set query options
-	    if(isset($options['orderby'])) {
-		    $getEntities->orderBy($options['orderby']);
-	    }
+        // Set query options
+        if(isset($options['orderby'])) {
+            $getEntities->orderBy($options['orderby']);
+        }
 
-	    // Set query options
-	    if(isset($options['limit'])) {
-		    if(isset($options['offset'])) {
-		        $getEntities->limit($options['offset'], $options['limit']);
-		    } else {
-			    $getEntities->limit($options['limit']);
-		    }
-	    }
+        // Set query options
+        if(isset($options['limit'])) {
+            if(isset($options['offset'])) {
+                $getEntities->limit($options['offset'], $options['limit']);
+            } else {
+                $getEntities->limit($options['limit']);
+            }
+        }
 
-	    // Get results
-	    /** @var static[] $entities */
-	    $entities = $getEntities->toObject(static::class, true, $options);
+        // Get results
+        /** @var static[] $entities */
+        $entities = $getEntities->toObject(static::class, true, $options);
 
         // Process entities
-	    foreach($entities as &$entity) {
+        foreach($entities as &$entity) {
 
-		    // Create the backup entity used during save
-		    $entity->createBackup();
+            // Create the backup entity used during save
+            $entity->createBackup();
 
-		    // Load other levels if depth is set and > 0
-		    if(!empty($options['depth'])) {
+            // Load other levels if depth is set and > 0
+            if(!empty($options['depth'])) {
 
-		    	$fields = array_keys(static::table_structure);
+                $fields = array_keys(static::table_structure);
 
-			    foreach($fields as $fieldName) {
+                foreach($fields as $fieldName) {
 
-				    // Check if this field is a FK
-				    if(static::isForeignKeyNew($fieldName)) {
+                    // Check if this field is a FK
+                    if(static::isForeignKeyNew($fieldName)) {
 
-					    // Get the method names
-					    $propertyName = Name::fieldToProperty($fieldName);
-					    $methodGetName = 'get' . ucwords($propertyName);
-					    $methodSetName = 'set' . ucwords($propertyName);
+                        // Get the method names
+                        $propertyName = Name::fieldToProperty($fieldName);
+                        $methodGetName = 'get' . ucwords($propertyName);
+                        $methodSetName = 'set' . ucwords($propertyName);
 
-					    // Get the current FK value
-					    if(method_exists($entity, $methodGetName)) {
-						    $value = $entity->$methodGetName();
-					    } else {
-						    $value = $entity->$propertyName;
-					    }
+                        // Get the current FK value
+                        if(method_exists($entity, $methodGetName)) {
+                            $value = $entity->$methodGetName();
+                        } else {
+                            $value = $entity->$propertyName;
+                        }
 
-					    // Decrement the depth count for the new query
-					    $newOptions = $options;
-					    $newOptions['depth']--;
+                        // Decrement the depth count for the new query
+                        $newOptions = $options;
+                        $newOptions['depth']--;
 
-					    // Get the referenced entity
-				    	$referencedEntity = static::findFirstBy('id = ' . $value, $newOptions);
+                        // Get the referenced entity
+                        $referencedEntity = static::findFirstBy('id = ' . $value, $newOptions);
 
-					    // Set the new value in the entity field
-					    // @TODO: Set in a new property to keep the FK ref?
-					    if(method_exists($entity, $methodSetName)) {
-						    $entity->$methodSetName($referencedEntity);
-					    } else {
-						    $entity->$propertyName = $referencedEntity;
-					    }
+                        // Set the new value in the entity field
+                        // @TODO: Set in a new property to keep the FK ref?
+                        if(method_exists($entity, $methodSetName)) {
+                            $entity->$methodSetName($referencedEntity);
+                        } else {
+                            $entity->$propertyName = $referencedEntity;
+                        }
 
-				    }
+                    }
 
-			    }
+                }
 
-		    }
-	    }
+            }
+        }
 
-	    return $entities;
+        return $entities;
 
     }
-    
+
     /**
      * Cette fonction permet de déterminer si on est en train de tenter d'ajouter un
      * nouvel objet ou si l'on tente de modifier un existant.
@@ -625,7 +637,7 @@ abstract class Entity {
      */
     public function save() {
 
-    	try {
+        try {
 
             $exist = !is_numeric($this->id) ? false : static::exists($this->id);
 
@@ -708,7 +720,7 @@ abstract class Entity {
      */
     public static function deleteEntity($className, $uk) {
 
-    	/** @var Entity $object */
+        /** @var Entity $object */
         $object = new $className();
 
         if(!is_array($uk)) {
@@ -761,27 +773,27 @@ abstract class Entity {
 
     }
 
-	/**
-	 * Get the current instance as an array
-	 *
-	 * @param array $columns
-	 *
-	 * @return array
-	 */
+    /**
+     * Get the current instance as an array
+     *
+     * @param array $columns
+     *
+     * @return array
+     */
     public function toArray(array $columns = []) {
 
-		$array = get_object_vars($this);
+        $array = get_object_vars($this);
 
-		foreach($array as $key => $var) {
-		    if(
-		    	!in_array($key, array_keys(static::table_structure))
-		        || (!empty($columns) && !in_array($key, $columns))
-		    ) {
+        foreach($array as $key => $var) {
+            if(
+                !in_array($key, array_keys(static::table_structure))
+                || (!empty($columns) && !in_array($key, $columns))
+            ) {
                 unset($array[$key]);
             }
         }
 
-	    return $array;
+        return $array;
 
     }
 
@@ -795,59 +807,60 @@ abstract class Entity {
      */
     public static function exists($value, $propertyName = 'id') {
 
-	    $count = static::select()
-		    ->whereEqual($propertyName, $value)
-		    ->toCount();
+        $count = static::select()
+            ->whereEqual($propertyName, $value)
+            ->toCount();
 
-    	return $count > 0 ? true : false;
+        return $count > 0 ? true : false;
 
     }
 
-	/**
-	 * Select in the current entity table
-	 *
-	 * @param string $alias
-	 *
-	 * @return Select
-	 */
+    /**
+     * Select in the current entity table
+     *
+     * @param string $alias
+     *
+     * @return Select
+     */
     public static function select($alias = '') {
 
         $select = new Select(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $select->setConnection(ConnectionRepository::getConnection(static::conn_name));
+        $select->setConnection(static::getConnection());
+        $select->setFetchEntity(static::class);
 
-    	return $select;
+        return $select;
 
     }
 
-	/**
-	 * Update in the current entity table
-	 *
-	 * @param string $alias
-	 *
-	 * @return Update
-	 */
+    /**
+     * Update in the current entity table
+     *
+     * @param string $alias
+     *
+     * @return Update
+     */
     public static function update($alias = '') {
 
         $update = new Update(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $update->setConnection(ConnectionRepository::getConnection(static::conn_name));
+        $update->setConnection(static::getConnection());
 
-    	return $update;
+        return $update;
 
     }
 
-	/**
-	 * Delete in the current entity table
-	 *
-	 * @param string $alias
-	 *
-	 * @return Delete
-	 */
+    /**
+     * Delete in the current entity table
+     *
+     * @param string $alias
+     *
+     * @return Delete
+     */
     public static function delete($alias = '') {
 
         $delete = new Delete(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $delete->setConnection(ConnectionRepository::getConnection(static::conn_name));
+        $delete->setConnection(static::getConnection());
 
-    	return $delete;
+        return $delete;
 
     }
 

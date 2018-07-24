@@ -10,7 +10,6 @@
 
 namespace Rf\Core\Database\QueryEngine\Others;
 
-use Rf\Core\Database\Adapter;
 use Rf\Core\Database\PDO;
 use Rf\Core\Database\ConnectionRepository;
 

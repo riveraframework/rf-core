@@ -10,9 +10,8 @@
 
 namespace Rf\Core\Database\QueryEngine\Actions;
 
-use Rf\Core\Database\PDO;
-use Rf\Core\Database\ConnectionRepository;
 use Rf\Core\Database\QueryEngine\Select;
+use Rf\Core\Entity\Entity;
 
 /**
  * Trait ExecuteSelectTrait
@@ -20,6 +19,21 @@ use Rf\Core\Database\QueryEngine\Select;
  * @package Rf\Core\Database\QueryEngine\Actions
  */
 trait ExecuteSelectTrait {
+
+    protected $fetchEntityName;
+
+    /**
+     * Setup the fetch entity class name
+     *
+     * @param $className
+     *
+     * @throws \Exception
+     */
+    public function setFetchEntity($className) {
+
+        $this->fetchEntityName = $className;
+
+    }
 
     /**
      * Get the result of a query as an array or array of arrays
@@ -32,24 +46,24 @@ trait ExecuteSelectTrait {
      */
     public function toArray($forceArray = false, $mode = 'both') {
 
-    	if(!empty($this->cached)) {
+        if(!empty($this->cached)) {
 
-    		$key = 'query-' . md5($this->compile() . implode('', $this->generateValueArray()) . $forceArray . $mode);
-    		$cachedValue = rf_cache_get($key);
+            $key = 'query-' . md5($this->compile() . implode('', $this->generateValueArray()) . $forceArray . $mode);
+            $cachedValue = rf_cache_get($key);
 
-    		if(isset($cachedValue) && $cachedValue !== false) {
-    			return json_decode($cachedValue, true);
-		    }
+            if(isset($cachedValue) && $cachedValue !== false) {
+                return json_decode($cachedValue, true);
+            }
 
-	    }
+        }
 
         $results =  $this->getConnection()->executeToArray($this->compile(), $this->generateValueArray(), $forceArray, $mode);
 
-	    if(!empty($this->cached)) {
-		    rf_cache_set($key, json_encode($results), $this->cachedExpires);
-	    }
+        if(!empty($this->cached)) {
+            rf_cache_set($key, json_encode($results), $this->cachedExpires);
+        }
 
-	    return $results;
+        return $results;
 
     }
 
@@ -59,6 +73,7 @@ trait ExecuteSelectTrait {
      * @param bool $forceArray
      *
      * @return array
+     * @throws \Rf\Core\Exception\BaseException
      */
     public function toArrayAssoc($forceArray = false) {
 
@@ -72,6 +87,7 @@ trait ExecuteSelectTrait {
      * @param bool $forceArray
      *
      * @return array
+     * @throws \Rf\Core\Exception\BaseException
      */
     public function toRow($forceArray = false) {
 
@@ -88,7 +104,6 @@ trait ExecuteSelectTrait {
      * @param array $options Options
      *
      * @return array|object
-     * @throws \Rf\Core\Exception\BaseException
      */
     public function toObject($className = null, $forceArray = false, array $options = []) {
 
@@ -96,13 +111,31 @@ trait ExecuteSelectTrait {
 
     }
 
-    //@TODO: toEntity function
-	// Pass classname from entity to select and add Exception if empty
+    /**
+     * Get the result of a query as an enity or array of objects. A class name needs to be specified
+     * using the `setFetchEntity` method
+     *
+     * @param bool $forceArray
+     * @param array $options Options
+     *
+     * @return array|object
+     * @throws \Exception
+     */
+    public function toEntity($forceArray = false, array $options = []) {
+
+        if(empty($this->fetchEntityName) || !is_a($this->fetchEntityName, Entity::class)) {
+            throw new \Exception('Fetch error: the class is not an entity');
+        }
+
+        return $this->getConnection()->executeToObject($this->compile(), $this->generateValueArray(), $this->fetchEntityName, $forceArray, $options);
+
+    }
 
     /**
      * Get the number of rows for the current query
      *
      * @return int
+     * @throws \Rf\Core\Exception\BaseException
      */
     public function toCount() {
 
