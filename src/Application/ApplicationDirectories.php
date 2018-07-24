@@ -44,7 +44,7 @@ class ApplicationDirectories {
             'logs'     => $appPath . 'logs/',
             'modules'  => $appPath . 'modules/',
             'tmp'      => $appPath . 'tmp/',
-            'public'   => $appPath . 'public/',
+            'public'   => $basePath . 'public/',
         ];
 
     }
