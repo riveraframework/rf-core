@@ -15,33 +15,32 @@ use ZipArchive;
 /**
  * Class Log
  * 
- * @since 1.0
- * 
  * @package Rf\Core\Log
  */
 class Log {
 
+    const TYPE_DEBUG = 'debug';
+    const TYPE_ERROR = 'error';
+    const TYPE_INFO = 'info';
+    const TYPE_WARNING = 'warning';
+
     /**
      * @var string $type
-     * @since 1.0
      */
     protected $type;
 
     /**
      * @var string $message
-     * @since 1.0
      */
     protected $message;
 
     /**
      * @var int $logNb
-     * @since 1.0
      */
     private static $logNb;
 
     /**
      * @var array $logFiles
-     * @since 1.0
      */
     private static $logFiles;
 
@@ -61,10 +60,6 @@ class Log {
 
     /**
      * Save a new entry in the current log file
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     public function save() {
 
@@ -91,9 +86,8 @@ class Log {
     /**
      * Get a log file name
      *
-     * @since 1.0
-     *
      * @param bool $current
+     *
      * @return string
      */
     public static function getFileName($current = false) {
@@ -112,10 +106,7 @@ class Log {
     /**
      * Set the log number from a log file name
      *
-     * @since 1.0
-     *
      * @param string $logName
-     * @return void
      */
     public static function getLogNb($logName) {
 
@@ -126,8 +117,6 @@ class Log {
 
     /**
      * Get the current log file name
-     *
-     * @since 1.0
      *
      * @return string
      */
@@ -179,10 +168,6 @@ class Log {
 
     /**
      * Archive filled logs
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     public static function archiveLogs() {
 
@@ -252,10 +237,6 @@ class Log {
 
     /**
      * Delete the content of a log file
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     public static function emptyLogFile() {
 
@@ -265,4 +246,5 @@ class Log {
         fclose($fileOpen);
 
     }
+
 }
