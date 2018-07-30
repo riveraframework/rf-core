@@ -236,6 +236,17 @@ class Request {
     }
 
     /**
+     * Get DELETE data
+     *
+     * @return ParameterSet
+     */
+    public function getDeleteData() {
+
+        return $this->delete;
+
+    }
+
+    /**
      * Get FILES data
      *
      * @return ParameterSet
