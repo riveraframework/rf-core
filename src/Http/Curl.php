@@ -94,15 +94,15 @@ class Curl {
         switch (strtolower($method)) {
 
             case 'head':
-                $this->setOption(CURLOPT_NOBODY, true);
+                $this->setOption(CURLOPT_NOBODY, 1);
                 break;
 
             case 'get':
-                $this->setOption(CURLOPT_HTTPGET, true);
+                $this->setOption(CURLOPT_HTTPGET, 1);
                 break;
 
             case 'post':
-                $this->setOption(CURLOPT_POST, true);
+                $this->setOption(CURLOPT_POST, 1);
                 break;
 
             case 'put':
@@ -136,7 +136,7 @@ class Curl {
      * Set an option
      *
      * @param string $name
-     * @param string $value
+     * @param string|array $value
      */
     public function setOption($name, $value) {
 
@@ -157,6 +157,11 @@ class Curl {
 
     }
 
+    /**
+     * Set request data
+     *
+     * @param array|string $postData
+     */
     public function setPostData($postData) {
 
         $this->setOption(CURLOPT_POSTFIELDS, $postData);
@@ -168,8 +173,8 @@ class Curl {
      */
     public function disableSslCheck() {
 
-        $this->setOption(CURLOPT_SSL_VERIFYPEER, false);
-        $this->setOption(CURLOPT_SSL_VERIFYHOST, false);
+        $this->setOption(CURLOPT_SSL_VERIFYPEER, 0);
+        $this->setOption(CURLOPT_SSL_VERIFYHOST, 0);
 
     }
 
