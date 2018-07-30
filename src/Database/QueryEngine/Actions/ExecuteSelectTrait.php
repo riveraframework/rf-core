@@ -123,8 +123,8 @@ trait ExecuteSelectTrait {
      */
     public function toEntity($forceArray = false, array $options = []) {
 
-        if(empty($this->fetchEntityName) || !is_a($this->fetchEntityName, Entity::class)) {
-            throw new \Exception('Fetch error: the class is not an entity');
+        if(empty($this->fetchEntityName) || !is_subclass_of($this->fetchEntityName, Entity::class)) {
+            throw new \Exception('Fetch error: the class "' . $this->fetchEntityName . '" is not an entity');
         }
 
         return $this->getConnection()->executeToObject($this->compile(), $this->generateValueArray(), $this->fetchEntityName, $forceArray, $options);
