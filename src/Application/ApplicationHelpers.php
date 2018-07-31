@@ -341,13 +341,16 @@ namespace {
     ///
 
     /**
-     * Return a random float number between 0 and 1
+     * Return a random float number between a min and a max
+     *
+     * @param float|int $min
+     * @param float|int $max
      *
      * @return float|int
      */
-    function rf_rand() {
+    function rf_rand_float($min = 0, $max = 1) {
 
-        return (float) mt_rand() / (float) mt_getrandmax();
+        return $min + mt_rand() / mt_getrandmax() * ($max - $min);
 
     }
 
