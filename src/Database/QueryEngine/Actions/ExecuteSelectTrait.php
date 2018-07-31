@@ -20,6 +20,7 @@ use Rf\Core\Entity\Entity;
  */
 trait ExecuteSelectTrait {
 
+    /** @var string */
     protected $fetchEntityName;
 
     /**
@@ -112,8 +113,8 @@ trait ExecuteSelectTrait {
     }
 
     /**
-     * Get the result of a query as an enity or array of objects. A class name needs to be specified
-     * using the `setFetchEntity` method
+     * Get the result of a query as an enity or array of objects. A class name needs to
+     * be specified using the `setFetchEntity` method
      *
      * @param bool $forceArray
      * @param array $options Options
@@ -123,11 +124,55 @@ trait ExecuteSelectTrait {
      */
     public function toEntity($forceArray = false, array $options = []) {
 
-        if(empty($this->fetchEntityName) || !is_subclass_of($this->fetchEntityName, Entity::class)) {
-            throw new \Exception('Fetch error: the class "' . $this->fetchEntityName . '" is not an entity');
+        if(empty($this->fetchEntityName) || !is_a($this->fetchEntityName, Entity::class, true)) {
+            throw new \Exception('Fetch error: the class is not an entity');
         }
 
         return $this->getConnection()->executeToObject($this->compile(), $this->generateValueArray(), $this->fetchEntityName, $forceArray, $options);
+
+    }
+
+    /**
+     * Process the results using a custom callback
+     *
+     * This method use `$this->toArrayAssoc()` to retrieve the data. Thus the callback
+     * needs to take as parameter a result row as an array.
+     *
+     * @param callable $callback
+     * @param bool $forceArray
+     *
+     * @return mixed|bool
+     * @throws \Exception
+     */
+    public function toCallback($callback, $forceArray = false) {
+
+        if(!is_callable($callback)) {
+            throw new \Exception('The callback is not a valid function');
+        }
+
+        $results = $this->toArrayAssoc($forceArray);
+
+        if($results) {
+
+            if(isset($results[0])) {
+
+                // +1 results
+                foreach ($results as &$result) {
+                    $result = $callback($result);
+                }
+
+                return $results;
+
+            } else {
+
+                // Only one result
+                return $callback($results);
+
+            }
+
+        } else {
+            return false;
+        }
 
     }
 
