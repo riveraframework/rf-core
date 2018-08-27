@@ -336,6 +336,47 @@ namespace {
 
     }
 
+    /**
+     * Get a value in an array recursively
+     *
+     * @param array $array
+     * @param string $key E.g: arrayKey.subArrayKey[...]
+     *
+     * @return mixed
+     */
+    function rf_array_get(array $array, $key) {
+
+        // Split the key parts
+        $keyParts = explode('.', $key);
+
+        foreach($keyParts as $keyIndex => $keyName) {
+
+            // Break loop if one of the key does not exist
+            if(!isset($array[$keyName])) {
+                break;
+            }
+
+            // Update current array with sub-array
+            $array = $array[$keyName];
+
+            if($keyIndex + 1 < count($keyParts)) {
+
+                // Continue iteration while key is not the last
+                continue;
+
+            } else {
+
+                // Return value
+                return $array;
+
+            }
+
+        }
+
+        return null;
+
+    }
+
     /////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////
     ///
