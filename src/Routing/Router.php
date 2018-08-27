@@ -218,6 +218,10 @@ class Router {
 
         $link = '#';
 
+        if(!empty($this->routesForLinks[$routeName]['pattern'])) {
+            $link = $this->routesForLinks[$routeName]['pattern'];
+        }
+
         if(!empty($routeName)) {
 
         	// @TODO: Remove api_
