@@ -30,8 +30,8 @@ class CacheService {
 	const HANDLER_TYPE_MEMCACHED = 'memcached';
 	const HANDLER_TYPE_REDIS = 'redis';
 
-	/** @var CacheInterface[] $caches  */
-	protected $caches = [];
+	/** @var CacheInterface[] $cacheHandlers  */
+	protected $cacheHandlers = [];
 
 	/**
 	 * Memcache constructor.
@@ -39,6 +39,7 @@ class CacheService {
 	 * @param array $cacheConfig
 	 *
 	 * @throws CacheConfigurationException
+	 * @throws \Exception
 	 */
 	public function __construct(array $cacheConfig) {
 
@@ -82,7 +83,7 @@ class CacheService {
                     // Check that the memcached server support the common operations
                     $memcache->checkService();
 
-					$this->caches[] = $memcache;
+					$this->cacheHandlers[] = $memcache;
 					break;
 
                 // Create Memcached handler
@@ -111,7 +112,7 @@ class CacheService {
                     // Check that the memcached server support the common operations
                     $memcached->checkService();
 
-                    $this->caches[] = $memcached;
+                    $this->cacheHandlers[] = $memcached;
                     break;
 
 				// Create disk handler
@@ -120,7 +121,7 @@ class CacheService {
 					// Create disk cache handler
 					$diskCache = new DiskCache();
 					$diskCache->setIdentifier($handlerIdentifier);
-					$this->caches[] = $diskCache;
+					$this->cacheHandlers[] = $diskCache;
 					break;
 
 			}
@@ -128,6 +129,17 @@ class CacheService {
 		}
 
 	}
+
+    /**
+     * Get available cache handlers
+     *
+     * @return CacheInterface[]
+     */
+	public function getHandlers() {
+
+	    return $this->cacheHandlers;
+
+    }
 
 	/**
 	 * Get value from cache
@@ -139,11 +151,11 @@ class CacheService {
 	 */
 	public function get($key, $cacheIdentifiers = []) {
 
-		foreach($this->caches as $cache) {
+		foreach($this->cacheHandlers as $cacheHandler) {
 
-			if(empty($cacheIdentifier) || in_array($cache->getIdentifier(), $cacheIdentifiers)) {
+			if(empty($cacheIdentifier) || in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
 
-				$value = $cache->get($key);
+				$value = $cacheHandler->get($key);
 
 				if($value !== false) {
 					return $value;
@@ -169,12 +181,12 @@ class CacheService {
 	 */
 	public function set($key, $value, $expires = 0, $cacheIdentifiers = []) {
 
-		foreach($this->caches as $cache) {
+		foreach($this->cacheHandlers as $cacheHandler) {
 
-			if(!empty($cacheIdentifiers) && !in_array($cache->getIdentifier(), $cacheIdentifiers)) {
+			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
 				continue;
 			} else {
-				$cache->set($key, $value, $expires);
+				$cacheHandler->set($key, $value, $expires);
 			}
 
 		}
@@ -189,12 +201,12 @@ class CacheService {
 	 */
 	public function delete($key, $cacheIdentifiers = []) {
 
-		foreach($this->caches as $cache) {
+		foreach($this->cacheHandlers as $cacheHandler) {
 
-			if(!empty($cacheIdentifiers) && !in_array($cache->getIdentifier(), $cacheIdentifiers)) {
+			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
 				continue;
 			} else {
-				$cache->delete($key);
+				$cacheHandler->delete($key);
 			}
 
 		}
@@ -208,11 +220,11 @@ class CacheService {
 	 */
 	public function flushAll($cacheIdentifiers = []) {
 
-		foreach($this->caches as $cache) {
-			if(!empty($cacheIdentifiers) && !in_array($cache->getIdentifier(), $cacheIdentifiers)) {
+		foreach($this->cacheHandlers as $cacheHandler) {
+			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
 				continue;
 			} else {
-				$cache->flush();
+				$cacheHandler->flush();
 			}
 
 		}
