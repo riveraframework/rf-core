@@ -60,4 +60,9 @@ interface CacheInterface {
 	 */
 	public function flush();
 
+	/**
+	 * Get cache stats
+	 */
+	public function getStats();
+
 }

@@ -102,7 +102,22 @@ class DiskCache extends DefaultCache {
 
 	}
 
-	/**
+    /**
+     * Get cache stats
+     *
+     * @return array
+     */
+	public function getStats() {
+
+	    // @TODO: Add different paths for the disk cache handler (equiv. of memcached servers)
+	    // @TODO: Count files and folders
+	    return [
+	        // Return stats for each path
+        ];
+
+    }
+
+    /**
 	 * Build the cache file path
 	 *
 	 * @param string $key

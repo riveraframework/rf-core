@@ -123,4 +123,15 @@ class MemcacheCache extends DefaultCache {
 
 	}
 
+    /**
+     * Get cache stats
+     *
+     * @return array
+     */
+    public function getStats() {
+
+        return $this->memcache->getExtendedStats();
+
+    }
+
 }
