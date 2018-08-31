@@ -24,13 +24,13 @@ class Assets {
      * @var array $jsFiles
      * @since 1.0
      */
-    private static $jsFiles;
+    private static $jsFiles = [];
 
     /**
      * @var array $cssFiles
      * @since 1.0
      */
-    private static $cssFiles;
+    private static $cssFiles = [];
     
     /**
      * Cette fonction permet de définir un fichier JS à utiliser en indiquant son nom
@@ -89,7 +89,7 @@ class Assets {
 		            if(is_string($name)) {
 			            $params .= ' ' . $name . '="' . $value . '" ';
 		            } else {
-			            $params .= ' ' . $name . ' ';
+			            $params .= ' ' . $value . ' ';
 		            }
 
 	            }
