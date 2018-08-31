@@ -37,8 +37,6 @@ trait WhereTrait {
         // Clause type
         $validTypes = [
         	'>', '>=', '=', '<=','<', '!=',
-	        'like', 'not like',
-	        'in',
 	        'between',
 	        'is null', 'is not null',
 	        'custom'
@@ -57,15 +55,6 @@ trait WhereTrait {
         if($type == 'custom') {
 
             $this->whereClause .= $field; // $field contient la requete car mandatory param
-
-        } elseif($type == 'in') {
-
-            $in = '';
-            foreach($value as $val) {
-                $in .= '?,';
-                $this->whereClauseValues[] = $val;
-            }
-            $this->whereClause .= $field . ' IN(' . substr($in, 0, strlen($in) - 1) . ')';
 
         } else {
 
@@ -249,22 +238,46 @@ trait WhereTrait {
 	    return $this->addWhereClauseEngine($customClause, 'custom');
     }
 
-    /* ------------------------------- IN ------------------------------------- */
-    protected function addWhereClauseInEngine($field, $arrayValue, $operator = null){
-	    return $this->addWhereClauseEngine($field, 'in', $arrayValue, null, $operator);
+    /**
+     * Add a IN clause
+     *
+     * @param string $field
+     * @param array $arrayValue
+     *
+     * @return $this
+     */
+    public function whereIn($field, array $arrayValue) {
+
+        $in = [];
+        foreach($arrayValue as $val) {
+            $in[] = '?';
+            $this->whereClauseValues[] = $val;
+        }
+        $this->whereClause .= $field . ' IN(' . implode(',', $in) . ')';
+
+        return $this;
+
     }
 
-    public function whereIn($field, $arrayValue) {
-	    return $this->addWhereClauseInEngine($field, $arrayValue);
-    }
-    public function addWhereClauseIn($field, $arrayValue) {
-	    return $this->whereIn($field, $arrayValue);
-    }
-    public function addWhereClauseAndIn($field, $arrayValue) {
-	    return $this->addWhereClauseInEngine($field, $arrayValue, 'AND');
-    }
-    public function addWhereClauseOrIn($field, $arrayValue) {
-	    return $this->addWhereClauseInEngine($field, $arrayValue, 'OR');
+    /**
+     * Add a NOT IN clause
+     *
+     * @param string $field
+     * @param array $arrayValue
+     *
+     * @return $this
+     */
+    public function whereNotIn($field, array $arrayValue) {
+
+        $notIn = [];
+        foreach($arrayValue as $val) {
+            $notIn[] = '?';
+            $this->whereClauseValues[] = $val;
+        }
+        $this->whereClause .= $field . ' NOT IN(' . implode(',', $notIn) . ')';
+
+        return $this;
+
     }
 
     /* ---------------------------- COMPARISON --------------------------------- */
