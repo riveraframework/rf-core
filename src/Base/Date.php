@@ -519,7 +519,7 @@ class Date extends DateTime {
      *
      * @TODO: Prendre en charge les autres masques et lier avec la langue.
      */
-    public static function checkDate($date, $format, $minAge) {
+    public static function checkDate($date, $format, $minAge = null) {
         $regex = '#' . $format . '#';
         $regex = str_replace(array('d',
             'j',
