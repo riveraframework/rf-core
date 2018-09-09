@@ -22,43 +22,26 @@ use Rf\Core\Exception\BaseException;
  * @package Rf\Core\Session
  */
 class Cookie {
-    
+
     use ObjectTrait;
 
-    /**
-     * @var string $name Name of the cookie
-     * @since 1.0
-     */
+    /** @var string $name Name of the cookie*/
     public $name;
 
-    /**
-     * @var string|int $content Content of the cookie
-     * @since 1.0
-     */
+    /** @var string|int $content Content of the cookiem */
     public $content;
 
-    /**
-     * @var int $validity Timestamp until when the cookie is considered as valid
-     * @since 1.0
-     */
+    /** @var int $validity Timestamp until when the cookie is considered as valid */
     public $validity;
 
-    /**
-     * @var string $url Domain of application of the cookie
-     * @since 1.0
-     */
+    /** @var string $url Domain of application of the cookie */
     public $url;
 
-    /**
-     * @var bool $crossSubDomain Allow to use the wildcard to get the cookie cross domains
-     * @since 1.6.0
-     */
+    /** @var bool $crossSubDomain Allow to use the wildcard to get the cookie cross domains */
     public $crossSubDomain;
 
     /**
      * Create a Cookie object with the necessary properties
-     *
-     * @since 1.0
      *
      * @param string $cookieName Name of the cookie
      * @param string|int $content Content of the cookie
@@ -77,43 +60,46 @@ class Cookie {
         }
         $this->crossSubDomain = $crossSubDomain;
         $this->url = ($crossSubDomain ? '.' : '') . CurrentUri::getDomain();
+
     }
 
     /**
      * Create a cookie
      *
-     * @since 1.0
-     *
-     * @return void
-     * @throws BaseException
+     * @throws \Exception
      */
     public function createCookie() {
-	if(!setcookie($this->name, $this->content, $this->validity, '/', $this->url)) {
-            throw new BaseException(get_called_class(), 'impossible de créer le cookie : '.$this->name);
+
+        if(!setcookie($this->name, $this->content, $this->validity, '/', $this->url)) {
+
+            throw new \Exception('Unable to create the cookie: '.$this->name);
+
         }
+
     }
 
     /**
      * Delete a cookie
      *
-     * @since 1.0
-     *
      * @param string $cookieName Name of the cookie
-     * @return void
      */
     public static function deleteCookie($cookieName) {
-	    setcookie($cookieName, 0, time() - 30, '/', CurrentUri::getDomain());
+
+        setcookie($cookieName, 0, time() - 30, '/', CurrentUri::getDomain());
+
     }
 
     /**
      * Check if a cookie exist
      *
-     * @since 1.0
-     *
      * @param string $cookieName Name of the cookie
+     *
      * @return bool
      */
     public static function cookieExist($cookieName) {
+
         return isset($_COOKIE[$cookieName]) ? true : false;
+
     }
+
 }
