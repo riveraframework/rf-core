@@ -81,7 +81,9 @@ class CacheService {
 					}
 
                     // Check that the memcached server support the common operations
-                    $memcache->checkService();
+                    if(!empty($handlerConfig['required'])) {
+                        $memcache->checkService();
+                    }
 
 					$this->cacheHandlers[] = $memcache;
 					break;
@@ -110,7 +112,9 @@ class CacheService {
                     }
 
                     // Check that the memcached server support the common operations
-                    $memcached->checkService();
+                    if(!empty($handlerConfig['required'])) {
+                        $memcached->checkService();
+                    }
 
                     $this->cacheHandlers[] = $memcached;
                     break;
