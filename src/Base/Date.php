@@ -161,8 +161,8 @@ class Date extends DateTime {
     public function __construct($date = 'now', $format = null, array $params = []) {
 
         // Set date language
-        if(isset($params['lang']) && in_array($params['lang'], self::$acceptedLang)) {
-            $this->lang = $params['lang'];
+        if(isset($params['language']) && in_array($params['language'], self::$acceptedLang)) {
+            $this->lang = $params['language'];
         } else {
             $this->lang = rf_current_language();
         }
