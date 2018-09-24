@@ -278,7 +278,12 @@ class ApplicationMvc extends Application {
 		    $actionName = $route['action'];
 
 		    $controller = new $controllerName();
-		    $controller->$actionName();
+
+            if(method_exists($controller, 'wrapper')) {
+                $controller->wrapper($actionName);
+            } else {
+                $controller->$actionName();
+            }
 
 	    } catch(\Error $error) {
 
