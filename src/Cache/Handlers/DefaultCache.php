@@ -22,6 +22,12 @@ abstract class DefaultCache implements CacheInterface {
 	/** @var string $identifier */
 	protected $identifier;
 
+    /** @var string $type */
+    protected $type;
+
+    /** @var string $endpoints */
+    protected $endpoints;
+
 	/**
 	 * Get cache identifier
 	 *
@@ -43,6 +49,28 @@ abstract class DefaultCache implements CacheInterface {
 		$this->identifier = $identifier;
 
 	}
+
+    /**
+     * Get cache type
+     *
+     * @return string
+     */
+    public function getType() {
+
+        return $this->type;
+
+    }
+
+    /**
+     * Get cache endpoints
+     *
+     * @return string
+     */
+    public function getEndpoints() {
+
+        return $this->endpoints;
+
+    }
 
 	/**
 	 * Generate a basic cache key

@@ -31,6 +31,20 @@ interface CacheInterface {
 	 */
 	public function setIdentifier($identifier);
 
+    /**
+     * Get cache type
+     *
+     * @return string
+     */
+    public function getType();
+
+    /**
+     * Get cache endpoints
+     *
+     * @return string
+     */
+    public function getEndpoints();
+
 	/**
 	 * Get value
 	 *

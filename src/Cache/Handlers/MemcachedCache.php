@@ -53,6 +53,7 @@ class MemcachedCache extends DefaultCache {
 	public function addServer($host, $port) {
 
 		$this->memcached->addServer($host, $port);
+        $this->endpoints[] = $host . ':' . $port;
 
 	}
 

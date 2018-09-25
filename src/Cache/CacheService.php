@@ -43,94 +43,98 @@ class CacheService {
 	 */
 	public function __construct(array $cacheConfig) {
 
-		foreach($cacheConfig['handlers'] as $handlerIdentifier => $handlerConfig) {
+        if(!empty($cacheConfig['handlers'])) {
 
-			// Check if the handler type is authorized
-			$handlerType = !empty($handlerConfig['type']) ? $handlerConfig['type'] : '';
-			if(!in_array($handlerType, [
-				self::HANDLER_TYPE_DISK,
-				self::HANDLER_TYPE_MEMCACHE,
-				self::HANDLER_TYPE_MEMCACHED,
-			])) {
-				throw new CacheConfigurationException('Cache setup error: the cache type `' . $handlerType . '` does not exists');
-			}
+            foreach ($cacheConfig['handlers'] as $handlerIdentifier => $handlerConfig) {
 
-			switch($handlerType) {
+                // Check if the handler type is authorized
+                $handlerType = !empty($handlerConfig['type']) ? $handlerConfig['type'] : '';
+                if (!in_array($handlerType, [
+                    self::HANDLER_TYPE_DISK,
+                    self::HANDLER_TYPE_MEMCACHE,
+                    self::HANDLER_TYPE_MEMCACHED,
+                ])) {
+                    throw new CacheConfigurationException('Cache setup error: the cache type `' . $handlerType . '` does not exists');
+                }
 
-				// Create Memcache handler
-				case self::HANDLER_TYPE_MEMCACHE:
+                switch ($handlerType) {
 
-					$memcache = new MemcacheCache();
-					$memcache->setIdentifier($handlerIdentifier);
+                    // Create Memcache handler
+                    case self::HANDLER_TYPE_MEMCACHE:
 
-					// Check if the Memcache server list is empty
-					$servers = $handlerConfig['servers'];
-					if(empty($servers)) {
-						throw new CacheConfigurationException('Cache setup error: the Memcache server list is empty');
-					}
+                        $memcache = new MemcacheCache();
+                        $memcache->setIdentifier($handlerIdentifier);
 
-					// Add listed server to the Memcache handler
-					foreach($servers as $server) {
-
-						if(empty($server['host']) || empty($server['port'])) {
-							throw new CacheConfigurationException('Cache setup error: the Memcache configuration is invalid');
-						}
-
-						$memcache->addServer($server['host'], $server['port']);
-
-					}
-
-                    // Check that the memcached server support the common operations
-                    if(!empty($handlerConfig['required'])) {
-                        $memcache->checkService();
-                    }
-
-					$this->cacheHandlers[] = $memcache;
-					break;
-
-                // Create Memcached handler
-                case self::HANDLER_TYPE_MEMCACHED:
-
-                    $memcached = new MemcachedCache();
-                    $memcached->setIdentifier($handlerIdentifier);
-
-                    // Check if the Memcached server list is empty
-                    $servers = $handlerConfig['servers'];
-                    if(empty($servers)) {
-                        throw new CacheConfigurationException('Cache setup error: the Memcached server list is empty');
-                    }
-
-                    // Add listed server to the Memcached handler
-                    foreach($servers as $server) {
-
-                        if(empty($server['host']) || empty($server['port'])) {
-                            throw new CacheConfigurationException('Cache setup error: the Memcached configuration is invalid');
+                        // Check if the Memcache server list is empty
+                        $servers = $handlerConfig['servers'];
+                        if (empty($servers)) {
+                            throw new CacheConfigurationException('Cache setup error: the Memcache server list is empty');
                         }
 
-                        $memcached->addServer($server['host'], $server['port']);
+                        // Add listed server to the Memcache handler
+                        foreach ($servers as $server) {
 
-                    }
+                            if (empty($server['host']) || empty($server['port'])) {
+                                throw new CacheConfigurationException('Cache setup error: the Memcache configuration is invalid');
+                            }
 
-                    // Check that the memcached server support the common operations
-                    if(!empty($handlerConfig['required'])) {
-                        $memcached->checkService();
-                    }
+                            $memcache->addServer($server['host'], $server['port']);
 
-                    $this->cacheHandlers[] = $memcached;
-                    break;
+                        }
 
-				// Create disk handler
-				case self::HANDLER_TYPE_DISK:
+                        // Check that the memcached server support the common operations
+                        if (!empty($handlerConfig['required'])) {
+                            $memcache->checkService();
+                        }
 
-					// Create disk cache handler
-					$diskCache = new DiskCache();
-					$diskCache->setIdentifier($handlerIdentifier);
-					$this->cacheHandlers[] = $diskCache;
-					break;
+                        $this->cacheHandlers[] = $memcache;
+                        break;
 
-			}
+                    // Create Memcached handler
+                    case self::HANDLER_TYPE_MEMCACHED:
 
-		}
+                        $memcached = new MemcachedCache();
+                        $memcached->setIdentifier($handlerIdentifier);
+
+                        // Check if the Memcached server list is empty
+                        $servers = $handlerConfig['servers'];
+                        if (empty($servers)) {
+                            throw new CacheConfigurationException('Cache setup error: the Memcached server list is empty');
+                        }
+
+                        // Add listed server to the Memcached handler
+                        foreach ($servers as $server) {
+
+                            if (empty($server['host']) || empty($server['port'])) {
+                                throw new CacheConfigurationException('Cache setup error: the Memcached configuration is invalid');
+                            }
+
+                            $memcached->addServer($server['host'], $server['port']);
+
+                        }
+
+                        // Check that the memcached server support the common operations
+                        if (!empty($handlerConfig['required'])) {
+                            $memcached->checkService();
+                        }
+
+                        $this->cacheHandlers[] = $memcached;
+                        break;
+
+                    // Create disk handler
+                    case self::HANDLER_TYPE_DISK:
+
+                        // Create disk cache handler
+                        $diskCache = new DiskCache();
+                        $diskCache->setIdentifier($handlerIdentifier);
+                        $this->cacheHandlers[] = $diskCache;
+                        break;
+
+                }
+
+            }
+
+        }
 
 	}
 
