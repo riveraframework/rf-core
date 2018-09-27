@@ -72,9 +72,6 @@ class Request {
 	/** @var bool */
 	protected $isApi;
 
-	/** @var bool */
-	protected $isApiFollow;
-
     /**
      * Create a new Request object using the $_ variables and the current uri
      */
@@ -322,8 +319,6 @@ class Request {
 	        $this->isAjax = false;
         }
 
-        $this->isApiFollow = false;
-
         switch($this->getMethod()) {
 
             case 'GET':
@@ -448,17 +443,6 @@ class Request {
     final public function isApi() {
 
         return $this->isApi;
-
-    }
-
-    /**
-     * Check is the current request is an API request
-     *
-     * @return bool
-     */
-    final public function isApiFollow() {
-
-        return $this->isApiFollow;
 
     }
 

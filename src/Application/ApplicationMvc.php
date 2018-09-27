@@ -10,7 +10,6 @@
 
 namespace Rf\Core\Application;
 
-use Rf\Core\Api\Api;
 use Rf\Core\Base\ErrorHandler;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
@@ -21,6 +20,7 @@ use Rf\Core\Exception\ErrorMessageException;
 use Rf\Core\Http\Request;
 use Rf\Core\I18n\I18n;
 use Rf\Core\Routing\Router;
+use Rf\Core\System\Performance\Benchmark;
 use Rf\Core\Uri\Uri;
 
 /**
@@ -89,6 +89,10 @@ class ApplicationMvc extends Application {
      */
     public function init() {
 
+        // Start Benchmark tool
+        Benchmark::init();
+        Benchmark::log('init start');
+
         // Register directories in current context
         $this->directories = new ApplicationDirectories();
 
@@ -105,6 +109,8 @@ class ApplicationMvc extends Application {
             $configuration = new ApplicationConfiguration();
         }
         $this->configuration = $configuration;
+
+        Benchmark::log('configuration loaded');
 
         // Load cache handler
 	    if(!rf_empty(rf_config('cache'))) {
@@ -123,15 +129,11 @@ class ApplicationMvc extends Application {
 	        ini_set('session.gc_maxlifetime', rf_config('session.gc_maxlifetime'));
         }
         session_start();
+
+        Benchmark::log('session started');
         
         // Get request info
         $this->request = new Request();
-        if($this->request->isApiFollow()) {
-            Api::handleRequest();
-        }
-        
-        // Load Architect
-        $this->architect = new Architect();
         
         // Multi-lang support
         if($this->configuration->get('options.i18n') == true) {
@@ -145,6 +147,8 @@ class ApplicationMvc extends Application {
         // Init router module and verify bad requests (based on requested domain)
         $this->router = new Router();
         $this->router->testDomain();
+
+        Benchmark::log('init end');
 
     }
     
@@ -237,6 +241,13 @@ class ApplicationMvc extends Application {
      */
     public function architect() {
 
+        if(!isset($this->architect)) {
+
+            // Load Architect
+            $this->architect = new Architect();
+
+        }
+
         return $this->architect;
 
     }
@@ -265,24 +276,39 @@ class ApplicationMvc extends Application {
     
     /**
      * Start the application execution using the main controller property
+     *
+     * @TODO: Add user customizable error handler
      */
     public function handleRequest() {
 
+        Benchmark::log('handle request start');
+
     	try {
 
+            // Get the applicable route
 		    $this->router->route();
+            $route = $this->router->getCurrentRoute();
 
-		    $route = $this->router->getCurrentRoute();
-
+            // Get the controller name
 		    $controllerName = $route['controller'];
-		    $actionName = $route['action'];
 
+            // Create the controller instance
 		    $controller = new $controllerName();
 
+		    // Get the action name
+            $actionName = $route['action'];
+
+            // Execute the requested action
             if(method_exists($controller, 'wrapper')) {
+
+                Benchmark::log($controllerName . '::' . $actionName . ' started (with wrapper)');
                 $controller->wrapper($actionName);
+
             } else {
+
+                Benchmark::log($controllerName . '::' . $actionName . ' started');
                 $controller->$actionName();
+
             }
 
 	    } catch(\Error $error) {
@@ -298,9 +324,13 @@ class ApplicationMvc extends Application {
 			    echo ErrorHandler::formatError($error);
 
 		    } elseif(rf_request()->isApi()) {
+
 		        throw new ErrorMessageException($error->getMessage());
+
             } else {
+
 		        die($error->getMessage());
+
             }
 
 	    }

@@ -16,6 +16,7 @@ use Rf\Core\Entity\Architect;
 use Rf\Core\Exception\BaseException;
 use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\I18n\I18n;
+use Rf\Core\System\Performance\Benchmark;
 
 /**
  * Class ApplicationCron
@@ -70,6 +71,10 @@ class ApplicationCron extends Application {
      */
     public function init() {
 
+        // Start Benchmark tool
+        Benchmark::init();
+        Benchmark::log('init start');
+
         // Register directories in current context
         $this->directories = new ApplicationDirectories();
 
@@ -87,6 +92,8 @@ class ApplicationCron extends Application {
         }
         $this->configuration = $configuration;
 
+        Benchmark::log('configuration loaded');
+
         // Load cache handler
         if(!rf_empty(rf_config('cache'))) {
             $this->cacheService = new CacheService(rf_config('cache')->toArray());
@@ -103,6 +110,8 @@ class ApplicationCron extends Application {
             } catch(BaseException $e) {}
 
         }
+
+        Benchmark::log('init end');
 
     }
 

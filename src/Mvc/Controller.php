@@ -12,6 +12,7 @@ namespace Rf\Core\Mvc;
 
 use Rf\Core\Exception\BaseException;
 use Rf\Core\Exception\ControllerPermissionsException;
+use Rf\Core\System\Performance\Benchmark;
 
 /**
  * Class Controller
@@ -348,6 +349,12 @@ abstract class Controller {
 
             echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
             rf_debug_display();
+
+        }
+
+        if(!rf_request()->isAjax() && rf_config('options.benchmark')) {
+
+            Benchmark::display();
 
         }
 
