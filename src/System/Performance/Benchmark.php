@@ -25,7 +25,7 @@ class Benchmark {
      */
 	public static function init() {
 
-	    !defined('APPLICATION_START') || define('APPLICATION_START', microtime(true));
+	    defined('APPLICATION_START') || define('APPLICATION_START', microtime(true));
 
 	    self::$times[] = [APPLICATION_START, 'init'];
 
