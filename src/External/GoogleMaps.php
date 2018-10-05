@@ -67,7 +67,9 @@ class GoogleMaps {
             $json = $file_contents;
             $response = json_decode($json);
 
-            if (!isset($response) || $response->status !== 'OK') {
+            if (!isset($response) || $response === false) {
+                throw new SilentException(get_called_class(), 'Unable to retrieve informations from Google Maps API for given address:' . json_last_error_msg());
+            } elseif ($response->status !== 'OK') {
                 throw new SilentException(get_called_class(), 'Unable to retrieve informations from Google Maps API for given address');
             } else {
                 return $response;
