@@ -15,19 +15,29 @@ use Rf\Core\Exception\SilentException;
 /**
  * Class GoogleMaps
  *
- * @since 1.0
- *
  * @package Rf\Core\External
  */
 class GoogleMaps {
 
+    protected $apiKey;
+
+    /**
+     * GoogleMaps constructor.
+     *
+     * @param string $apiKey
+     */
+    public function __construct($apiKey) {
+
+        $this->apiKey = $apiKey;
+
+    }
+
     /**
      * Get a Google location from an address using the Google Maps API
      *
-     * @since 1.0
-     *
      * @param string $address
      * @param null|string $language
+     *
      * @return bool|mixed
      */
     public function getLocationFromAddress($address, $language = null) {
@@ -37,6 +47,9 @@ class GoogleMaps {
             // Prepare the request URI
             $formatted_address = urlencode(str_replace(' ', '+', $address));
             $curl_url = 'http://maps.google.com/maps/api/geocode/json?address=' . $formatted_address;
+            if(isset($this->apiKey)) {
+                $curl_url .= '&key=' . $this->apiKey;
+            }
             if(isset($language)) {
                 $curl_url .= '&language=' . $language;
             }
