@@ -21,44 +21,47 @@ use Rf\Core\Uri\Uri;
  */
 class Request {
     
-    /** @var \Rf\Core\Uri\Uri Request uri */
-    public $uri;
+    /** @var Uri Request uri */
+    protected $uri;
 
-    /** @var string Request method (GET|POST|PUT|DELETE) */
-    public $method;
+    /** @var string HTTP Request method (GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD|TRACE|CONNECT) */
+    protected $method;
 
     /** @var ParameterSet Headers data */
-    public $headers;
+    protected $headers;
 
     /** @var string Content type */
-    public $contentType;
+    protected $contentType;
 
     /** @var ParameterSet Query data */
-    public $query;
+    protected $query;
 
     /** @var ParameterSet GET data */
-    public $get;
+    protected $getData;
 
     /** @var ParameterSet POST data */
-    public $post;
+    protected $postData;
 
     /** @var ParameterSet PUT data */
-    public $put;
+    protected $putData;
 
     /** @var ParameterSet DELETE data */
-    public $delete;
+    protected $deleteData;
+
+    /** @var ParameterSet Request data (all methods + files combined) */
+    protected $requestData;
 
     /** @var ParameterSet Files data */
-    public $files;
+    protected $filesData;
 
     /** @var ParameterSet Server data */
-    public $server;
+    protected $serverData;
 
     /** @var ParameterSet */
-    public $session;
+    protected $sessionData;
 
     /** @var ParameterSet */
-    public $cookie;
+    protected $cookieData;
 
 	/** @var bool */
 	protected $isHttps;
@@ -74,6 +77,8 @@ class Request {
 
     /**
      * Create a new Request object using the $_ variables and the current uri
+     *
+     * @throws \Exception
      */
     public function __construct() {
 
@@ -81,13 +86,13 @@ class Request {
         $this->headers = new ParameterSet(getallheaders());
 
         // Map $_SERVER params
-        $this->server = new ParameterSet($_SERVER);
+        $this->serverData = new ParameterSet($_SERVER);
 
         // Map $_SESSION params
-        $this->session = new ParameterSet($_SESSION);
+        $this->sessionData = new ParameterSet($_SESSION);
 
         // Map $_COOKIE params
-        $this->cookie = new ParameterSet($_COOKIE);
+        $this->cookieData = new ParameterSet($_COOKIE);
 
         // Create a new Uri object with the current uri
         $this->uri = new Uri(Uri::INIT_WITH_CURRENT_URI);
@@ -99,13 +104,16 @@ class Request {
         $this->query = new ParameterSet([]);
 
         // Map $_GET params
-        $this->get = new ParameterSet($_GET);
+        $this->getData = new ParameterSet($_GET);
 
         // Map $_POST params
-        $this->post = new ParameterSet($_POST);
+        $this->postData = new ParameterSet($_POST);
 
         // Map $_FILES params
-        $this->files = new ParameterSet($_FILES);
+        $this->filesData = new ParameterSet($_FILES);
+
+        // Combine all data
+        $this->requestData = new ParameterSet(array_merge($_GET, $_POST, $_FILES));
 
     }
 
@@ -117,7 +125,7 @@ class Request {
     public function getMethod() {
 
         if(!isset($this->method)) {
-            $this->method = strtoupper($this->server->get('REQUEST_METHOD'));
+            $this->method = strtoupper($this->serverData->get('REQUEST_METHOD'));
         }
 
         return $this->method;
@@ -132,7 +140,7 @@ class Request {
     public function getContentType() {
 
         if(!isset($this->contentType)) {
-            $contentTypeParts = explode(';', $this->server->get('CONTENT_TYPE'));
+            $contentTypeParts = explode(';', $this->serverData->get('CONTENT_TYPE'));
             $this->contentType = $contentTypeParts[0];
         }
 
@@ -217,7 +225,7 @@ class Request {
 	 */
     public function getGetData() {
 
-    	return $this->get;
+    	return $this->getData;
 
     }
 
@@ -228,7 +236,7 @@ class Request {
 	 */
     public function getPostData() {
 
-    	return $this->post;
+    	return $this->postData;
 
     }
 
@@ -239,7 +247,7 @@ class Request {
      */
     public function getDeleteData() {
 
-        return $this->delete;
+        return $this->deleteData;
 
     }
 
@@ -250,7 +258,7 @@ class Request {
      */
     public function getFilesData() {
 
-        return $this->files;
+        return $this->filesData;
 
     }
 
@@ -261,7 +269,7 @@ class Request {
      */
     public function getServerData() {
 
-        return $this->server;
+        return $this->serverData;
 
     }
 
@@ -272,7 +280,7 @@ class Request {
      */
     public function getSessionData() {
 
-        return $this->session;
+        return $this->sessionData;
 
     }
 
@@ -283,16 +291,21 @@ class Request {
      */
     public function getCookieData() {
 
-        return $this->cookie;
+        return $this->cookieData;
 
     }
 
     /**
      * Get request information
+     *
+     * @throws \Exception
      */
     private function getRequestInformation() {
 
-	    if($this->get('server', 'HTTPS') !== false || $this->get('server', 'HTTPS') == 'on') {
+	    if(
+	        $this->get('server', 'HTTPS') !== false
+            || $this->get('server', 'HTTPS') == 'on'
+        ) {
 		    $this->isHttps = true;
 	    } else {
 		    $this->isHttps = false;
@@ -313,7 +326,10 @@ class Request {
 	    	$this->isApi = false;
 	    }
 
-        if($this->server->get('HTTP_X_REQUESTED_WITH') !== false && $this->server->get('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest') {
+        if(
+            $this->serverData->get('HTTP_X_REQUESTED_WITH') !== false
+            && $this->serverData->get('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest'
+        ) {
             $this->isAjax = true;
         } else {
 	        $this->isAjax = false;
@@ -363,12 +379,27 @@ class Request {
                     parse_str($deleteParams, $deleteParamsParsed);
                 }
 
-                $this->delete = new ParameterSet($deleteParamsParsed);
+                $this->deleteData = new ParameterSet($deleteParamsParsed);
 
                 break;
 
+            case 'PATCH':
+                break;
+
+            case 'HEAD':
+                break;
+
+            case 'OPTIONS':
+                break;
+
+            case 'TRACE':
+                break;
+
+            case 'CONNECT':
+                break;
+
             default:
-                $this->method = 'GET';
+                throw new \Exception('Unsupported HTTP method');
                 break;
 
         }
