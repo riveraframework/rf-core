@@ -33,7 +33,8 @@ namespace {
 	use Rf\Core\Application\ApplicationConfigurationParameterSet;
 	use Rf\Core\Application\ApplicationCron;
     use Rf\Core\Application\ServiceProvider;
-	use Rf\Core\Html\Breadcrumbs;
+    use Rf\Core\Data\Generation\Random;
+    use Rf\Core\Html\Breadcrumbs;
     use Rf\Core\Http\QueryParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
@@ -391,7 +392,7 @@ namespace {
      */
     function rf_rand_float($min = 0, $max = 1) {
 
-        return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+        return Random::float($min, $max);
 
     }
 
