@@ -11,13 +11,9 @@
 namespace Rf\Core\Session;
 
 use Rf\Core\Base\ObjectTrait;
-use Rf\Core\Uri\CurrentUri;
-use Rf\Core\Exception\BaseException;
 
 /**
  * Class Cookie
- *
- * @since 1.0
  *
  * @package Rf\Core\Session
  */
@@ -59,7 +55,7 @@ class Cookie {
             $this->validity = $validity;
         }
         $this->crossSubDomain = $crossSubDomain;
-        $this->url = ($crossSubDomain ? '.' : '') . CurrentUri::getDomain();
+        $this->url = ($crossSubDomain ? '.' : '') . rf_request()->getUri()->domain();
 
     }
 
@@ -85,7 +81,7 @@ class Cookie {
      */
     public static function deleteCookie($cookieName) {
 
-        setcookie($cookieName, 0, time() - 30, '/', CurrentUri::getDomain());
+        setcookie($cookieName, 0, time() - 30, '/', rf_request()->getUri()->domain());
 
     }
 

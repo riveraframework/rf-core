@@ -10,18 +10,13 @@
 
 namespace Rf\Core\Api;
 
-use Rf\Core\Application\Application;
-use Rf\Core\Uri\CurrentUri;
-use Rf\Core\Http\Response as HttpResponse;
-
 /**
  * Class Api
  * Contain methods to handle API requests (CURL) and generating responses
  *
  * @package Rf\Core\Api
  *
- * @TODO: Replace $format by constants
- * @TODO: Configure API in app instead of Rf
+ * @TODO: Replace static class by normal class and use formats class to build the response
  */
 abstract class Api {
 
@@ -33,81 +28,6 @@ abstract class Api {
         'fail' => 'fail',
         'error' => 'error'
     );
-
-    /**
-     * This function get params for internal API requests and init a CURL connexion
-     * to get the data cross (sub)domains.
-     *
-     * @return void
-     */
-    public static function handleRequest() {
-
-        if(Application::getInstance()->getRequest()->get('request_type') !== 'api_follow') {
-
-            // If the request type is different from "api_follow" an error is returned (json format)
-            $httpResponse = new HttpResponse(200);
-            $httpResponse->setBody(self::buildErrorResponse(null, 'json', 'Request type not supported'));
-            $httpResponse->send();
-
-        } else {
-            
-            // Build API url
-            $url = CurrentUri::getProtocol() . '://' . rf_config('api.domain');
-            $urlApiPart = strstr('/' . CurrentUri::getQuery(), '/api');
-            $urlApiTarget = substr($urlApiPart, 4);
-            $url .= $urlApiTarget;
-
-            // Add GET parameters to query if some are present
-            $get = $_GET;
-            if(!empty($get)) {
-                $url .= '?'. http_build_query($get);
-            }
-            
-            // Define headers
-            $headers = array (
-                "Content-Type: application/json"
-            );
-            
-            // Define variables to send
-            $vars = json_encode(array_merge($_POST, $_FILES));
-            
-            // Prepare session
-            $strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
-            session_write_close();            
-
-            // Build the CURL request
-            $handle = curl_init(); 
-            curl_setopt($handle, CURLOPT_URL, $url);
-            curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($handle, CURLOPT_COOKIE, $strCookie);
-            
-            if(Application::getInstance()->getRequest()->get('request_method') === 'DELETE') {
-                curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'DELETE');
-            } elseif(Application::getInstance()->getRequest()->get('request_method') === 'PUT') {
-                curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'PUT');
-                curl_setopt($handle, CURLOPT_POSTFIELDS, $vars);
-            } elseif(Application::getInstance()->getRequest()->get('request_method') === 'POST') {
-                curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($handle, CURLOPT_POSTFIELDS, $vars);
-            }
-
-            // Execute CURL request and get results
-            $result = curl_exec($handle);
-
-            // Return the request result with a 200 HTTP code
-            $httpResponse = new HttpResponse(200);
-            if($result !== false) {
-                $httpResponse->setBody($result);
-            } else {
-                $httpResponse->setBody(self::buildErrorResponse(null, 'json', curl_error($handle)));
-            }
-            curl_close($handle);
-            $httpResponse->send();
-        }
-
-    }
 
     /**
      * Build a response with the parameters and return it in the right format

@@ -14,7 +14,6 @@ use Rf\Core\Base\ParameterSet;
 use Rf\Core\Http\QueryParameterSet;
 use Rf\Core\Http\Response;
 use Rf\Core\I18n\I18n;
-use Rf\Core\Uri\CurrentUri;
 use Rf\Core\Uri\Uri;
 
 /**
@@ -105,13 +104,13 @@ class Router {
             $this->initRequestRoutes();
         }
 
-        rf_debug(CurrentUri::getQuery());
+        rf_debug(rf_request()->getUri()->query());
 
         foreach ($this->routes as $routeName => $route) {
 
 //            $routeRegex = '/^' . str_replace('/', '\/', preg_replace('/\{\w+\}/', '(\w+)', $route['pattern'])) . '$/ui';
             $routeRegex = '/^' . str_replace('/', '\/', preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $route['pattern'])) . '$/ui';
-            $urlIsApplicable = (bool) preg_match($routeRegex, '/' . CurrentUri::getQuery(), $matches);
+            $urlIsApplicable = (bool) preg_match($routeRegex, '/' . rf_request()->getUri()->query(), $matches);
 
 	        // @TODO: Check accepted methods
 
@@ -306,11 +305,11 @@ class Router {
         } else {
             $availableDomains = $availableDomainsList->toArray();
         }
-        $currentDomain = CurrentUri::getDomain();
+        $currentDomain = rf_request()->getUri()->domain();
 
         foreach ($availableDomains as $domain) {
 
-            if (in_array($domain, array('*.' . $currentDomain, CurrentUri::getHost()))) { // !!!!
+            if (in_array($domain, array('*.' . $currentDomain, rf_request()->getUri()->host()))) { // !!!!
                 return;
             }
 

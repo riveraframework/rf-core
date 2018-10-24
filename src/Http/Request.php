@@ -11,7 +11,6 @@
 namespace Rf\Core\Http;
 
 use Rf\Core\Base\ParameterSet;
-use Rf\Core\Uri\CurrentUri;
 use Rf\Core\Uri\Uri;
 
 /**
@@ -207,6 +206,17 @@ class Request {
 
     }
 
+    /**
+     * Get current URI
+     *
+     * @return Uri
+     */
+    public function getUri() {
+
+        return $this->uri;
+
+    }
+
 	/**
 	 * Get headers
 	 *
@@ -311,13 +321,13 @@ class Request {
 		    $this->isHttps = false;
 	    }
 
-    	if(CurrentUri::getHost() == rf_config('app.domain-mobile')) {
+    	if($this->uri->host() == rf_config('app.domain-mobile')) {
     		$this->isMobile = true;
 	    } else {
 	    	$this->isMobile = false;
 	    }
 
-    	if(CurrentUri::getHost() == rf_config('app.domain-api')) {
+    	if($this->uri->host() == rf_config('app.domain-api')) {
     		$this->isApi = true;
             header('Allow: OPTIONS, GET, POST, PUT, DELETE');
             header('Access-Control-Allow-Origin: *'); // http://' . rf_config('api.domain')
@@ -447,11 +457,23 @@ class Request {
      */
     public function getFullUrl() {
 
-        $s = $this->isHttps() ? 's' : '';
-        $protocol = substr(strtolower($_SERVER['SERVER_PROTOCOL']), 0, strpos(strtolower($_SERVER['SERVER_PROTOCOL']), '/')) . $s;
-        $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : (':'.$_SERVER['SERVER_PORT']);
+        return $this->uri->full();
 
-        return $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
+    }
+
+    /**
+     * Return the visitor IP address
+     *
+     * @return string
+     */
+    public function getVisitorIp() {
+
+        // Get real visitor IP behind CloudFlare network
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            return $_SERVER['HTTP_CF_CONNECTING_IP'];
+        }
+
+        return $_SERVER['REMOTE_ADDR'];
 
     }
 
@@ -461,6 +483,8 @@ class Request {
      * @return bool
      */
     public function isHttps() {
+
+        // @TODO: Get this info from URI
 
     	return $this->isHttps;
 
