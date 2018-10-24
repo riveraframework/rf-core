@@ -119,8 +119,8 @@ class Router {
 
 	            $methodIsApplicable = (
             		empty($route['methods'])
-		            || rf_request()->method == $route['methods']
-		            || in_array(rf_request()->method, $route['methods'])
+		            || rf_request()->getMethod() == $route['methods']
+		            || in_array(rf_request()->getMethod(), $route['methods'])
 	            );
 
 	            if($methodIsApplicable) {
