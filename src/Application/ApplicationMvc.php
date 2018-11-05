@@ -121,12 +121,14 @@ class ApplicationMvc extends Application {
         $this->executeActions('init');
         
         // Start session
-        ini_set('session.cookie_domain', '.' . Uri::getDomainFromUri($this->configuration->get('app.url')));
-        if(!rf_empty(rf_config('session.cookie_lifetime'))) {
-	        ini_set('session.cookie_lifetime', rf_config('session.cookie_lifetime'));
+        if(!rf_empty(rf_config('ini.session.cookie_domain'))) {
+            ini_set('session.cookie_domain', rf_config('ini.session.cookie_domain'));
         }
-        if(!rf_empty(rf_config('session.gc_maxlifetime'))) {
-	        ini_set('session.gc_maxlifetime', rf_config('session.gc_maxlifetime'));
+        if(!rf_empty(rf_config('ini.session.cookie_lifetime'))) {
+            ini_set('session.cookie_lifetime', rf_config('ini.session.cookie_lifetime'));
+        }
+        if(!rf_empty(rf_config('ini.session.gc_maxlifetime'))) {
+            ini_set('session.gc_maxlifetime', rf_config('ini.session.gc_maxlifetime'));
         }
         session_start();
 
