@@ -25,7 +25,7 @@ abstract class DefaultCache implements CacheInterface {
     /** @var string $type */
     protected $type;
 
-    /** @var string $endpoints */
+    /** @var array $endpoints */
     protected $endpoints;
 
 	/**
@@ -64,7 +64,7 @@ abstract class DefaultCache implements CacheInterface {
     /**
      * Get cache endpoints
      *
-     * @return string
+     * @return array
      */
     public function getEndpoints() {
 

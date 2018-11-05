@@ -21,6 +21,9 @@ use Rf\Core\System\FileSystem\DirectoryFactory;
  */
 class DiskCache extends DefaultCache {
 
+    /** @var string $type */
+    protected $type = 'disk';
+
 	/**
 	 * DiskCache constructor.
 	 */

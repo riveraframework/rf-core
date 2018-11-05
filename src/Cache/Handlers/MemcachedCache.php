@@ -17,6 +17,9 @@ namespace Rf\Core\Cache\Handlers;
  */
 class MemcachedCache extends DefaultCache {
 
+    /** @var string $type */
+    protected $type = 'memcached';
+
 	/** @var \Memcached $memcached */
 	protected $memcached;
 
