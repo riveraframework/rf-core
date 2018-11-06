@@ -11,17 +11,15 @@
 namespace Rf\Core\Application;
 
 use Rf\Core\Cache\CacheHelpers;
+use Rf\Core\Session\SessionHelpers;
 use Rf\Core\System\SystemHelpers;
 
 /**
  * Class Autoload
  *
  * @package Rf\Core\Application
- * @version 1.0
- * @since 1.0
  */
-abstract class Autoload
-{
+abstract class Autoload {
 
     /**
      * Init all autoloaders using the spl_autoload_register function
@@ -33,9 +31,10 @@ abstract class Autoload
         // Load helpers
         ApplicationHelpers::init();
         CacheHelpers::init();
+        SessionHelpers::init();
         SystemHelpers::init();
 
-        // Rf modules
+        // Rf additional modules
         if(class_exists('\Rf\OAuth2\OAuth2Helpers')) {
             \Rf\OAuth2\OAuth2Helpers::init();
         }

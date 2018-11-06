@@ -20,6 +20,9 @@ use Rf\Core\Exception\ErrorMessageException;
 use Rf\Core\Http\Request;
 use Rf\Core\I18n\I18n;
 use Rf\Core\Routing\Router;
+use Rf\Core\Session\SessionService;
+use Rf\Core\Session\Sessions\MemcachedHaSession;
+use Rf\Core\Session\Sessions\PhpSession;
 use Rf\Core\System\Performance\Benchmark;
 use Rf\Core\Uri\Uri;
 
@@ -74,7 +77,10 @@ class ApplicationMvc extends Application {
 
     /** @var CacheService Current cache service */
     protected $cacheService;
-    
+
+    /** @var SessionService $sessionManager */
+    protected $sessionManager;
+
     /** @var Router Current Router object */
     protected $router;
 
@@ -121,19 +127,8 @@ class ApplicationMvc extends Application {
         $this->executeActions('init');
         
         // Start session
-        if(!rf_empty(rf_config('ini.session.cookie_domain'))) {
-            ini_set('session.cookie_domain', rf_config('ini.session.cookie_domain'));
-        }
-        if(!rf_empty(rf_config('ini.session.cookie_lifetime'))) {
-            ini_set('session.cookie_lifetime', rf_config('ini.session.cookie_lifetime'));
-        }
-        if(!rf_empty(rf_config('ini.session.gc_maxlifetime'))) {
-            ini_set('session.gc_maxlifetime', rf_config('ini.session.gc_maxlifetime'));
-        }
-        session_start();
+        $this->handleSession();
 
-        Benchmark::log('session started');
-        
         // Get request info
         $this->request = new Request();
         
@@ -237,23 +232,16 @@ class ApplicationMvc extends Application {
     }
 
     /**
-     * Get the current Architect object
+     * Get the current session manager object
      *
-     * @return Architect
+     * @return SessionService
      */
-    public function architect() {
+    public function getSessionManager() {
 
-        if(!isset($this->architect)) {
-
-            // Load Architect
-            $this->architect = new Architect();
-
-        }
-
-        return $this->architect;
+        return $this->sessionManager;
 
     }
-    
+
     /**
      * Get the current router object
      *
@@ -275,29 +263,81 @@ class ApplicationMvc extends Application {
         return $this->serviceProvider;
 
     }
-    
+
+    /**
+     * Handle the session
+     */
+    public function handleSession() {
+
+        $this->sessionManager = new SessionService();
+
+        $sessionsConfig = rf_config('sessions')->toArray();
+
+        if(empty($sessionsConfig)) {
+            return;
+        }
+
+        foreach($sessionsConfig as $sessionConfig) {
+
+            $sessionName = !rf_empty($sessionConfig['name'])
+                ? $sessionConfig['name']
+                : session_name();
+
+            if($sessionConfig['type'] === 'default') {
+
+                $this->sessionManager->add(new PhpSession($sessionName));
+
+                Benchmark::log('session started');
+
+            } elseif($sessionConfig['type'] === 'memcached-ha') {
+
+                $options = [];
+                if(!empty($sessionConfig['handler'])) {
+                    $options['handler'] = rf_cache()->getHandler($sessionConfig['handler']);
+                }
+                if(!empty($sessionConfig['map'])) {
+                    $options['map'] = $sessionConfig['map'];
+                }
+                if(!empty($sessionConfig['duration'])) {
+                    $options['duration'] = $sessionConfig['duration'];
+                }
+
+                $this->sessionManager->add(new MemcachedHaSession($sessionName, $options));
+
+            }
+
+            if(!empty($sessionConfig['autostart'])) {
+                $this->sessionManager->get($sessionName)->start();
+            }
+
+        }
+
+    }
+
     /**
      * Start the application execution using the main controller property
      *
      * @TODO: Add user customizable error handler
+     *
+     * @throws \Exception
      */
     public function handleRequest() {
 
         Benchmark::log('handle request start');
 
-    	try {
+        try {
 
             // Get the applicable route
-		    $this->router->route();
+            $this->router->route();
             $route = $this->router->getCurrentRoute();
 
             // Get the controller name
-		    $controllerName = $route['controller'];
+            $controllerName = $route['controller'];
 
             // Create the controller instance
-		    $controller = new $controllerName();
+            $controller = new $controllerName();
 
-		    // Get the action name
+            // Get the action name
             $actionName = $route['action'];
 
             // Execute the requested action
