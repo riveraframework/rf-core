@@ -87,11 +87,11 @@ class Request {
         // Map $_SERVER params
         $this->serverData = new ParameterSet($_SERVER);
 
-        // Map $_SESSION params
-        $this->sessionData = new ParameterSet($_SESSION);
+        // Map $_SESSION params ($_SESSION only filled if session is already started)
+        $this->sessionData = new ParameterSet(isset($_SESSION) ? $_SESSION : []);
 
         // Map $_COOKIE params
-        $this->cookieData = new ParameterSet($_COOKIE);
+        $this->cookieData = new ParameterSet(isset($_COOKIE) ? $_COOKIE : []);
 
         // Create a new Uri object with the current uri
         $this->uri = new Uri(Uri::INIT_WITH_CURRENT_URI);
