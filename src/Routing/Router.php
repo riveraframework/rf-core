@@ -290,13 +290,15 @@ class Router {
 
     /**
      * Check if the current domain is in the available domain list of the configuration file
+     *
+     * @param array $domains
      */
-    public function testDomain() {
+    public static function testDomain(array $domains) {
 
         /** @var false|string|ParameterSet $availableDomainsList */
-        $availableDomainsList = rf_config('app.available-domains');
+        $availableDomainsList = $domains;
 
-        if (!$availableDomainsList) {
+        if (empty($availableDomainsList)) {
             return;
         }
 

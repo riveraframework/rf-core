@@ -143,7 +143,6 @@ class ApplicationMvc extends Application {
         
         // Init router module and verify bad requests (based on requested domain)
         $this->router = new Router();
-        $this->router->testDomain();
 
         Benchmark::log('init end');
 
