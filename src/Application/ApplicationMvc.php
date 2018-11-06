@@ -13,8 +13,6 @@ namespace Rf\Core\Application;
 use Rf\Core\Base\ErrorHandler;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
-use Rf\Core\Entity\Architect;
-use Rf\Core\Exception\BaseException;
 use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\Exception\ErrorMessageException;
 use Rf\Core\Http\Request;
@@ -24,7 +22,6 @@ use Rf\Core\Session\SessionService;
 use Rf\Core\Session\Sessions\MemcachedHaSession;
 use Rf\Core\Session\Sessions\PhpSession;
 use Rf\Core\System\Performance\Benchmark;
-use Rf\Core\Uri\Uri;
 
 /**
  * Class Application
@@ -32,12 +29,12 @@ use Rf\Core\Uri\Uri;
  * @package Rf\Core\Application
  */
 class ApplicationMvc extends Application {
-    
+
     /**
      * @var string Application name
      */
     protected $name;
-    
+
     /**
      * @var array Hooks for custom actions
      *
@@ -46,17 +43,17 @@ class ApplicationMvc extends Application {
     protected $actions = [
         'init' => []
     ];
-    
+
     /**
      * @var string Path to the configuration file
      */
     protected $configurationFile;
-    
+
     /**
      * @var ApplicationConfiguration Current Configuration object
      */
     protected $configuration;
-    
+
     /**
      * @var ApplicationDirectories Current Directories object
      */
@@ -64,13 +61,6 @@ class ApplicationMvc extends Application {
 
     /** @var ServiceProvider ServiceProvider intance */
     protected $serviceProvider;
-    
-    /**
-     * @var Architect Current architect object
-     *
-     * @TODO: Don't put the architect in the app by default
-     */
-    protected $architect;
 
     /** @var Request Current Request object */
     protected $request;
@@ -86,12 +76,13 @@ class ApplicationMvc extends Application {
 
     /** @var array Vars to debug */
     protected $debugVars = [];
-    
+
     /**
      * Start the application init process
      *
      * @throws ConfigurationException
      * @throws CacheConfigurationException
+     * @throws \Exception
      */
     public function init() {
 
@@ -106,51 +97,49 @@ class ApplicationMvc extends Application {
         Autoload::init();
 
         // Register the service provider
+        // @TODO: Register other modules as services
         $this->serviceProvider = new ServiceProvider();
-        
+
         // Register application configuration
         if(!empty($this->configurationFile)) {
-            $configuration = new ApplicationConfiguration($this->configurationFile);
+            $this->configuration = new ApplicationConfiguration($this->configurationFile);
         } else {
-            $configuration = new ApplicationConfiguration();
+            $this->configuration = new ApplicationConfiguration();
         }
-        $this->configuration = $configuration;
 
         Benchmark::log('configuration loaded');
 
         // Load cache handler
-	    if(!rf_empty(rf_config('cache'))) {
-	    	$this->cacheService = new CacheService(rf_config('cache')->toArray());
-	    }
-        
+        if(!rf_empty(rf_config('cache'))) {
+            $this->cacheService = new CacheService(rf_config('cache')->toArray());
+        } else {
+            $this->cacheService = new CacheService([]);
+        }
+
         // Execute registered actions (init)
         $this->executeActions('init');
-        
+
         // Start session
         $this->handleSession();
 
         // Get request info
         $this->request = new Request();
-        
+
         // Multi-lang support
-        if($this->configuration->get('options.i18n') == true) {
-
-            try {
-                I18n::init();
-            } catch(BaseException $e) {}
-
+        if($this->configuration->get('options.i18n')) {
+            I18n::init();
         }
-        
+
         // Init router module and verify bad requests (based on requested domain)
         $this->router = new Router();
 
         Benchmark::log('init end');
 
     }
-    
+
     /**
      * Register a function|method to be executed at some points of the application execution using hooks
-     * 
+     *
      * @param string $timing Hook name
      * @param string $action Action name (function or static method)
      *
@@ -185,7 +174,7 @@ class ApplicationMvc extends Application {
 
     /**
      * Execute the functions|methods for a specific hook
-     * 
+     *
      * @param $hookName
      */
     public function executeActions($hookName) {
@@ -209,7 +198,7 @@ class ApplicationMvc extends Application {
 
     /**
      * Get application name
-     * 
+     *
      * @return string
      */
     public function getName() {
@@ -221,7 +210,7 @@ class ApplicationMvc extends Application {
 
     /**
      * Set the configuration file path
-     * 
+     *
      * @param string $path Configuration file path
      */
     public function setConfigurationFile($path) {
@@ -352,29 +341,29 @@ class ApplicationMvc extends Application {
 
             }
 
-	    } catch(\Error $error) {
+        } catch(\Error $error) {
 
-		    if(
-			    (!rf_request()->isAjax() && rf_config('options.debug'))
-			    || (rf_request()->isAjax() && rf_config('options.debug-ajax'))
-		    ) {
+            if(
+                (!rf_request()->isAjax() && rf_config('options.debug'))
+                || (rf_request()->isAjax() && rf_config('options.debug-ajax'))
+            ) {
 
-			    echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
-			    rf_debug_display();
+                echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
+                rf_debug_display();
 
-			    echo ErrorHandler::formatError($error);
+                echo ErrorHandler::formatError($error);
 
-		    } elseif(rf_request()->isApi()) {
+            } elseif(rf_request()->isApi()) {
 
-		        throw new ErrorMessageException($error->getMessage());
+                throw new ErrorMessageException($error->getMessage());
 
             } else {
 
-		        die($error->getMessage());
+                die($error->getMessage());
 
             }
 
-	    }
+        }
 
     }
 
@@ -382,11 +371,14 @@ class ApplicationMvc extends Application {
      * Get the current request object
      *
      * @return Request
+     * @throws \Exception
      */
     public function getRequest() {
 
         if(!isset($this->request)) {
-            // throw exception
+
+            throw new \Exception('Undefined request');
+
         }
 
         return $this->request;
@@ -397,18 +389,20 @@ class ApplicationMvc extends Application {
      * Get the current cache service
      *
      * @return CacheService
+     * @throws \Exception
      */
     public function getCacheService() {
 
         if(!isset($this->cacheService)) {
-            // @TODO: Throw exception
-	        return null;
+
+            throw new \Exception('Undefined cache service');
+
         }
 
         return $this->cacheService;
 
     }
-    
+
     /**
      * Get a directory by name
      *

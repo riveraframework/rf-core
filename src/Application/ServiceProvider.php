@@ -21,12 +21,12 @@ class ServiceProvider {
     protected $services = [];
 
     /**
-     * Set a service
+     * Register a service
      *
      * @param string $name
      * @param mixed $service
      */
-    public function setService($name, $service) {
+    public function registerService($name, $service) {
 
         $this->services[$name] = $service;
 
