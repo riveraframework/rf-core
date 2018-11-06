@@ -20,113 +20,249 @@ class MemcachedCache extends DefaultCache {
     /** @var string $type */
     protected $type = 'memcached';
 
-	/** @var \Memcached $memcached */
-	protected $memcached;
+    /** @var \Memcached $memcached */
+    protected $memcached;
 
-	/**
-	 * MemcacheCache constructor.
-	 */
-	public function __construct() {
+    /** @var array $options */
+    protected $options;
 
-		if(!class_exists('\Memcached')) {
-			throw new \Exception('Memcached is not configured on this server.');
-		}
+    /**
+     * MemcacheCache constructor.
+     */
+    public function __construct(array $options = []) {
 
-		$this->memcached = new \Memcached();
+        if(!class_exists('\Memcached')) {
+            throw new \Exception('Memcached is not configured on this server.');
+        }
 
-	}
+        $this->memcached = new \Memcached();
 
-	/**
-	 * Get memcached
-	 *
-	 * @return \Memcached
-	 */
-	public function getMemcached() {
+        // Set options
+        $this->options = $options;
 
-		return $this->memcached;
+    }
 
-	}
+    /**
+     * Get memcached
+     *
+     * @return \Memcached
+     */
+    public function getMemcached() {
 
-	/**
-	 * Add a server
-	 *
-	 * @param string $host
-	 * @param string $port
-	 */
-	public function addServer($host, $port) {
+        return $this->memcached;
 
-		$this->memcached->addServer($host, $port);
+    }
+
+    /**
+     * Add a server
+     *
+     * @param string $host
+     * @param string $port
+     */
+    public function addServer($host, $port) {
+
+        $this->memcached->addServer($host, $port);
         $this->endpoints[] = $host . ':' . $port;
 
-	}
+    }
 
-	/**
-	 * Check if the write/read operations work
-	 *
-	 * @throws \Exception
-	 */
-	public function checkService() {
+    /**
+     * Check if the write/read operations work
+     *
+     * @throws \Exception
+     */
+    public function checkService() {
 
-		$check = $this->memcached->get('memcached-check');
+        $check = $this->memcached->get('memcached-check');
 
-		if(!$check) {
+        if(!$check) {
 
-			$this->memcached->set('memcached-check', 1, 3600);
-			$check = $this->memcached->get('memcached-check');
+            $this->memcached->set('memcached-check', 1, 3600);
+            $check = $this->memcached->get('memcached-check');
 
-		}
+        }
 
-		if(!$check) {
-			throw new \Exception('The Memcached servers are not accessible.');
-		}
+        if(!$check) {
+            throw new \Exception('The Memcached servers are not accessible.');
+        }
 
-	}
+    }
 
-	/**
-	 * Get value
-	 *
-	 * @param string $key
-	 *
-	 * @return string
-	 */
-	public function get($key) {
+    /**
+     * Get value
+     *
+     * @TODO: Better/different write strategies
+     *
+     * @param string $key
+     * @param int $expires
+     *
+     * @return string|false
+     */
+    public function get($key, $expires = 0) {
 
-		return $this->memcached->get($key);
+        if(!empty($this->options['replication'])) {
 
-	}
+            $activeServerCount = 0;
+            $activeServerIndexes = [];
+            $activeReplicationCount = 0;
+            $activeReplicationIndexes = [];
+            $finalvalue = false;
 
-	/**
-	 * Set value
-	 *
-	 * @param string $key
-	 * @param string $value
-	 * @param int $expires
-	 */
-	public function set($key, $value, $expires = 0) {
+            foreach($this->endpoints as $index => $server) {
 
-		$this->memcached->set($key, $value, $expires);
+                for($i = 0; $i < $this->options['attempts_max']; $i++) {
 
-	}
+                    $value = $this->memcached->getByKey($server, $key);
 
-	/**
-	 * Delete value
-	 *
-	 * @param string $key
-	 */
-	public function delete($key) {
+                    if($value && $this->memcached->getResultCode() === \Memcached::RES_SUCCESS) {
 
-		$this->memcached->delete($key);
+                        if(!in_array($index, $activeServerIndexes)) {
+                            $activeServerCount++;
+                            $activeServerIndexes[] = $index;
+                        }
 
-	}
+                        if(!in_array($index, $activeReplicationIndexes)) {
+                            $activeReplicationCount++;
+                            $activeReplicationIndexes[] = $index;
+                        }
 
-	/**
-	 * Flush cache
-	 */
-	public function flush() {
+                        $finalvalue = $value;
 
-		$this->memcached->flush();
+                        break;
 
-	}
+                        // @TODO: Improve errors codes
+                    } elseif(in_array($this->memcached->getResultCode(), [
+                        \Memcached::RES_NOTFOUND,
+                        \Memcached::RES_DELETED,
+                        \Memcached::RES_NOTSTORED,
+                    ])) {
+
+                        if(!in_array($index, $activeServerIndexes)) {
+                            $activeServerCount++;
+                            $activeServerIndexes[] = $index;
+                        }
+
+                    }
+
+                }
+
+            }
+
+            // @TODO: Do this process in background
+            if(
+                $this->options['replicate_to'] > $activeReplicationCount
+            ) {
+
+                $currentReplicationCount = $activeReplicationCount;
+                $maxReplication = min($this->options['replicate_to'], $activeServerCount);
+
+                foreach($this->endpoints as $index => $server) {
+
+                    // Get out of the loop when the replication max is reached
+                    if($currentReplicationCount > $maxReplication) {
+                        break;
+                    }
+
+                    // Skip if data already present
+                    if(in_array($index, $activeReplicationIndexes)) {
+                        continue;
+                    }
+
+                    // Skip if server not reachable
+                    if(!in_array($index, $activeServerIndexes)) {
+                        continue;
+                    }
+
+                    // Add the replication
+                    // @TODO: Handle proper expiration
+                    $this->memcached->setByKey($server, $key, $value, $expires);
+
+                    // Increment replicaiton count
+                    $currentReplicationCount++;
+
+                }
+
+            }
+
+            return $finalvalue;
+
+        } else {
+
+            return $this->memcached->get($key);
+
+        }
+
+    }
+
+    /**
+     * Set value
+     *
+     * @TODO: Better/different write strategies
+     *
+     * @param string $key
+     * @param string $value
+     * @param int $expires
+     */
+    public function set($key, $value, $expires = 0) {
+
+        if(!empty($this->options['replication'])) {
+
+            $count = 0;
+            $max = $this->options['replicate_to'];
+
+            foreach($this->endpoints as $server) {
+
+                if(++$count <= $max) {
+
+                    $this->memcached->setByKey($server, $key, $value, $expires);
+
+                } else {
+
+                    $this->memcached->deleteByKey($server, $key);
+
+                }
+
+            }
+
+        } else {
+
+            $this->memcached->set($key, $value, $expires);
+
+        }
+
+    }
+
+    /**
+     * Delete value
+     *
+     * @param string $key
+     */
+    public function delete($key) {
+
+        if(!empty($this->options['replication'])) {
+
+            foreach($this->endpoints as $server) {
+
+                $this->memcached->deleteByKey($server, $key);
+
+            }
+
+        } else {
+
+            $this->memcached->delete($key);
+
+        }
+
+    }
+
+    /**
+     * Flush cache
+     */
+    public function flush() {
+
+        $this->memcached->flush();
+
+    }
 
     /**
      * Get cache stats

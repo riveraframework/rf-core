@@ -25,23 +25,23 @@ use Rf\Core\Cache\Interfaces\CacheInterface;
  */
 class CacheService {
 
-	const HANDLER_TYPE_DISK = 'disk';
-	const HANDLER_TYPE_MEMCACHE = 'memcache';
-	const HANDLER_TYPE_MEMCACHED = 'memcached';
-	const HANDLER_TYPE_REDIS = 'redis';
+    const HANDLER_TYPE_DISK = 'disk';
+    const HANDLER_TYPE_MEMCACHE = 'memcache';
+    const HANDLER_TYPE_MEMCACHED = 'memcached';
+    const HANDLER_TYPE_REDIS = 'redis';
 
-	/** @var CacheInterface[] $cacheHandlers  */
-	protected $cacheHandlers = [];
+    /** @var CacheInterface[] $cacheHandlers  */
+    protected $cacheHandlers = [];
 
-	/**
-	 * Memcache constructor.
-	 *
-	 * @param array $cacheConfig
-	 *
-	 * @throws CacheConfigurationException
-	 * @throws \Exception
-	 */
-	public function __construct(array $cacheConfig) {
+    /**
+     * Memcache constructor.
+     *
+     * @param array $cacheConfig
+     *
+     * @throws CacheConfigurationException
+     * @throws \Exception
+     */
+    public function __construct(array $cacheConfig) {
 
         if(!empty($cacheConfig['handlers'])) {
 
@@ -93,7 +93,7 @@ class CacheService {
                     // Create Memcached handler
                     case self::HANDLER_TYPE_MEMCACHED:
 
-                        $memcached = new MemcachedCache();
+                        $memcached = new MemcachedCache(!empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
                         $memcached->setIdentifier($handlerIdentifier);
 
                         // Check if the Memcached server list is empty
@@ -136,107 +136,128 @@ class CacheService {
 
         }
 
-	}
+    }
 
     /**
      * Get available cache handlers
      *
      * @return CacheInterface[]
      */
-	public function getHandlers() {
+    public function getHandlers() {
 
-	    return $this->cacheHandlers;
+        return $this->cacheHandlers;
 
     }
 
-	/**
-	 * Get value from cache
-	 *
-	 * @param string $key
-	 * @param string[] $cacheIdentifiers
-	 *
-	 * @return string
-	 */
-	public function get($key, $cacheIdentifiers = []) {
+    /**
+     * Get a specific cache handler
+     *
+     * @return CacheInterface
+     */
+    public function getHandler($identifier) {
 
-		foreach($this->cacheHandlers as $cacheHandler) {
+        foreach($this->cacheHandlers as $handler) {
 
-			if(empty($cacheIdentifier) || in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
+            if($handler->getIdentifier() === $identifier) {
 
-				$value = $cacheHandler->get($key);
+                return $handler;
 
-				if($value !== false) {
-					return $value;
-				}
+            }
 
-			}
+        }
 
-		}
+        return null;
 
-		return null;
+    }
 
-	}
+    /**
+     * Get value from cache
+     *
+     * @param string $key
+     * @param string[] $cacheIdentifiers
+     *
+     * @return string
+     */
+    public function get($key, $cacheIdentifiers = []) {
 
-	/**
-	 * Set value in cache(s)
-	 *
-	 * @TODO: Fix the expire params (not common with disk and memory)
-	 *
-	 * @param string $key
-	 * @param string $value
-	 * @param int $expires
-	 * @param string[] $cacheIdentifiers
-	 */
-	public function set($key, $value, $expires = 0, $cacheIdentifiers = []) {
+        foreach($this->cacheHandlers as $cacheHandler) {
 
-		foreach($this->cacheHandlers as $cacheHandler) {
+            if(empty($cacheIdentifier) || in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
 
-			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-				continue;
-			} else {
-				$cacheHandler->set($key, $value, $expires);
-			}
+                $value = $cacheHandler->get($key);
 
-		}
+                if($value !== false) {
+                    return $value;
+                }
 
-	}
+            }
 
-	/**
-	 * Delete value
-	 *
-	 * @param string $key
-	 * @param string[] $cacheIdentifiers
-	 */
-	public function delete($key, $cacheIdentifiers = []) {
+        }
 
-		foreach($this->cacheHandlers as $cacheHandler) {
+        return null;
 
-			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-				continue;
-			} else {
-				$cacheHandler->delete($key);
-			}
+    }
 
-		}
+    /**
+     * Set value in cache(s)
+     *
+     * @TODO: Fix the expire params (not common with disk and memory)
+     *
+     * @param string $key
+     * @param string $value
+     * @param int $expires
+     * @param string[] $cacheIdentifiers
+     */
+    public function set($key, $value, $expires = 0, $cacheIdentifiers = []) {
 
-	}
+        foreach($this->cacheHandlers as $cacheHandler) {
 
-	/**
-	 * Flush all caches
-	 *
-	 * @param string[] $cacheIdentifiers
-	 */
-	public function flushAll($cacheIdentifiers = []) {
+            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
+                continue;
+            } else {
+                $cacheHandler->set($key, $value, $expires);
+            }
 
-		foreach($this->cacheHandlers as $cacheHandler) {
-			if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-				continue;
-			} else {
-				$cacheHandler->flush();
-			}
+        }
 
-		}
+    }
 
-	}
+    /**
+     * Delete value
+     *
+     * @param string $key
+     * @param string[] $cacheIdentifiers
+     */
+    public function delete($key, $cacheIdentifiers = []) {
+
+        foreach($this->cacheHandlers as $cacheHandler) {
+
+            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
+                continue;
+            } else {
+                $cacheHandler->delete($key);
+            }
+
+        }
+
+    }
+
+    /**
+     * Flush all caches
+     *
+     * @param string[] $cacheIdentifiers
+     */
+    public function flushAll($cacheIdentifiers = []) {
+
+        foreach($this->cacheHandlers as $cacheHandler) {
+            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
+                continue;
+            } else {
+                $cacheHandler->flush();
+            }
+
+        }
+
+    }
 
 }
