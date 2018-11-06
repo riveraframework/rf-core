@@ -14,7 +14,8 @@ This repo contains a light PHP framework supporting :
 * Applications (Mvc, Cron)
 * Database connection (MySQL) and query builder
 * ORM with command to generate models from database schema
-* Cache management (Disk, Memcached)
+* Cache management (Disk, Memcached) with support for redundancy
+* Session management (PHP, Memcached) with support for redundancy
 * Translations management (Classes, libs, templates)
 * Routing and link generation
 * Helpers: rf_*()
