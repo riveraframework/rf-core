@@ -27,35 +27,31 @@ class Cookie {
     /** @var string|int $content Content of the cookiem */
     public $content;
 
-    /** @var int $validity Timestamp until when the cookie is considered as valid */
-    public $validity;
+    /** @var int $expiration Timestamp until when the cookie is considered as valid */
+    public $expiration;
 
-    /** @var string $url Domain of application of the cookie */
-    public $url;
-
-    /** @var bool $crossSubDomain Allow to use the wildcard to get the cookie cross domains */
-    public $crossSubDomain;
+    /** @var string $domain Domain of application of the cookie */
+    public $domain;
 
     /**
      * Create a Cookie object with the necessary properties
      *
      * @param string $cookieName Name of the cookie
      * @param string|int $content Content of the cookie
-     * @param int $validity Timestamp until when the cookie is considered as valid
-     * @param bool $crossSubDomain
+     * @param int $expiration Timestamp until when the cookie is considered as valid
+     * @param string $domain
      */
-    public function __construct($cookieName, $content = 0, $validity = null, $crossSubDomain = false) {
+    public function __construct($cookieName, $content = 0, $expiration = null, $domain = null) {
 
         $this->name = $cookieName;
         $this->content = $content;
 
-        if(!isset($validity)) {
-            $this->validity = time() + 60 * 60 * 24 * 7;
+        if(!isset($expiration)) {
+            $this->expiration = time() + 60 * 60 * 24 * 7;
         } else {
-            $this->validity = $validity;
+            $this->expiration = time() + $expiration;
         }
-        $this->crossSubDomain = $crossSubDomain;
-        $this->url = ($crossSubDomain ? '.' : '') . rf_request()->getUri()->domain();
+        $this->domain = isset($domain) ? $domain : SessionService::getConfig('domain');
 
     }
 
@@ -64,9 +60,9 @@ class Cookie {
      *
      * @throws \Exception
      */
-    public function createCookie() {
+    public function create() {
 
-        if(!setcookie($this->name, $this->content, $this->validity, '/', $this->url)) {
+        if(!setcookie($this->name, $this->content, $this->expiration, '/', $this->domain)) {
 
             throw new \Exception('Unable to create the cookie: '.$this->name);
 
@@ -81,7 +77,7 @@ class Cookie {
      */
     public static function deleteCookie($cookieName) {
 
-        setcookie($cookieName, 0, time() - 30, '/', rf_request()->getUri()->domain());
+        setcookie($cookieName, 0, time() - 30);
 
     }
 
