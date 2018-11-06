@@ -106,7 +106,7 @@ class MemcachedCache extends DefaultCache {
             $activeServerIndexes = [];
             $activeReplicationCount = 0;
             $activeReplicationIndexes = [];
-            $finalvalue = false;
+            $finalValue = false;
 
             foreach($this->endpoints as $index => $server) {
 
@@ -126,7 +126,7 @@ class MemcachedCache extends DefaultCache {
                             $activeReplicationIndexes[] = $index;
                         }
 
-                        $finalvalue = $value;
+                        $finalValue = $value;
 
                         break;
 
@@ -177,14 +177,14 @@ class MemcachedCache extends DefaultCache {
                     // @TODO: Handle proper expiration
                     $this->memcached->setByKey($server, $key, $value, $expires);
 
-                    // Increment replicaiton count
+                    // Increment replication count
                     $currentReplicationCount++;
 
                 }
 
             }
 
-            return $finalvalue;
+            return $finalValue;
 
         } else {
 
