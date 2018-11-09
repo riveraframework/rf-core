@@ -259,7 +259,7 @@ class ApplicationMvc extends Application {
 
         $this->sessionManager = new SessionService();
 
-        $sessionsConfig = rf_config('sessions')->toArray();
+        $sessionsConfig = !rf_empty(rf_config('sessions')) ? rf_config('sessions')->toArray() : false;
 
         if(empty($sessionsConfig)) {
             return;
