@@ -228,6 +228,17 @@ class Request {
 
     }
 
+    /**
+     * Get query data
+     *
+     * @return ParameterSet
+     */
+    public function getQueryData() {
+
+        return $this->query;
+
+    }
+
 	/**
 	 * Get GET data
 	 *
