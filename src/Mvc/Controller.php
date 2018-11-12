@@ -281,6 +281,9 @@ abstract class Controller {
 
     }
 
+    /**
+     * Load included files in the template
+     */
     final protected function loadIncludes() {
 
         $matches = [];
@@ -299,16 +302,20 @@ abstract class Controller {
                         $className = $includeParts[0];
                         $partialName = $includeParts[1];
 
-                        $html = (new $className($this->dictionary))->getPartial($partialName);
+                        /** @var Controller $controller */
+                        $controller = new $className($this->dictionary);
 
-                        // Replace
+                        // Retrieve the rendered partial
+                        $html = $controller->getPartial($partialName);
+
+                        // Replace placeholder by the generated code
                         $this->html = str_replace('{%' . $string . '%}', $html, $this->html);
 
                     }
 
                 }
-            }
 
+            }
 
         }
 
