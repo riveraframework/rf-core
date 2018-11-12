@@ -49,7 +49,7 @@ class Cookie {
         if(!isset($expiration)) {
             $this->expiration = time() + 60 * 60 * 24 * 7;
         } else {
-            $this->expiration = time() + $expiration;
+            $this->expiration = $expiration;
         }
         $this->domain = isset($domain) ? $domain : SessionService::getConfig('domain');
 
