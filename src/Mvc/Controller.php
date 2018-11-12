@@ -10,8 +10,6 @@
 
 namespace Rf\Core\Mvc;
 
-use Rf\Core\Exception\BaseException;
-use Rf\Core\Exception\ControllerPermissionsException;
 use Rf\Core\System\Performance\Benchmark;
 
 /**
@@ -85,8 +83,6 @@ abstract class Controller {
      * Create a new controller
      *
      * @param array $dictionary
-     *
-     * @throws BaseException
      */
     public function __construct(array $dictionary = []) {
 
@@ -105,9 +101,6 @@ abstract class Controller {
         if(!empty($dictionary)) {
             $this->dictionary = $dictionary;
         }
-
-        // Check user permissions
-        $this->hasRight();
 
     }
 
@@ -441,73 +434,6 @@ abstract class Controller {
                 break;
 
         }
-
-    }
-
-    // @TODO: verif autre parametre et minifier si possible
-    /**
-     * Check if the current user have the right privilege to access the controller
-     *
-     * @return bool
-     * @throws BaseException
-     */
-    final protected function hasRight() {
-
-        if(!isset($this->privilege)) {
-            return true;
-        }
-
-        if(rf_current_user() && rf_current_user()->getPrivilegeId() != null) {
-
-            // First check of permissions
-            $check = $this->checkPermissions();
-
-            // Refresh permissions if first check return false
-            if(!$check) {
-                rf_current_user()->refreshPrivileges();
-            }
-
-            // Second check
-            $check = $this->checkPermissions();
-
-            if($check) {
-                return true;
-            }
-
-        }
-
-        throw new ControllerPermissionsException('Controller', 'Permission error');
-
-    }
-
-    /**
-     * Check permissions
-     *
-     * @return bool
-     */
-    final protected function checkPermissions() {
-
-        if(!is_array($this->privilege)) {
-            $privileges = [$this->privilege, 'admin'];
-        } else {
-            $privileges = $this->privilege;
-            $privileges[] = 'admin';
-        }
-
-        foreach($privileges as $privilege) {
-
-            $methodName = 'get' . ucwords($privilege);
-
-            if(
-                method_exists(rf_current_user()->getPrivilege(), $methodName)
-                && rf_current_user()->getPrivilege()->$methodName() == true
-            ) {
-                return true;
-            }
-
-        }
-
-        return false;
 
     }
 
