@@ -41,7 +41,7 @@ interface CacheInterface {
     /**
      * Get cache endpoints
      *
-     * @return string
+     * @return array
      */
     public function getEndpoints();
 
