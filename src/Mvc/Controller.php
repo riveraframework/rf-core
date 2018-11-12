@@ -68,7 +68,7 @@ abstract class Controller {
 
     /** @var array Available actions */
     public $actions = [];
-    
+
     /** @var string Default view for the current controller */
     public static $defaultView = 'page';
 
@@ -77,26 +77,33 @@ abstract class Controller {
 
     /** @var array List of all forced modules */
     public static $moduleListForced = [];
-    
+
     /** @var array Export data to be reused in other views/controllers */
     protected static $export = [];
 
     /**
      * Create a new controller
      *
+     * @param array $dictionary
+     *
      * @throws BaseException
      */
-    public function __construct() {
+    public function __construct(array $dictionary = []) {
 
         $calledClassName = get_class($this);
         $calledClassNameParts = explode('\\', $calledClassName);
-        
+
         $this->moduleName = lcfirst($calledClassNameParts[count($calledClassNameParts) - 2]);
         $this->moduleDir = rf_dir('modules') . $this->moduleName . '/';
 
         // Set default language
         if(!isset($this->language)) {
             $this->language = rf_current_language();
+        }
+
+        // Set default dictionary
+        if(!empty($dictionary)) {
+            $this->dictionary = $dictionary;
         }
 
         // Check user permissions
@@ -114,14 +121,14 @@ abstract class Controller {
         return $this->html;
 
     }
-    
+
     /* ####################################################################### */
     /* ###########################  TEMPLATES  ############################### */
     /* ####################################################################### */
 
     /**
      * Get a partial view
-     * 
+     *
      * @param string $partialName
      * @param array $dictionary
      *
@@ -146,7 +153,7 @@ abstract class Controller {
         return $this->html;
 
     }
-    
+
     /**
      * This function load the template file, then use buffer to replace PHP values,
      * then if I18n is active replace all translatable strings.
@@ -155,20 +162,20 @@ abstract class Controller {
      */
     public function loadTemplate($viewName) {
 
-    	$normalFile = $this->moduleDir . '/views/' . str_replace(':', '/', $viewName) . '.php';
-    	$mobileFile = $this->moduleDir . '/views/' . str_replace(':', '/', $viewName) . '.mobile.php';
+        $normalFile = $this->moduleDir . '/views/' . str_replace(':', '/', $viewName) . '.php';
+        $mobileFile = $this->moduleDir . '/views/' . str_replace(':', '/', $viewName) . '.mobile.php';
 
-    	if(rf_request()->isMobile() && file_exists($mobileFile)) {
-		    $viewFile = $mobileFile;
-	    } else {
-		    $viewFile = $normalFile;
-	    }
+        if(rf_request()->isMobile() && file_exists($mobileFile)) {
+            $viewFile = $mobileFile;
+        } else {
+            $viewFile = $normalFile;
+        }
 
-	    rf_debug($viewFile);
+        rf_debug($viewFile);
 
         // Get template path
         if(file_exists($viewFile)) {
-            
+
             // Replace translatable strings
             $this->html = $this->translate($viewFile);
 
@@ -189,16 +196,16 @@ abstract class Controller {
      */
     public function loadExternalTemplate($moduleName, $viewName) {
 
-    	$normalFile = rf_dir('modules') . $moduleName . '/views/' . str_replace(':', '/', $viewName) . '.php';
-    	$mobileFile = rf_dir('modules') . $moduleName . '/views/' . str_replace(':', '/', $viewName) . '.mobile.php';
+        $normalFile = rf_dir('modules') . $moduleName . '/views/' . str_replace(':', '/', $viewName) . '.php';
+        $mobileFile = rf_dir('modules') . $moduleName . '/views/' . str_replace(':', '/', $viewName) . '.mobile.php';
 
-    	if(rf_request()->isMobile() && file_exists($mobileFile)) {
-		    $viewFile = $mobileFile;
-	    } else {
-		    $viewFile = $normalFile;
-	    }
+        if(rf_request()->isMobile() && file_exists($mobileFile)) {
+            $viewFile = $mobileFile;
+        } else {
+            $viewFile = $normalFile;
+        }
 
-	    rf_debug($viewFile);
+        rf_debug($viewFile);
 
         // Get template path
         if(file_exists($viewFile)) {
@@ -216,7 +223,7 @@ abstract class Controller {
 
     /**
      * Translate all translatable variable in the target file
-     * 
+     *
      * @param string $viewFile
      *
      * @return string
@@ -245,17 +252,17 @@ abstract class Controller {
 
                 foreach ($matches[1] as $string) {
 
-                	$stringParts = explode('|', $string);
-	                //$filter = !empty($stringParts[1]) ? $stringParts[1] : false;
-	                $transParts = explode(':', $stringParts[0], 2);
-	                $transKey = $transParts[0];
-	                $transParams = !empty($transParts[1]) ? json_decode($transParts[1]) : [];
+                    $stringParts = explode('|', $string);
+                    //$filter = !empty($stringParts[1]) ? $stringParts[1] : false;
+                    $transParts = explode(':', $stringParts[0], 2);
+                    $transKey = $transParts[0];
+                    $transParams = !empty($transParts[1]) ? json_decode($transParts[1]) : [];
 
                     // Get translated string
                     if(isset($trans[trim($transKey)][$this->language])) {
 
-	                    $newString = preg_replace('/(\r|\n)+/', '', vsprintf($trans[trim($transKey)][$this->language], $transParams));
-	                    $newString = preg_replace('/(\s+)/', ' ', $newString);
+                        $newString = preg_replace('/(\r|\n)+/', '', vsprintf($trans[trim($transKey)][$this->language], $transParams));
+                        $newString = preg_replace('/(\s+)/', ' ', $newString);
 
                     } else {
 
@@ -292,7 +299,7 @@ abstract class Controller {
                         $className = $includeParts[0];
                         $partialName = $includeParts[1];
 
-                        $html = (new $className())->getPartial($partialName, $this->dictionary);
+                        $html = (new $className($this->dictionary))->getPartial($partialName);
 
                         // Replace
                         $this->html = str_replace('{%' . $string . '%}', $html, $this->html);
@@ -314,7 +321,7 @@ abstract class Controller {
      */
     public function setHtml($html) {
 
-    	$this->html = $html;
+        $this->html = $html;
 
     }
 
@@ -325,7 +332,7 @@ abstract class Controller {
      */
     public function getHtml() {
 
-    	return $this->html;
+        return $this->html;
 
     }
 
@@ -363,18 +370,18 @@ abstract class Controller {
 
     }
 
-	/**
-	 * Write data to a cached file
-	 *
-	 * @return int
-	 */
+    /**
+     * Write data to a cached file
+     *
+     * @return int
+     */
     public function cache() {
 
-	    if(!rf_config('options.cache')) {
-		    return 0;
-	    }
+        if(!rf_config('options.cache')) {
+            return 0;
+        }
 
-	    return Cache::write($this->cacheFileName, $this->getHtml());
+        return Cache::write($this->cacheFileName, $this->getHtml());
 
     }
 
@@ -387,16 +394,16 @@ abstract class Controller {
      */
     protected function loadCache() {
 
-    	if(!rf_config('options.cache')) {
-    		return false;
-	    }
+        if(!rf_config('options.cache')) {
+            return false;
+        }
 
-    	$cacheContent = Cache::get($this->cacheFileName, 7 * 86400);
+        $cacheContent = Cache::get($this->cacheFileName, 7 * 86400);
 
-	    if(!empty($cacheContent)) {
-	    	$this->html = $cacheContent;
-		    return true;
-	    }
+        if(!empty($cacheContent)) {
+            $this->html = $cacheContent;
+            return true;
+        }
 
         return false;
 
@@ -406,7 +413,7 @@ abstract class Controller {
      * Minify HTML
      */
     final protected function minifyHTML() {
-        
+
     }
 
     /**
@@ -429,7 +436,7 @@ abstract class Controller {
         }
 
     }
-    
+
     // @TODO: verif autre parametre et minifier si possible
     /**
      * Check if the current user have the right privilege to access the controller
@@ -439,30 +446,30 @@ abstract class Controller {
      */
     final protected function hasRight() {
 
-    	if(!isset($this->privilege)) {
-    		return true;
-	    }
+        if(!isset($this->privilege)) {
+            return true;
+        }
 
-	    if(rf_current_user() && rf_current_user()->getPrivilegeId() != null) {
+        if(rf_current_user() && rf_current_user()->getPrivilegeId() != null) {
 
-    	    // First check of permissions
-    	    $check = $this->checkPermissions();
+            // First check of permissions
+            $check = $this->checkPermissions();
 
-    	    // Refresh permissions if first check return false
-    	    if(!$check) {
-    	        rf_current_user()->refreshPrivileges();
+            // Refresh permissions if first check return false
+            if(!$check) {
+                rf_current_user()->refreshPrivileges();
             }
 
             // Second check
             $check = $this->checkPermissions();
 
-    	    if($check) {
-    	        return true;
+            if($check) {
+                return true;
             }
 
-	    }
+        }
 
-	    throw new ControllerPermissionsException('Controller', 'Permission error');
+        throw new ControllerPermissionsException('Controller', 'Permission error');
 
     }
 
@@ -477,7 +484,7 @@ abstract class Controller {
             $privileges = [$this->privilege, 'admin'];
         } else {
             $privileges = $this->privilege;
-	        $privileges[] = 'admin';
+            $privileges[] = 'admin';
         }
 
         foreach($privileges as $privilege) {
