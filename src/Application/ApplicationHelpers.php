@@ -29,15 +29,16 @@ namespace Rf\Core\Application {
 
 namespace {
 
-	use Rf\Core\Application\Application;
-	use Rf\Core\Application\ApplicationConfigurationParameterSet;
-	use Rf\Core\Application\ApplicationCron;
+    use Rf\Core\Application\Application;
+    use Rf\Core\Application\ApplicationConfigurationParameterSet;
+    use Rf\Core\Application\ApplicationCron;
     use Rf\Core\Application\ServiceProvider;
     use Rf\Core\Data\Generation\Random;
     use Rf\Core\Html\Breadcrumbs;
     use Rf\Core\Http\QueryParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
+    use Rf\Core\Utils\Format\Json;
 
     /**
      * Get service provider
@@ -65,7 +66,7 @@ namespace {
 
     }
 
-	/**
+    /**
      * Execute a actions for a specific hook
      *
      * @param string $hookName
@@ -90,7 +91,7 @@ namespace {
 
     }
 
-	/**
+    /**
      * Return the current HTTP query
      *
      * @return QueryParameterSet
@@ -127,7 +128,7 @@ namespace {
      */
     function rf_switch_language($language) {
 
-    	return rf_link_to(null, ['language' => $language]);
+        return rf_link_to(null, ['language' => $language]);
 
     }
 
@@ -213,7 +214,7 @@ namespace {
         return Rf\Core\I18n\I18n::$availableLanguages;
 
     }
-    
+
     /**
      * Get the translation of a string
      *
@@ -240,14 +241,14 @@ namespace {
      */
     function _t($key, $dataset) {
 
-	    $args = func_get_args();
-	    array_shift($args);
-	    array_shift($args);
+        $args = func_get_args();
+        array_shift($args);
+        array_shift($args);
 
         return I18n::translateFromDataSet($key, $dataset, $args);
 
     }
-    
+
     /////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////
 
@@ -274,7 +275,7 @@ namespace {
      * @param string $type date|number|other
      * @param string $order asc|desc
      *
-     * @return array 
+     * @return array
      */
     function rf_aasort(array $arrayOfArrays, $key, $type, $order = 'asc') {
 
@@ -434,11 +435,11 @@ namespace {
      */
     function rf_dir($name) {
 
-    	if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-		    return ApplicationCron::getInstance()->getDir($name);
-	    } else {
-		    return Application::getInstance()->getDir($name);
-	    }
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
+            return ApplicationCron::getInstance()->getDir($name);
+        } else {
+            return Application::getInstance()->getDir($name);
+        }
 
     }
 
@@ -450,11 +451,11 @@ namespace {
      */
     function rf_add_dir($name, $path) {
 
-	    if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-		    ApplicationCron::getInstance()->setDir( $name, $path );
-	    } else {
-		    Application::getInstance()->setDir( $name, $path );
-	    }
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
+            ApplicationCron::getInstance()->setDir( $name, $path );
+        } else {
+            Application::getInstance()->setDir( $name, $path );
+        }
 
     }
 
@@ -467,11 +468,11 @@ namespace {
      */
     function rf_config($name) {
 
-	    if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-		    return ApplicationCron::getInstance()->getConfiguration()->get( $name );
-	    } else {
-		    return Application::getInstance()->getConfiguration()->get( $name );
-	    }
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
+            return ApplicationCron::getInstance()->getConfiguration()->get( $name );
+        } else {
+            return Application::getInstance()->getConfiguration()->get( $name );
+        }
 
     }
 
@@ -501,64 +502,77 @@ namespace {
      *
      * @param mixed $var
      */
-    function rf_debug($var) {
+    function rf_debug($var, $logType = 'debug') {
 
         if(rf_config('options.debug')) {
             Application::getInstance()->addDebugVar($var);
         }
 
+        if(rf_config('options.log')) {
+
+            if(is_array($var) || is_object($var)) {
+                try {
+                    $var = Json::encode($var);
+                } catch (\Exception $e) {
+                    $var = 'Debug error: ' . $e->getMessage();
+                }
+            }
+
+            rf_log($logType, $var);
+
+        }
+
     }
 
-	/**
-	 * Format template params
-	 *
-	 * @param array $vars
-	 *
-	 * @return string
-	 */
+    /**
+     * Format template params
+     *
+     * @param array $vars
+     *
+     * @return string
+     */
     function rf_template_vars(array $vars) {
 
-    	return json_encode(array_values($vars));
+        return json_encode(array_values($vars));
 
     }
 
-	/**
-	 * PHP empty function wrapper
-	 *
-	 * @param mixed $var
-	 *
-	 * @return bool
-	 */
+    /**
+     * PHP empty function wrapper
+     *
+     * @param mixed $var
+     *
+     * @return bool
+     */
     function rf_empty($var) {
 
-    	return empty($var);
+        return empty($var);
 
     }
 
     // Fix for PHP-FPM and NGINX where the function getallheaders does not exist
-	// @link: http://php.net/manual/en/function.getallheaders.php#84262
-	if (!function_exists('getallheaders')) {
+    // @link: http://php.net/manual/en/function.getallheaders.php#84262
+    if (!function_exists('getallheaders')) {
 
-		function getallheaders() {
+        function getallheaders() {
 
-			$headers = [];
-			foreach ($_SERVER as $name => $value) {
+            $headers = [];
+            foreach ($_SERVER as $name => $value) {
 
-				if (substr($name, 0, 5) == 'HTTP_') {
-					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-				} else if ($name == 'CONTENT_TYPE') {
-					$headers['Content-Type'] = $value;
-				} else if ($name == 'CONTENT_LENGTH') {
-					$headers['Content-Length'] = $value;
-				}
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                } else if ($name == 'CONTENT_TYPE') {
+                    $headers['Content-Type'] = $value;
+                } else if ($name == 'CONTENT_LENGTH') {
+                    $headers['Content-Length'] = $value;
+                }
 
-			}
+            }
 
-			return $headers;
+            return $headers;
 
-		}
+        }
 
-	}
+    }
 
 }
-
