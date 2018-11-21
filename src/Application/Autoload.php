@@ -11,6 +11,7 @@
 namespace Rf\Core\Application;
 
 use Rf\Core\Cache\CacheHelpers;
+use Rf\Core\Log\LogHelpers;
 use Rf\Core\Session\SessionHelpers;
 use Rf\Core\System\SystemHelpers;
 
@@ -31,6 +32,7 @@ abstract class Autoload {
         // Load helpers
         ApplicationHelpers::init();
         CacheHelpers::init();
+        LogHelpers::init();
         SessionHelpers::init();
         SystemHelpers::init();
 
