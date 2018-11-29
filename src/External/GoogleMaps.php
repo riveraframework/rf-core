@@ -41,12 +41,12 @@ class GoogleMaps {
      * @return bool|mixed
      */
     public function getLocationFromAddress($address, $language = null) {
-        
+
         try {
 
             // Prepare the request URI
             $formatted_address = urlencode(str_replace(' ', '+', $address));
-            $curl_url = 'http://maps.google.com/maps/api/geocode/json?address=' . $formatted_address;
+            $curl_url = 'https://maps.google.com/maps/api/geocode/json?address=' . $formatted_address;
             if(isset($this->apiKey)) {
                 $curl_url .= '&key=' . $this->apiKey;
             }
