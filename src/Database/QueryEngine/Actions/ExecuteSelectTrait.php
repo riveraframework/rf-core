@@ -152,7 +152,7 @@ trait ExecuteSelectTrait {
 
         $results = $this->toArrayAssoc($forceArray);
 
-        if($results) {
+        if($results !== false) {
 
             if(isset($results[0])) {
 
@@ -165,13 +165,23 @@ trait ExecuteSelectTrait {
 
             } else {
 
-                // Only one result
-                return $callback($results);
+                if(!empty($results)) {
+
+                    // Only one result
+                    return $callback($results);
+
+                } else {
+
+                    return [];
+
+                }
 
             }
 
         } else {
+
             return false;
+
         }
 
     }
