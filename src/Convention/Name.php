@@ -13,8 +13,6 @@ namespace Rf\Core\Convention;
 /**
  * Class Name
  *
- * @since 1.0
- *
  * @package Rf\Core\Convention
  */
 abstract class Name {
@@ -22,13 +20,15 @@ abstract class Name {
     /**
      * Transform a table name to a class name
      *
+     * @TODO: Replace by toCamelCase
+     *
      * @param string $tableName Table name to transform
      *
      * @return string
      */
     public static function tableToClass($tableName) {
 
-        $className = 'App\\Entities\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $tableName)));
+        $className = str_replace(' ', '', ucwords(str_replace('_', ' ', $tableName)));
 
         if(substr($tableName, 0, 4) === 'rf__') {
             $className = str_replace('Rf', 'Rf_', $className);
