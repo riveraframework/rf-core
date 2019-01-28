@@ -158,9 +158,12 @@ class MemcachedCache extends DefaultCache {
 
                 foreach($this->endpoints as $index => $server) {
 
-                    // Get out of the loop when the replication max is reached
+                    // Remove data from server when the replication max is reached
                     if($currentReplicationCount > $maxReplication) {
-                        break;
+
+                        $this->memcached->deleteByKey($server, $key);
+                        continue;
+
                     }
 
                     // Skip if data already present
