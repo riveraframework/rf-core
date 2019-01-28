@@ -180,7 +180,17 @@ class MemcachedHaSession implements SessionInterface {
                 $cookie = new Cookie(
                     $this->sessionName,
                     $sessionId,
-                    $this->duration
+                    time() + $this->duration
+                );
+                $cookie->create();
+
+            } else {
+
+                // Update the cookie to extend it's life
+                $cookie = new Cookie(
+                    $this->sessionName,
+                    $sessionId,
+                    time() + $this->duration
                 );
                 $cookie->create();
 
@@ -276,7 +286,7 @@ class MemcachedHaSession implements SessionInterface {
         $value = null;
         try {
 
-            $value = $this->handler->get($this->getFullKey($key));
+            $value = $this->handler->get($this->getFullKey($key), time() + $this->duration);
             $this->data[$key] = $value;
 
         } catch (\Exception $e) {
@@ -307,11 +317,17 @@ class MemcachedHaSession implements SessionInterface {
      *
      * @param string $key
      * @param mixed $value
-     * @param int $expiration
+     * @param int $duration
      *
      * @throws \Exception
      */
-    public function set($key, $value, $expiration) {
+    public function set($key, $value, $duration = null) {
+
+        if(!isset($expiration)) {
+            $expiration = time() + $this->duration;
+        } else {
+            $expiration = time() + $duration;
+        }
 
         $map = $this->getMap();
 
