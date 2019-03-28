@@ -177,7 +177,9 @@ abstract class Controller {
             $this->loadIncludes();
 
         } else {
-            $this->error(404);
+
+            $this->error(404, $viewFile);
+
         }
 
     }
@@ -211,7 +213,7 @@ abstract class Controller {
             $this->loadIncludes();
 
         } else {
-            $this->error(404);
+            $this->error(404, $viewFile);
         }
 
     }
@@ -422,13 +424,14 @@ abstract class Controller {
      * Replace the actual HTML content by an error view
      *
      * @param int|string $errorCode Error code/view
+     * @param string $errorContent Error content
      */
-    final protected function error($errorCode) {
+    final protected function error($errorCode, $errorContent = '') {
 
         switch ($errorCode) {
 
             case 404:
-                $this->html = 'Controller error: Unable to load the template';
+                $this->html = 'Controller error: Unable to load the template' . (rf_config('options.debug') ? '<br/>' . $errorContent : '');
                 break;
 
             default:
