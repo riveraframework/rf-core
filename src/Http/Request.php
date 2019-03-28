@@ -19,7 +19,7 @@ use Rf\Core\Uri\Uri;
  * @package Rf\Core\Http
  */
 class Request {
-    
+
     /** @var Uri Request uri */
     protected $uri;
 
@@ -62,17 +62,17 @@ class Request {
     /** @var ParameterSet */
     protected $cookieData;
 
-	/** @var bool */
-	protected $isHttps;
+    /** @var bool */
+    protected $isHttps;
 
-	/** @var bool */
-	protected $isAjax;
+    /** @var bool */
+    protected $isAjax;
 
-	/** @var bool */
-	protected $isMobile;
+    /** @var bool */
+    protected $isMobile;
 
-	/** @var bool */
-	protected $isApi;
+    /** @var bool */
+    protected $isApi;
 
     /**
      * Create a new Request object using the $_ variables and the current uri
@@ -217,14 +217,14 @@ class Request {
 
     }
 
-	/**
-	 * Get headers
-	 *
-	 * @return ParameterSet
-	 */
+    /**
+     * Get headers
+     *
+     * @return ParameterSet
+     */
     public function getHeaders() {
 
-    	return $this->headers;
+        return $this->headers;
 
     }
 
@@ -239,25 +239,25 @@ class Request {
 
     }
 
-	/**
-	 * Get GET data
-	 *
-	 * @return ParameterSet
-	 */
+    /**
+     * Get GET data
+     *
+     * @return ParameterSet
+     */
     public function getGetData() {
 
-    	return $this->getData;
+        return $this->getData;
 
     }
 
-	/**
-	 * Get POST data
-	 *
-	 * @return ParameterSet
-	 */
+    /**
+     * Get POST data
+     *
+     * @return ParameterSet
+     */
     public function getPostData() {
 
-    	return $this->postData;
+        return $this->postData;
 
     }
 
@@ -323,29 +323,29 @@ class Request {
      */
     private function getRequestInformation() {
 
-	    if(
-	        $this->get('server', 'HTTPS') !== false
+        if(
+            $this->get('server', 'HTTPS') !== false
             || $this->get('server', 'HTTPS') == 'on'
         ) {
-		    $this->isHttps = true;
-	    } else {
-		    $this->isHttps = false;
-	    }
+            $this->isHttps = true;
+        } else {
+            $this->isHttps = false;
+        }
 
-    	if($this->uri->host() == rf_config('app.domain-mobile')) {
-    		$this->isMobile = true;
-	    } else {
-	    	$this->isMobile = false;
-	    }
+        if($this->uri->host() == rf_config('app.domain-mobile')) {
+            $this->isMobile = true;
+        } else {
+            $this->isMobile = false;
+        }
 
-    	if($this->uri->host() == rf_config('app.domain-api')) {
-    		$this->isApi = true;
+        if($this->uri->host() == rf_config('app.domain-api')) {
+            $this->isApi = true;
             header('Allow: OPTIONS, GET, POST, PUT, DELETE');
             header('Access-Control-Allow-Origin: *'); // http://' . rf_config('api.domain')
             header('Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE');
-	    } else {
-	    	$this->isApi = false;
-	    }
+        } else {
+            $this->isApi = false;
+        }
 
         if(
             $this->serverData->get('HTTP_X_REQUESTED_WITH') !== false
@@ -353,7 +353,7 @@ class Request {
         ) {
             $this->isAjax = true;
         } else {
-	        $this->isAjax = false;
+            $this->isAjax = false;
         }
 
         switch($this->getMethod()) {
@@ -497,7 +497,7 @@ class Request {
 
         // @TODO: Get this info from URI
 
-    	return $this->isHttps;
+        return $this->isHttps;
 
     }
 
