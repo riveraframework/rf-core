@@ -129,18 +129,20 @@ abstract class Controller {
      */
     final public function getPartial($partialName, $dictionary = []) {
 
+        if(!empty($dictionary)) {
+            $this->dictionary = $dictionary;
+        }
+
         $methodName = 'partial' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $partialName)));
 
         if(method_exists($this, $methodName)) {
 
-            if(!empty($dictionary)) {
-                $this->dictionary = $dictionary;
-            }
-
             $this->$methodName();
 
         } else {
-            $this->error(404);
+
+            $this->loadTemplate('partials:' . $partialName);
+
         }
 
         return $this->html;
