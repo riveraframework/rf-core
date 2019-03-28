@@ -55,14 +55,8 @@ abstract class Controller {
     /** @var string  */
     public $forceCacheFileName;
 
-    /** @var string  */
-    public $cacheFileName;
-
     /** @var array  */
-    public $cache = []; // array('tplName' => array('duration' => 5, 'filename' => 'file_name-params.php'));
-
-    /** @var bool  */
-    public $isCache = false;
+    public $cacheConfig = []; // ['template' => 'my_template', 'duration' => 3600, 'params' => [], 'path' => '']
 
     /** @var array Available actions */
     public $actions = [];
@@ -174,7 +168,11 @@ abstract class Controller {
             // Replace translatable strings
             $this->html = $this->translate($viewFile);
 
+            // Load included templates
             $this->loadIncludes();
+
+            // Cache the generated code
+            $this->cache();
 
         } else {
 
@@ -211,6 +209,12 @@ abstract class Controller {
             $this->html = $this->translate($viewFile);
 
             $this->loadIncludes();
+
+            // Load included templates
+            $this->loadIncludes();
+
+            // Cache the generated code
+            $this->cache();
 
         } else {
             $this->error(404, $viewFile);
@@ -342,14 +346,10 @@ abstract class Controller {
 
     /**
      * Get the controller content
-     * $format == 'html' >> $this->html
-     * $format == 'json' >> $this->dictionary
      *
      * @param string $viewName
-     *
-     * @return string
      */
-    final protected function render($viewName) {
+    protected function render($viewName) {
 
         $this->loadTemplate($viewName);
 
@@ -369,6 +369,15 @@ abstract class Controller {
 
         }
 
+        $this->display();
+
+    }
+
+    /**
+     * Echo the generated HTML content
+     */
+    protected function display() {
+
         echo $this;
         die;
 
@@ -376,37 +385,54 @@ abstract class Controller {
 
     /**
      * Write data to a cached file
-     *
-     * @return int
      */
     public function cache() {
 
-        if(!rf_config('options.cache')) {
-            return 0;
-        }
+        if(!empty($this->cacheConfig['path'])) {
 
-        return Cache::write($this->cacheFileName, $this->getHtml());
+            // @TODO: Use new cache handlers and this as a backup
+            Cache::write($this->cacheConfig['path'], $this->getHtml());
+
+        }
 
     }
 
     /**
-     * Get data from a cached file
+     * Render the cached version if available
      *
-     * @TODO: Replace by new cache system
+     * @param string $template Template name
+     * @param int $duration Duration in minutes
+     * @param array $params Array of params to generate the cache path
      *
      * @return bool
      */
-    protected function loadCache() {
+    public function cached($template, $duration = 60, array $params = []) {
 
-        if(!rf_config('options.cache')) {
-            return false;
+        // @TODO: Option to obfuscate cache path
+        $this->cacheConfig = [
+            'template' => $template,
+            'duration' => $duration,
+            'params' => $params,
+        ];
+
+        // Generate the cache path
+        $cachePath = $template;
+        foreach($params as $param) {
+            $cachePath .= '-' . $param;
         }
 
-        $cacheContent = Cache::get($this->cacheFileName, 7 * 86400);
+        $this->cacheConfig['path'] = $cachePath;
 
-        if(!empty($cacheContent)) {
-            $this->html = $cacheContent;
+        // Check if the path exists
+        $cached = Cache::get($cachePath, $duration);
+
+        if(!empty($cached)) {
+
+            // @TODO: Cache data type?
+            $this->html = $cached;
+
             return true;
+
         }
 
         return false;
