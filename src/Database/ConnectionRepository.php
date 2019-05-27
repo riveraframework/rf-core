@@ -90,8 +90,9 @@ class ConnectionRepository {
             return self::getConnection('default');
 
         } else {
-
-            $name = array_shift(array_keys($availableConnections));
+            
+            $keys = array_keys($availableConnections);
+            $name = array_shift($keys);
 
             return self::getConnection($name);
 
