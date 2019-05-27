@@ -112,17 +112,16 @@ class Uri {
      *
      * @param mixed $uri
      *
-     * @return \Rf\Core\Uri\Uri
+     * @return Uri
      */
     public function __construct($uri = null) {
-        if(isset($uri)) {
-            if($uri === self::INIT_WITH_CURRENT_URI) {
-                $this->parse(self::current());
-            } else {
-                $this->parse($uri);
-            }
+
+        if(!isset($uri) || $uri === self::INIT_WITH_CURRENT_URI) {
+            $this->parse(self::current());
+        } else {
+            $this->parse($uri);
         }
-        
+
         return $this;
     }
 
