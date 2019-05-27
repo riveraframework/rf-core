@@ -43,5 +43,5 @@ https://github.com/riveraframework/example-skeleton
 REST API application available at:
 https://github.com/riveraframework/example-rest-api
 
-OAuth2 API/SSO application available **soon** at:
+OAuth2 API/SSO application available at:
 https://github.com/riveraframework/example-oauth2-api-sso
