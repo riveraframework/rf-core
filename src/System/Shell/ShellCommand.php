@@ -8,74 +8,65 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exec;
+namespace Rf\Core\Shell;
 
 /**
  * Class ShellCommand
  *
- * @since 1.0
- *
- * @package Rf\Core\Exec
+ * @package Rf\Core\Shell
  */
 class ShellCommand {
 
-    /**
-     * @var resource $resource
-     * @since 1.0
-     */
+    /** @var resource $resource */
     public $resource;
 
-    /**
-     * @var string $output
-     * @since 1.0
-     */
+    /** @var string $output */
     public $output;
-
 
     /**
      * Execute a new command
      *
-     * @since 1.0
-     *
-     * @param $cmd Command to execute
-     * @param $path Path to the directory where the command need to be executed
+     * @param string $cmd Command to execute
+     * @param string $path Path to the directory where the command need to be executed
      */
     public function __construct($cmd, $path) {
         
         // Init pipes to get stdout and stderr output
-        $descriptorspec = array(
-            1 => array('pipe', 'w'), // stdout
-            2 => array('pipe', 'w')  // stderr
+        $descriptorSpec = array(
+            'stdout' => array('pipe', 'w'),
+            'stderr' => array('pipe', 'w')
         );
         
         // Execute command
-        $this->resource = proc_open($cmd, $descriptorspec, $pipes, $path);
+        $this->resource = proc_open($cmd, $descriptorSpec, $pipes, $path);
         
         if (is_resource($this->resource)) {
             
             // Extract output
-            $output = stream_get_contents($pipes[2]) . PHP_EOL;
-            $output .= stream_get_contents($pipes[1]) . PHP_EOL;
+            $output = stream_get_contents($pipes['stdout']) . PHP_EOL;
+            $output .= stream_get_contents($pipes['stderr']) . PHP_EOL;
             $this->output = $output;
             
             // Close pipes and proc
-            fclose($pipes[1]);
-            fclose($pipes[2]);
+            fclose($pipes['stderr']);
+            fclose($pipes['stdout']);
             proc_close($this->resource);
             
         }
         
         return $this;
+
     }
 
     /**
      * Get the current command output
      *
-     * @since 1.0
-     *
      * @return bool|string
      */
     public function getOutput() {
+
         return isset($this->output) ? $this->output : false;
+
     }
+
 }
