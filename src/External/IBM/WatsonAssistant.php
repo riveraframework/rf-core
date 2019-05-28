@@ -16,6 +16,8 @@ use Rf\Core\Http\Exceptions\CurlException;
 /**
  * Class WatsonAssistant
  *
+ * Note: This class is a work in progress
+ *
  * @package Rf\Core\External\IBM
  */
 class WatsonAssistant {

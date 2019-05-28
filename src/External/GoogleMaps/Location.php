@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Geography;
+namespace Rf\Core\GoogleMaps;
 
 use Rf\Core\External\GoogleMaps;
 use Rf\Core\Convention\Name;
@@ -41,37 +41,37 @@ class Location {
     public $type;
 
     /**
-     * @var \Rf\Core\Geography\BaseCountry $country
+     * @var \Rf\Core\GoogleMaps\BaseCountry $country
      * @since 1.0
      */
     public $country;
 
     /**
-     * @var \Rf\Core\Geography\BaseAdministrativeArea $administrativeAreaLevel1
+     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel1
      * @since 1.0
      */
     public $administrativeAreaLevel1;
 
     /**
-     * @var \Rf\Core\Geography\BaseAdministrativeArea $administrativeAreaLevel2
+     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel2
      * @since 1.0
      */
     public $administrativeAreaLevel2;
 
     /**
-     * @var \Rf\Core\Geography\BaseAdministrativeArea $administrativeAreaLevel3
+     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel3
      * @since 1.0
      */
     public $administrativeAreaLevel3;
 
     /**
-     * @var \Rf\Core\Geography\BaseAdministrativeArea $administrativeAreaLevel4
+     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel4
      * @since 1.0
      */
     public $administrativeAreaLevel4;
 
     /**
-     * @var \Rf\Core\Geography\BaseAdministrativeArea $administrativeAreaLevel5
+     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel5
      * @since 1.0
      */
     public $administrativeAreaLevel5;
@@ -83,19 +83,19 @@ class Location {
     public $administrativeAreaLevelMax = 0;
 
     /**
-     * @var \Rf\Core\Geography\BasePostalCode $postalCode
+     * @var \Rf\Core\GoogleMaps\BasePostalCode $postalCode
      * @since 1.0
      */
     public $postalCode;
 
     /**
-     * @var \Rf\Core\Geography\BaseLocality $locality
+     * @var \Rf\Core\GoogleMaps\BaseLocality $locality
      * @since 1.0
      */
     public $locality;
 
     /**
-     * @var \Rf\Core\Geography\BaseStreet $street
+     * @var \Rf\Core\GoogleMaps\BaseStreet $street
      * @since 1.0
      */
     public $street;
@@ -417,12 +417,12 @@ class Location {
     /**
      *
      *
-     * @since 1.0
-     *
      * @param string $address
      * @param string $language don't override the class language param
-     * @return boolean|\Rf\Core\Geography\Location
+     * @return boolean|\Rf\Core\GoogleMaps\Location
      * @return void
+     *@since 1.0
+     *
      */
     public function retrieveFromGoogleMapAPI($address, $language = null) {
         

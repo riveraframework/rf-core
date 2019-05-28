@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Geography;
+namespace Rf\Core\GoogleMaps;
 
 class BaseCountry {
     

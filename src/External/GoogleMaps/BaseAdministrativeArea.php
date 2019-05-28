@@ -8,12 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Geography;
+namespace Rf\Core\GoogleMaps;
 
-class BaseStreet {
+class BaseAdministrativeArea {
     
-    public $route;
-    public $number;
+    public $name;
+    public $level;
+    public $code;
 
     public $lat;
     public $lng;
@@ -21,33 +22,49 @@ class BaseStreet {
     /**
      * @return mixed
      */
-    public function getRoute()
+    public function getName()
     {
-        return $this->route;
+        return $this->name;
     }
 
     /**
-     * @param mixed $route
+     * @param mixed $name
      */
-    public function setRoute($route)
+    public function setName($name)
     {
-        $this->route = $route;
+        $this->name = $name;
     }
 
     /**
      * @return mixed
      */
-    public function getNumber()
+    public function getLevel()
     {
-        return $this->number;
+        return $this->level;
     }
 
     /**
-     * @param mixed $number
+     * @param mixed $level
      */
-    public function setNumber($number)
+    public function setLevel($level)
     {
-        $this->number = $number;
+        $this->level = $level;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param mixed $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 
     /**
@@ -82,4 +99,5 @@ class BaseStreet {
         $this->lng = $lng;
     }
 
+    
 }

@@ -8,48 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Geography;
+namespace Rf\Core\GoogleMaps;
 
-class BaseAdministrativeArea {
+class BasePostalCode {
     
-    public $name;
-    public $level;
     public $code;
-
+    
     public $lat;
     public $lng;
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * @param mixed $level
-     */
-    public function setLevel($level)
-    {
-        $this->level = $level;
-    }
 
     /**
      * @return mixed
@@ -99,5 +65,4 @@ class BaseAdministrativeArea {
         $this->lng = $lng;
     }
 
-    
 }
