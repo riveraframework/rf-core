@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Payment\Systempay;
+namespace Rf\Core\External\Systempay;
 
 /**
  * Class SystempayIpn
  *
- * @package Rf\Core\Payment\Systempay
+ * @package Rf\Core\External\Systempay
  */
 class SystempayIpn {
 
