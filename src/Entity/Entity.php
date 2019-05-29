@@ -11,7 +11,7 @@
 namespace Rf\Core\Entity;
 
 use Rf\Core\Base\Date;
-use Rf\Core\Convention\Name;
+use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
 use Rf\Core\Database\Query;
 use Rf\Core\Database\QueryEngine\Delete;

@@ -10,10 +10,9 @@
 
 namespace Rf\Core\Entity;
 
-use Rf\Core\Convention\Name;
+use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
 use Rf\Core\Database\Query;
-use Rf\Core\Database\QueryEngine\Select;
 use Rf\Core\Database\Tools as DatabaseTools;
 use Rf\Core\Exception\BaseException;
 

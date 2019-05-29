@@ -18,6 +18,8 @@ use Rf\Core\System\Performance\Benchmark;
  * @package Rf\Core\Mvc
  *
  * @TODO: Add a getRequest() method
+ * @TODO: Move to Application/Components
+ * @TODO: Add a "filter system" in the template e.g: `{string | camel_case}`
  */
 abstract class Controller {
 

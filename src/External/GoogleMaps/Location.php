@@ -11,7 +11,7 @@
 namespace Rf\Core\GoogleMaps;
 
 use Rf\Core\External\GoogleMaps;
-use Rf\Core\Convention\Name;
+use Rf\Core\Utils\Format\Name;
 
 /**
  * Class Location

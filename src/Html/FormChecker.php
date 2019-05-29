@@ -11,7 +11,7 @@
 namespace Rf\Core\Html;
 
 use Rf\Core\Base\Date;
-use Rf\Core\Convention\Name;
+use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\Tools as DatabaseTools;
 
 /**
