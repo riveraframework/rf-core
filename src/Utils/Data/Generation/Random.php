@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Data\Generation;
+namespace Rf\Core\Utils\Data\Generation;
 
 /**
  * Class Random
  *
- * @package Rf\Core\Data\Generation
+ * @package Rf\Core\Utils\Data\Generation
  */
 class Random {
 

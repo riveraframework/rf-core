@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Data\DataSet;
+namespace Rf\Core\Utils\Data\DataSet;
 
 /**
  * Class RecursiveDataSet
  *
- * @package Rf\Core\Data\DataSet
+ * @package Rf\Core\Utils\Data\DataSet
  */
 class RecursiveDataSet {
 
