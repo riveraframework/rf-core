@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\GoogleMaps;
+namespace Rf\Core\Wrappers\ExternalServices\Google;
 
 /**
  * Class GoogleLocation
  *
- * @package Rf\Core\Geography
+ * @package Rf\Core\Wrappers\ExternalServices\Google
  */
 class GoogleLocation extends Location {
 

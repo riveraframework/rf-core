@@ -8,17 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\GoogleMaps;
+namespace Rf\Core\Wrappers\ExternalServices\Google;
 
-use Rf\Core\External\GoogleMaps;
 use Rf\Core\Utils\Format\Name;
+use Rf\Core\Wrappers\ExternalServices\Google\Models\BaseAdministrativeArea;
+use Rf\Core\Wrappers\ExternalServices\Google\Models\BaseCountry;
+use Rf\Core\Wrappers\ExternalServices\Google\Models\BaseLocality;
+use Rf\Core\Wrappers\ExternalServices\Google\Models\BasePostalCode;
+use Rf\Core\Wrappers\ExternalServices\Google\Models\BaseStreet;
 
 /**
  * Class Location
  *
- * @since 1.0
- *
- * @package Rf\Core\Geography
+ * @package Rf\Core\Wrappers\ExternalServices\Google
  */
 class Location {
 
@@ -41,37 +43,37 @@ class Location {
     public $type;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseCountry $country
+     * @var BaseCountry $country
      * @since 1.0
      */
     public $country;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel1
+     * @var BaseAdministrativeArea $administrativeAreaLevel1
      * @since 1.0
      */
     public $administrativeAreaLevel1;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel2
+     * @var BaseAdministrativeArea $administrativeAreaLevel2
      * @since 1.0
      */
     public $administrativeAreaLevel2;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel3
+     * @var BaseAdministrativeArea $administrativeAreaLevel3
      * @since 1.0
      */
     public $administrativeAreaLevel3;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel4
+     * @var BaseAdministrativeArea $administrativeAreaLevel4
      * @since 1.0
      */
     public $administrativeAreaLevel4;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseAdministrativeArea $administrativeAreaLevel5
+     * @var BaseAdministrativeArea $administrativeAreaLevel5
      * @since 1.0
      */
     public $administrativeAreaLevel5;
@@ -83,19 +85,19 @@ class Location {
     public $administrativeAreaLevelMax = 0;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BasePostalCode $postalCode
+     * @var BasePostalCode $postalCode
      * @since 1.0
      */
     public $postalCode;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseLocality $locality
+     * @var BaseLocality $locality
      * @since 1.0
      */
     public $locality;
 
     /**
-     * @var \Rf\Core\GoogleMaps\BaseStreet $street
+     * @var BaseStreet $street
      * @since 1.0
      */
     public $street;
@@ -419,10 +421,8 @@ class Location {
      *
      * @param string $address
      * @param string $language don't override the class language param
-     * @return boolean|\Rf\Core\GoogleMaps\Location
-     * @return void
-     *@since 1.0
      *
+     * @return Location|false
      */
     public function retrieveFromGoogleMapAPI($address, $language = null) {
         
@@ -536,10 +536,6 @@ class Location {
 
     /**
      * Determine the coordinate type
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     protected function setCoordinateType() {
 
@@ -603,9 +599,8 @@ class Location {
 
     /**
      *
-     * @since 1.0
-     *
      * @param $googleApiObject
+     *
      * @return bool
      */
     public function getGoogleMapAPILat($googleApiObject) {
@@ -622,9 +617,8 @@ class Location {
 
     /**
      *
-     * @since 1.0
-     *
      * @param $googleApiObject
+     *
      * @return bool
      */
     public function getGoogleMapAPILng($googleApiObject) {
@@ -643,10 +637,7 @@ class Location {
 
     /**
      *
-     * @since 1.0
-     *
      * @param $language
-     * @return void
      */
     public function setLanguage($language) {
 

@@ -8,29 +8,46 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\GoogleMaps;
+namespace Rf\Core\Wrappers\ExternalServices\Google\Models;
 
-class BasePostalCode {
+class BaseStreet {
     
-    public $code;
-    
+    public $route;
+    public $number;
+
     public $lat;
     public $lng;
 
     /**
      * @return mixed
      */
-    public function getCode()
+    public function getRoute()
     {
-        return $this->code;
+        return $this->route;
     }
 
     /**
-     * @param mixed $code
+     * @param mixed $route
      */
-    public function setCode($code)
+    public function setRoute($route)
     {
-        $this->code = $code;
+        $this->route = $route;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param mixed $number
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
     }
 
     /**

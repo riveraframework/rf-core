@@ -10,6 +10,8 @@
 
 namespace Rf\Core\Cache\Handlers;
 
+use Rf\Core\Wrappers\InternalServices\Memcached\MemcachedWrapper;
+
 /**
  * Class MemcachedCache
  *
@@ -20,7 +22,7 @@ class MemcachedCache extends DefaultCache {
     /** @var string $type */
     protected $type = 'memcached';
 
-    /** @var \Memcached $memcached */
+    /** @var MemcachedWrapper $memcached */
     protected $memcached;
 
     /** @var array $options */
@@ -28,14 +30,14 @@ class MemcachedCache extends DefaultCache {
 
     /**
      * MemcacheCache constructor.
+     *
+     * @param array $options
+     *
+     * @throws \Exception
      */
     public function __construct(array $options = []) {
 
-        if(!class_exists('\Memcached')) {
-            throw new \Exception('Memcached is not configured on this server.');
-        }
-
-        $this->memcached = new \Memcached();
+        $this->memcached = new MemcachedWrapper();
 
         // Set options
         $this->options = $options;
@@ -45,7 +47,7 @@ class MemcachedCache extends DefaultCache {
     /**
      * Get memcached
      *
-     * @return \Memcached
+     * @return MemcachedWrapper
      */
     public function getMemcached() {
 
@@ -61,7 +63,7 @@ class MemcachedCache extends DefaultCache {
      */
     public function addServer($host, $port) {
 
-        $this->memcached->addServer($host, $port);
+        $this->memcached->getService()->addServer($host, $port);
         $this->endpoints[] = $host . ':' . $port;
 
     }
@@ -73,12 +75,12 @@ class MemcachedCache extends DefaultCache {
      */
     public function checkService() {
 
-        $check = $this->memcached->get('memcached-check');
+        $check = $this->memcached->getService()->get('memcached-check');
 
         if(!$check) {
 
-            $this->memcached->set('memcached-check', 1, 3600);
-            $check = $this->memcached->get('memcached-check');
+            $this->memcached->getService()->set('memcached-check', 1, 3600);
+            $check = $this->memcached->getService()->get('memcached-check');
 
         }
 
@@ -112,9 +114,9 @@ class MemcachedCache extends DefaultCache {
 
                 for($i = 0; $i < $this->options['attempts_max']; $i++) {
 
-                    $value = $this->memcached->getByKey($server, $key);
+                    $value = $this->memcached->getService()->getByKey($server, $key);
 
-                    if($value && $this->memcached->getResultCode() === \Memcached::RES_SUCCESS) {
+                    if($value && $this->memcached->getService()->getResultCode() === \Memcached::RES_SUCCESS) {
 
                         if(!in_array($index, $activeServerIndexes)) {
                             $activeServerCount++;
@@ -131,7 +133,7 @@ class MemcachedCache extends DefaultCache {
                         break;
 
                         // @TODO: Improve errors codes
-                    } elseif(in_array($this->memcached->getResultCode(), [
+                    } elseif(in_array($this->memcached->getService()->getResultCode(), [
                         \Memcached::RES_NOTFOUND,
                         \Memcached::RES_DELETED,
                         \Memcached::RES_NOTSTORED,
@@ -161,7 +163,7 @@ class MemcachedCache extends DefaultCache {
                     // Remove data from server when the replication max is reached
                     if($currentReplicationCount > $maxReplication) {
 
-                        $this->memcached->deleteByKey($server, $key);
+                        $this->memcached->getService()->deleteByKey($server, $key);
                         continue;
 
                     }
@@ -178,7 +180,7 @@ class MemcachedCache extends DefaultCache {
 
                     // Add the replication
                     // @TODO: Handle proper expiration
-                    $this->memcached->setByKey($server, $key, $value, $expires);
+                    $this->memcached->getService()->setByKey($server, $key, $value, $expires);
 
                     // Increment replication count
                     $currentReplicationCount++;
@@ -191,7 +193,7 @@ class MemcachedCache extends DefaultCache {
 
         } else {
 
-            return $this->memcached->get($key);
+            return $this->memcached->getService()->get($key);
 
         }
 
@@ -217,11 +219,11 @@ class MemcachedCache extends DefaultCache {
 
                 if(++$count <= $max) {
 
-                    $this->memcached->setByKey($server, $key, $value, $expires);
+                    $this->memcached->getService()->setByKey($server, $key, $value, $expires);
 
                 } else {
 
-                    $this->memcached->deleteByKey($server, $key);
+                    $this->memcached->getService()->deleteByKey($server, $key);
 
                 }
 
@@ -229,7 +231,7 @@ class MemcachedCache extends DefaultCache {
 
         } else {
 
-            $this->memcached->set($key, $value, $expires);
+            $this->memcached->getService()->set($key, $value, $expires);
 
         }
 
@@ -246,13 +248,13 @@ class MemcachedCache extends DefaultCache {
 
             foreach($this->endpoints as $server) {
 
-                $this->memcached->deleteByKey($server, $key);
+                $this->memcached->getService()->deleteByKey($server, $key);
 
             }
 
         } else {
 
-            $this->memcached->delete($key);
+            $this->memcached->getService()->delete($key);
 
         }
 
@@ -263,7 +265,7 @@ class MemcachedCache extends DefaultCache {
      */
     public function flush() {
 
-        $this->memcached->flush();
+        $this->memcached->getService()->flush();
 
     }
 
@@ -274,7 +276,7 @@ class MemcachedCache extends DefaultCache {
      */
     public function getStats() {
 
-        return $this->memcached->getStats();
+        return $this->memcached->getService()->getStats();
 
     }
 

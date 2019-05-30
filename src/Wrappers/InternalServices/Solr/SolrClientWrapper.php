@@ -8,19 +8,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Search\Solr;
+namespace Rf\Core\Wrappers\InternalServices\Solr;
 
 /**
- * Class SolrService
+ * Class SolrClientWrapper
  *
- * @package Rf\Core\Search\Solr
+ * @package Rf\Core\Wrappers\InternalServices\Solr
  */
-class SolrService {
+class SolrClientWrapper {
 
-	protected $client;
+    /** @var \SolrClient  */
+	protected $service;
 
 	/**
-	 * SolrService constructor.
+	 * SolrClientWrapper constructor.
 	 *
 	 * @param array $options
 	 *
@@ -34,7 +35,7 @@ class SolrService {
 	    }
 
     	try {
-		    $this->client = new \SolrClient($options);
+		    $this->service = new \SolrClient($options);
 	    } catch(\SolrIllegalArgumentException $e) {
 		    throw new \Exception('Unable to init Solr');
 	    }
@@ -42,13 +43,13 @@ class SolrService {
     }
 
     /**
-     * Get the Solr client
+     * Get the Solr service
      *
      * @return \SolrClient
      */
-    public function getClient() {
+    public function getService() {
 
-        return $this->client;
+        return $this->service;
 
     }
 

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\GoogleMaps;
+namespace Rf\Core\Wrappers\ExternalServices\Google\Models;
 
 class BaseAdministrativeArea {
     

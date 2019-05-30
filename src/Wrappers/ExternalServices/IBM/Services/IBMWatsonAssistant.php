@@ -8,19 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\External\IBM;
+namespace Rf\Core\Wrappers\ExternalServices\IBM\Services;
 
 use Rf\Core\Http\Curl;
 use Rf\Core\Http\Exceptions\CurlException;
 
 /**
- * Class WatsonAssistant
+ * Class IBMWatsonAssistant
  *
  * Note: This class is a work in progress
  *
  * @package Rf\Core\External\IBM
  */
-class WatsonAssistant {
+class IBMWatsonAssistant {
 
     /** Watson API url */
     const API_URL = 'https://gateway.watsonplatform.net/assistant/api/v1/';

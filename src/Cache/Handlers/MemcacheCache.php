@@ -10,8 +10,12 @@
 
 namespace Rf\Core\Cache\Handlers;
 
+use Rf\Core\Wrappers\InternalServices\Memcache\MemcacheWrapper;
+
 /**
  * Class MemcacheCache
+ *
+ * @TODO: Implement replication as in the MemcachedCache class
  *
  * @package Rf\Core\Cache\Handlers
  */
@@ -20,7 +24,7 @@ class MemcacheCache extends DefaultCache {
     /** @var string $type */
     protected $type = 'memcache';
 
-    /** @var \Memcache $memcached */
+    /** @var MemcacheWrapper $memcached */
 	protected $memcache;
 
 	/**
@@ -28,18 +32,14 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function __construct() {
 
-		if(!class_exists('\Memcache')) {
-			throw new \Exception('Memcache is not configured on this server.');
-		}
-
-		$this->memcache = new \Memcache();
+		$this->memcache = new MemcacheWrapper();
 
 	}
 
     /**
      * Get memcache
      *
-     * @return \Memcache
+     * @return MemcacheWrapper
      */
     public function getMemcache() {
 
@@ -55,7 +55,7 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function addServer($host, $port) {
 
-		$this->memcache->addServer($host, $port);
+		$this->memcache->getService()->addServer($host, $port);
         $this->endpoints[] = $host . ':' . $port;
 
 	}
@@ -67,12 +67,12 @@ class MemcacheCache extends DefaultCache {
      */
     public function checkService() {
 
-        $check = $this->memcache->get('memcached-check');
+        $check = $this->memcache->getService()->get('memcached-check');
 
         if(!$check) {
 
-            $this->memcache->set('memcached-check', 1, 3600);
-            $check = $this->memcache->get('memcached-check');
+            $this->memcache->getService()->set('memcached-check', 1, 3600);
+            $check = $this->memcache->getService()->get('memcached-check');
 
         }
 
@@ -91,7 +91,7 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function get($key) {
 
-		return $this->memcache->get($key);
+		return $this->memcache->getService()->get($key);
 
 	}
 
@@ -104,7 +104,7 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function set($key, $value, $expires = 0) {
 
-		$this->memcache->set($key, $value, null, $expires);
+		$this->memcache->getService()->set($key, $value, null, $expires);
 
 	}
 
@@ -115,7 +115,7 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function delete($key) {
 
-		$this->memcache->delete($key);
+		$this->memcache->getService()->delete($key);
 
 	}
 
@@ -124,7 +124,7 @@ class MemcacheCache extends DefaultCache {
 	 */
 	public function flush() {
 
-		$this->memcache->flush();
+		$this->memcache->getService()->flush();
 
 	}
 
@@ -135,7 +135,7 @@ class MemcacheCache extends DefaultCache {
      */
     public function getStats() {
 
-        return $this->memcache->getExtendedStats();
+        return $this->memcache->getService()->getExtendedStats();
 
     }
 

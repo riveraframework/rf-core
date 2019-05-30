@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Search\Exceptions;
+namespace Rf\Core\Wrappers\InternalServices\Solr\Exceptions;
 
 /**
  * Class SolrIndexationException
  *
- * @package Rf\Core\Search\Exceptions
+ * @package Rf\Core\Wrappers\InternalServices\Solr\Exceptions
  */
 class SolrIndexationException extends \Exception {
 

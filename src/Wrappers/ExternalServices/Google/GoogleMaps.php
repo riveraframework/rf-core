@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\External;
+namespace Rf\Core\Wrappers\ExternalServices\Google;
 
 use Rf\Core\Exception\SilentException;
 
 /**
  * Class GoogleMaps
  *
- * @package Rf\Core\External
+ * @package Rf\Core\Wrappers\ExternalServices\Google
  */
 class GoogleMaps {
 
@@ -68,9 +68,9 @@ class GoogleMaps {
             $response = json_decode($json);
 
             if (!isset($response) || $response === false) {
-                throw new SilentException(get_called_class(), 'Unable to retrieve informations from Google Maps API for given address:' . json_last_error_msg());
+                throw new SilentException(get_called_class(), 'Unable to retrieve information from Google Maps API for given address:' . json_last_error_msg());
             } elseif ($response->status !== 'OK') {
-                throw new SilentException(get_called_class(), 'Unable to retrieve informations from Google Maps API for given address');
+                throw new SilentException(get_called_class(), 'Unable to retrieve information from Google Maps API for given address');
             } else {
                 return $response;
             }
