@@ -9,12 +9,13 @@
  */
 
 namespace Rf\Core\Exception;
+
 use Rf\Core\Entity\Entity;
 
 /**
  * Class EntityAlreadyExistException
  *
- * @package Wusic\Api\Classes\Exceptions
+ * @package Rf\Core\Exception
  */
 class EntityAlreadyExistException extends BaseException {
 
