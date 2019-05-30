@@ -8,14 +8,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Mvc;
+namespace Rf\Core\Application\Components;
 
 use Rf\Core\System\Performance\Benchmark;
 
 /**
  * Class Controller
+ * This class is meant to be extended in the application modules.
  *
- * @package Rf\Core\Mvc
+ * @package Rf\Core\Application\Components
  *
  * @TODO: Add a getRequest() method
  * @TODO: Move to Application/Components
@@ -58,7 +59,7 @@ abstract class Controller {
     public $forceCacheFileName;
 
     /** @var array  */
-    public $cacheConfig = []; // ['template' => 'my_template', 'duration' => 3600, 'params' => [], 'path' => '']
+    public $cacheConfig = []; // ['cache_identifiers', 'path' => 'path-or-key', 'duration' => 3600]
 
     /** @var array Available actions */
     public $actions = [];
@@ -390,10 +391,44 @@ abstract class Controller {
      */
     public function cache() {
 
-        if(!empty($this->cacheConfig['path'])) {
+        $cacheIdentifiers = $this->getCacheIdentifiers();
 
-            // @TODO: Use new cache handlers and this as a backup
-            Cache::write($this->cacheConfig['path'], $this->getHtml());
+        // Skip caching if no identifier is provided
+        if(
+            !$cacheIdentifiers
+            || empty($this->cacheConfig['path'])
+        ) {
+            return;
+        }
+
+        // @TODO: Check if key or path works with disk handler
+        $cacheKey = $this->cacheConfig['path'];
+        $duration = !empty($this->cacheConfig['duration']) ? $this->cacheConfig['duration'] : 60 * 60;
+
+        // @TODO: Also cache data type? (e.g: xml,json,etc. templates)
+        rf_cache_set($cacheKey, $this->getHtml(), $duration, $cacheIdentifiers);
+
+    }
+
+    /**
+     * Get the cache identifiers.
+     *
+     *
+     * @return array|bool|mixed
+     */
+    public function getCacheIdentifiers() {
+
+        if(empty($this->cacheConfig['cache_identifiers'])) {
+
+            return false;
+
+        } else if(!is_array($this->cacheConfig['cache_identifiers'])) {
+
+            return [$this->cacheConfig['cache_identifiers']];
+
+        } else {
+
+            return $this->cacheConfig['cache_identifiers'];
 
         }
 
@@ -402,35 +437,26 @@ abstract class Controller {
     /**
      * Render the cached version if available
      *
-     * @param string $template Template name
-     * @param int $duration Duration in minutes
-     * @param array $params Array of params to generate the cache path
-     *
      * @return bool
      */
-    public function cached($template, $duration = 60, array $params = []) {
+    public function cached() {
 
-        // @TODO: Option to obfuscate cache path
-        $this->cacheConfig = [
-            'template' => $template,
-            'duration' => $duration,
-            'params' => $params,
-        ];
+        $cacheIdentifiers = $this->getCacheIdentifiers();
 
-        // Generate the cache path
-        $cachePath = $template;
-        foreach($params as $param) {
-            $cachePath .= '-' . $param;
+        // Skip caching if no identifier is provided
+        if(
+            !$cacheIdentifiers
+            || empty($this->cacheConfig['path'])
+        ) {
+            return false;
         }
 
-        $this->cacheConfig['path'] = $cachePath;
+        $cacheKey = $this->cacheConfig['path'];
 
-        // Check if the path exists
-        $cached = Cache::get($cachePath, $duration);
+        $cached = rf_cache_get($cacheKey, $cacheIdentifiers);
 
         if(!empty($cached)) {
 
-            // @TODO: Cache data type?
             $this->html = $cached;
 
             return true;

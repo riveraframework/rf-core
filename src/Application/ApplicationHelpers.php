@@ -32,12 +32,12 @@ namespace {
     use Rf\Core\Application\Application;
     use Rf\Core\Application\ApplicationConfigurationParameterSet;
     use Rf\Core\Application\ApplicationCron;
-    use Rf\Core\Application\ServiceProvider;
-    use Rf\Core\Data\Generation\Random;
+    use Rf\Core\Application\Components\ServiceProvider;
     use Rf\Core\Html\Breadcrumbs;
     use Rf\Core\Http\QueryParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
+    use Rf\Core\Utils\Data\Generation\Random;
     use Rf\Core\Utils\Format\Json;
 
     /**

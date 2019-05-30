@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Exception\ConfigurationException;
@@ -59,7 +60,7 @@ class ApplicationMvc extends Application {
      */
     protected $directories;
 
-    /** @var ServiceProvider ServiceProvider intance */
+    /** @var ServiceProvider ServiceProvider instance */
     protected $serviceProvider;
 
     /** @var Request Current Request object */

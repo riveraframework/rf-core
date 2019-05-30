@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Application;
+namespace Rf\Core\Application\Components;
 
 /**
  * Class ServiceProvider
  *
- * @package Rf\Core\Application
+ * @package Rf\Core\Application\Components
  */
 class ServiceProvider {
 

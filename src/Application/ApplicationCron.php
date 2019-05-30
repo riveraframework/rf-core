@@ -10,10 +10,10 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Entity\Architect;
-use Rf\Core\Exception\BaseException;
 use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\I18n\I18n;
 use Rf\Core\System\Performance\Benchmark;
@@ -104,11 +104,7 @@ class ApplicationCron extends Application {
         
         // Multi-lang support
         if($this->configuration->get('options.i18n') == true) {
-
-            try {
-                I18n::init();
-            } catch(BaseException $e) {}
-
+            I18n::init();
         }
 
         Benchmark::log('init end');
