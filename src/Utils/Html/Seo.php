@@ -8,14 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Html;
+namespace Rf\Core\Utils\Html;
 
 use Rf\Core\I18n\I18n;
 
 /**
  * Class Seo
  *
- * @package Rf\Core\Configuration
+ * @TODO: Add method to generate HTML tags
+ *
+ * @package Rf\Core\Utils\Html
  */
 abstract class Seo {
 

@@ -8,41 +8,32 @@
  * file that was distributed with this source code.
  */
 
-//TODO: Add priority management for assets
-namespace Rf\Core\Html;
+namespace Rf\Core\Utils\Html;
 
 /**
  * Class Assets
  *
- * @since 1.0
- *
- * @package Rf\Core\Html
+ * @package Rf\Core\Utils\Html
  */
 class Assets {
 
-    /**
-     * @var array $jsFiles
-     * @since 1.0
-     */
+    /** @var array $jsFiles */
     private static $jsFiles = [];
 
-    /**
-     * @var array $cssFiles
-     * @since 1.0
-     */
+    /** @var array $cssFiles */
     private static $cssFiles = [];
     
     /**
-     * Cette fonction permet de définir un fichier JS à utiliser en indiquant son nom
-     * (avec extension) si le fichier est dans le dossier "/web/asset/js" ou son adresse 
-     * complète (http://...)
+     * Enqueue a script
+     * Method 1: using "script-name.js" if the file is located in "/assets/js/"
+     * Method 2: using the full url (https://...)
      *
      * @param string $file
      * @param string $version
      * @param bool $preload
      * @param array $params
      */
-    public static function enqueueJsFile($file, $version = null, $preload = false, $params = []) {
+    public static function enqueueScript($file, $version = null, $preload = false, $params = []) {
 
         self::$jsFiles[$file] = [];
 
@@ -61,19 +52,19 @@ class Assets {
     }
     
     /**
-     * Cette fonction retourne une chaine de caractères comprenant la liste des balises
-     * correspondant aux fichier JS à charger.
+     * Get the enqueued scripts
+     * As an array: array of the enqueued scripts (name|url)
+     * As an HTML string: Generated HTML tags corresponding to the enqueued scripts
      *
-     * @since 1.0
+     * @param bool $asHtml
      *
-     * @param string $format 'array' (default) or 'html'
-     * @return string 
+     * @return array|string
      */
-    public static function getJsFiles($format = 'array') {
+    public static function getEnqueuedScripts($asHtml = false) {
 
         $fileList = array_keys(self::$jsFiles);
 
-        if($format === 'html') {
+        if($asHtml) {
 
             if(!isset(self::$jsFiles)) {
             	return '';
@@ -129,15 +120,15 @@ class Assets {
     
     
     /**
-     * Cette fonction permet de définir un fichier CSS à utiliser en indiquant son nom
-     * (avec extension) si le fichier est dans le dossier de thème adapté ou son adresse 
-     * complète (http://...)
+     * Enqueue a stylesheet
+     * Method 1: using "stylesheet-name.css" if the file is located in "/assets/css/"
+     * Method 2: using the full url (https://...)
      *
      * @param string $file
      * @param string $version
      * @param bool $preload
      */
-    public static function enqueueCssFile($file, $version = null, $preload = false) {
+    public static function enqueueStylesheet($file, $version = null, $preload = false) {
 
         self::$cssFiles[$file] = [];
 
@@ -154,19 +145,19 @@ class Assets {
     }
     
     /**
-     * Cette fonction retourne une chaine de caractères comprenant la liste des balises
-     * correspondant aux fichier CSS à charger.
+     * Get the enqueued stylesheets
+     * As an array: array of the enqueued stylesheets (name|url)
+     * As an HTML string: Generated HTML tags corresponding to the enqueued stylesheets
      *
-     * @since 1.0
+     * @param bool $asHtml
      *
-     * @param string $format 'array' (default) or 'html'
      * @return string 
      */
-    public static function getCssFiles($format = 'array') {
+    public static function getEnqueuedStylesheets($asHtml = false) {
 
         $fileList = array_keys(self::$cssFiles);
 
-        if($format === 'html') {
+        if($asHtml) {
 
             if(empty($fileList)) {
             	return '';
@@ -210,41 +201,45 @@ class Assets {
     }
 
     /**
-     * Get target JS file uri
-     *
-     * @since 1.0
+     * Get target script uri
      *
      * @param string $filename Ex: my_script.js
-     * @param string $subfolder Ex: my/sub/folder
+     * @param string $subFolder Ex: my/sub/folder
+     *
      * @return string
      */
-    public static function getJsFileUri($filename, $subfolder = '') {
-        return '/assets/js/' . (!empty($subfolder) ? $subfolder . '/' : '') . $filename;
+    public static function getScriptUri($filename, $subFolder = '') {
+
+        return '/assets/js/' . (!empty($subFolder) ? $subFolder . '/' : '') . $filename;
+
     }
 
     /**
-     * Get target CSS file uri
-     *
-     * @since 1.0
+     * Get target stylesheet uri
      *
      * @param string $filename Ex: my_style.css
-     * @param string $subfolder Ex: my/sub/folder
+     * @param string $subFolder Ex: my/sub/folder
+     *
      * @return string
      */
-    public static function getCssFileUri($filename, $subfolder = '') {
-        return '/assets/css/' . (!empty($subfolder) ? $subfolder . '/' : '') . $filename;
+    public static function getStylesheetUri($filename, $subFolder = '') {
+
+        return '/assets/css/' . (!empty($subFolder) ? $subFolder . '/' : '') . $filename;
+
     }
 
     /**
-     * Get target image file uri
-     *
-     * @since 1.0
+     * Get target image uri
      *
      * @param string $filename Ex: my_image.jpeg
-     * @param string $subfolder Ex: my/sub/folder
+     * @param string $subFolder Ex: my/sub/folder
+     *
      * @return string
      */
-    public static function getImageFileUri($filename, $subfolder = '') {
-        return '/assets/images/' . (!empty($subfolder) ? $subfolder . '/' : '') . $filename;
+    public static function getImageUri($filename, $subFolder = '') {
+
+        return '/assets/images/' . (!empty($subFolder) ? $subFolder . '/' : '') . $filename;
+
     }
+
 }

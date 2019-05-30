@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Html;
+namespace Rf\Core\Utils\Format;
 
 /**
- * Class Format
+ * Class Number
  *
- * @package Rf\Core\Html
+ * @package Rf\Core\Utils\Format
  */
-class Format {
+class Number {
 
 	public static function toPrice($value) {
 
