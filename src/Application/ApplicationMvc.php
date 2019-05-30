@@ -10,7 +10,6 @@
 
 namespace Rf\Core\Application;
 
-use Rf\Core\Base\ErrorHandler;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Exception\ConfigurationException;
@@ -22,6 +21,7 @@ use Rf\Core\Session\SessionService;
 use Rf\Core\Session\Sessions\MemcachedHaSession;
 use Rf\Core\Session\Sessions\PhpSession;
 use Rf\Core\System\Performance\Benchmark;
+use Rf\Core\Utils\Debug\ErrorHandler;
 
 /**
  * Class Application

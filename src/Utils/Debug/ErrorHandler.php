@@ -8,14 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Base;
+namespace Rf\Core\Utils\Debug;
 
 /**
  * Class ErrorHandler
  *
- * @package Rf\Core\Base
- * @version 1.0
- * @since 1.0
+ * @package Rf\Core\Utils\Debug
  */
 class ErrorHandler {
 
