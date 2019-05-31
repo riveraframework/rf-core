@@ -8,12 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Http;
+namespace Rf\Core\Http\Responses;
+
+use Rf\Core\Http\Response;
 
 /**
  * Class HtmlResponse
  *
- * @package Rf\Core\Http
+ * @package Rf\Core\Http\Responses
  */
 class HtmlResponse extends Response {
 

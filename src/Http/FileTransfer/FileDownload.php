@@ -8,19 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Transfer;
+namespace Rf\Core\Http\Transfer;
 
 /**
  * Class FileDownload
  *
- * @since 1.0
+ * @package Rf\Core\Http\Transfer
  */
 class FileDownload {
 
     /**
      * Force download for the target file
-     *
-     * @since 1.0
      *
      * @param  string $fileUri File uri or path to send
      *

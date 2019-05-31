@@ -15,7 +15,7 @@ namespace Rf\Core\Http;
  *
  * @package Rf\Core\Http
  */
-class Response {
+class Response implements ResponseInterface {
 
     /** @var int Response HTTP code */
     public $httpCode;

@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Upload;
+namespace Rf\Core\Http\Upload;
 
 /**
  * Class UploadedFile
  *
  * @TODO: Create a File class
  *
- * @package Rf\Core\Upload
+ * @package Rf\Core\Http\Upload
  */
 class UploadedFile {
 

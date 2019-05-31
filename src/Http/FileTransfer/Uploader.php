@@ -8,12 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Upload;
+namespace Rf\Core\Http\Upload;
 
 /**
  * Class Uploader
- *
- * @since 1.0
  *
  * @package Rf\Core\Upload
  */
@@ -21,7 +19,6 @@ class Uploader {
 
     /**
      * @var array Available extensions by category
-     * @since 1.0
      */
     public $availableExt = array(
         'img' => array('gif', 'jpg', 'jpeg', 'png')
@@ -29,7 +26,6 @@ class Uploader {
 
     /**
      * @var array Available MIME types by category
-     * @since 1.0
      */
     public $availableMime = array(
         'img' => array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png')
@@ -38,11 +34,10 @@ class Uploader {
     /**
      * Check the format of a file
      *
-     * @since 1.0
-     *
      * @param string $mode Category
      * @param string $fileName File name
      * @param string $fileMime File MIME type
+     *
      * @return bool
      */
     public function checkFormat($mode, $fileName, $fileMime) {
@@ -59,10 +54,9 @@ class Uploader {
     /**
      * Upload a file
      *
-     * @since 1.0
-     *
      * @param string $source Source path
      * @param string $dest Destination path
+     *
      * @return bool
      */
     public function upload($source, $dest) {

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Upload;
+namespace Rf\Core\Http\Upload;
 
 use Rf\Core\Http\Curl;
 
