@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Application\Components\Router;
 use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
@@ -17,7 +18,6 @@ use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\Exception\ErrorMessageException;
 use Rf\Core\Http\Request;
 use Rf\Core\I18n\I18n;
-use Rf\Core\Routing\Router;
 use Rf\Core\Session\SessionService;
 use Rf\Core\Session\Sessions\MemcachedHaSession;
 use Rf\Core\Session\Sessions\PhpSession;

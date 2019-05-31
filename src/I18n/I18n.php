@@ -52,6 +52,17 @@ abstract class I18n {
     }
 
     /**
+     * Get the current language
+     *
+     * @return string
+     */
+    public static function getCurrentLanguage() {
+
+        return self::$currentLanguage;
+
+    }
+
+    /**
      * Set the current language and locale
      *
      * @param string $language

@@ -32,9 +32,11 @@ namespace {
     use Rf\Core\Application\Application;
     use Rf\Core\Application\ApplicationConfigurationParameterSet;
     use Rf\Core\Application\ApplicationCron;
+    use Rf\Core\Application\Components\Route;
     use Rf\Core\Application\Components\ServiceProvider;
     use Rf\Core\Html\Breadcrumbs;
     use Rf\Core\Http\QueryParameterSet;
+    use Rf\Core\Base\ParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
     use Rf\Core\Utils\Data\Generation\Random;
@@ -94,7 +96,7 @@ namespace {
     /**
      * Return the current HTTP query
      *
-     * @return QueryParameterSet
+     * @return ParameterSet
      */
     function rf_request_query() {
 
@@ -132,26 +134,39 @@ namespace {
 
     }
 
+    /**
+     * Get the current url
+     *
+     * @return string
+     */
     function rf_current_url() {
 
         return rf_config('app.url') . rf_switch_language(rf_current_language());
 
     }
 
+    /**
+     * Get the current route
+     *
+     * @return Route
+     */
     function rf_current_route() {
 
         return Application::getInstance()->getRouter()->getCurrentRoute();
 
     }
 
+    /**
+     * Check if the current route is the same as the one provided
+     *
+     * @param string $routeName
+     *
+     * @return bool
+     */
     function rf_is_current_route($routeName) {
 
         $currentRoute = rf_current_route();
-        if(strpos('api_', $routeName)) {
-            return $currentRoute['name'] == $routeName;
-        } else {
-            return $currentRoute['name'] == $routeName . '_' . rf_current_language();
-        }
+        return $currentRoute->getName() == $routeName . '_' . rf_current_language();
 
     }
 
