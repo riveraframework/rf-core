@@ -34,8 +34,6 @@ namespace {
     use Rf\Core\Application\ApplicationCron;
     use Rf\Core\Application\Components\Route;
     use Rf\Core\Application\Components\ServiceProvider;
-    use Rf\Core\Html\Breadcrumbs;
-    use Rf\Core\Http\QueryParameterSet;
     use Rf\Core\Base\ParameterSet;
     use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
@@ -409,32 +407,6 @@ namespace {
     function rf_rand_float($min = 0, $max = 1) {
 
         return Random::float($min, $max);
-
-    }
-
-    /////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-
-    /**
-     * Get the current breadcrumbs elements
-     *
-     * @return array
-     */
-    function rf_breadcrumbs_elements() {
-
-        return Breadcrumbs::getInstance()->getElements();
-
-    }
-
-    /**
-     * Add an element to the breadcrumbs
-     *
-     * @param string $type link|list
-     * @param string|array $value
-     */
-    function rf_breadcrumbs_add($type, $value) {
-
-        Breadcrumbs::getInstance()->addElement($type, $value);
 
     }
 
