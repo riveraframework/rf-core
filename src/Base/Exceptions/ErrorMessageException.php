@@ -8,14 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
+
+use Rf\Core\Log\Log;
 
 /**
  * Class ErrorMessageException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class ErrorMessageException extends BaseException {
+class ErrorMessageException extends DebugException {
 
 	/**
 	 * ErrorMessageException constructor.
@@ -27,7 +29,7 @@ class ErrorMessageException extends BaseException {
 	public function __construct($message = '', $code = 0, \Exception $previous = null)
 	{
 
-		parent::__construct('ErrorMessageException', $message, $code, $previous);
+		parent::__construct(Log::TYPE_ERROR, $message, $code, $previous);
 
 	}
 

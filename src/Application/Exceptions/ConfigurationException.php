@@ -8,29 +8,24 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Application\Exceptions;
 
-use Rf\Core\Http\Response as HttpResponse;
+use Rf\Core\Base\Exceptions\DebugException;
 
 /**
- * Class ControllerException
+ * Class ConfigurationException
  *
- * @since 1.0
- *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Application\Exceptions
  */
-class ControllerException extends BaseException {
+class ConfigurationException extends DebugException {
 
     /**
      * Main method
-     *
-     * @since 1.0
      */
     protected function call() {
 
-        parent::call();
-        $httpResponse = new HttpResponse(404);
-        $httpResponse->send();
+        $this->debug();
 
-    }    
+    }
+
 }

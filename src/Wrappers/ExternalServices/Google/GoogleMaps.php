@@ -10,7 +10,7 @@
 
 namespace Rf\Core\Wrappers\ExternalServices\Google;
 
-use Rf\Core\Exception\SilentException;
+use Rf\Core\Base\Exceptions\SilentException;
 
 /**
  * Class GoogleMaps

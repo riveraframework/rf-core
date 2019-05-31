@@ -8,14 +8,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
 
 /**
- * Class ControllerPermissionsException
- * @TODO: Improve (does not need a variable message)
+ * Class SilentException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class ControllerPermissionsException extends BaseException {
+class SilentException extends DebugException {
+
+	/**
+	 * Override of the debug method
+	 */
+	protected function debug() {}
 
 }

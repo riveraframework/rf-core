@@ -11,14 +11,15 @@
 namespace Rf\Core\Orm;
 
 use Rf\Core\Base\Date;
+use Rf\Core\Base\Exceptions\DebugException;
 use Rf\Core\Database\PDO;
+use Rf\Core\Log\Log;
 use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
 use Rf\Core\Database\QueryEngine\Delete;
 use Rf\Core\Database\QueryEngine\Insert;
 use Rf\Core\Database\QueryEngine\Select;
 use Rf\Core\Database\QueryEngine\Update;
-use Rf\Core\Exception\BaseException;
 
 /**
  * Class Entity
@@ -98,7 +99,7 @@ abstract class Entity {
      *
      * @param Entity $entity
      *
-     * @throws BaseException
+     * @throws DebugException
      */
     public function setBackup($entity = null) {
 
@@ -651,8 +652,8 @@ abstract class Entity {
 
             $this->backup = clone $this;
 
-        } catch(BaseException $e) {
-            throw new BaseException('Entity', 'Impossible de sauver l\'entité (' . get_class($this) . ') :' . $e->getMessage());
+        } catch(DebugException $e) {
+            throw new DebugException(Log::TYPE_ERROR, 'Impossible de sauver l\'entité (' . get_class($this) . ') :' . $e->getMessage());
         }
 
     }
@@ -662,7 +663,7 @@ abstract class Entity {
     /**
      * Delete an entity in database
      *
-     * @throws BaseException
+     * @throws DebugException
      */
     public function remove() {
 
@@ -673,7 +674,7 @@ abstract class Entity {
 
             // Default process (primary key = id)
             if(!isset($this->id)) {
-                throw new BaseException('Entity', 'Erreur de clé primaire (id)');
+                throw new DebugException(Log::TYPE_ERROR, 'Erreur de clé primaire (id)');
             }
 
             $deleteQuery->whereEqual('id', $this->id);
@@ -703,7 +704,7 @@ abstract class Entity {
 
         // Throw an exception if the where clause is empty
         if(empty($deleteQuery->whereClause)) {
-            throw new BaseException('Entity', 'Erreur de clé primaire');
+            throw new DebugException(Log::TYPE_ERROR, 'Erreur de clé primaire');
         }
 
         // Execute query
@@ -758,12 +759,12 @@ abstract class Entity {
      *
      * @param Entity $entity
      *
-     * @throws BaseException
+     * @throws DebugException
      */
     public function replace($entity) {
 
         if(!is_a($entity, static::class)) {
-            throw new BaseException(get_called_class(), 'Cannot replace and entity with a different type of entity');
+            throw new DebugException(Log::TYPE_ERROR, 'Cannot replace and entity with a different type of entity');
         }
 
         $entity->setId($this->id);

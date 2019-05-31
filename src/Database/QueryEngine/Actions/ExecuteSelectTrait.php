@@ -43,7 +43,7 @@ trait ExecuteSelectTrait {
      * @param string $mode
      *
      * @return array
-     * @throws \Rf\Core\Exception\BaseException
+     * @throws \Rf\Core\Exception\DebugException
      */
     public function toArray($forceArray = false, $mode = 'both') {
 
@@ -74,7 +74,7 @@ trait ExecuteSelectTrait {
      * @param bool $forceArray
      *
      * @return array
-     * @throws \Rf\Core\Exception\BaseException
+     * @throws \Rf\Core\Exception\DebugException
      */
     public function toArrayAssoc($forceArray = false) {
 
@@ -88,7 +88,7 @@ trait ExecuteSelectTrait {
      * @param bool $forceArray
      *
      * @return array
-     * @throws \Rf\Core\Exception\BaseException
+     * @throws \Rf\Core\Exception\DebugException
      */
     public function toRow($forceArray = false) {
 
@@ -190,7 +190,7 @@ trait ExecuteSelectTrait {
      * Get the number of rows for the current query
      *
      * @return int
-     * @throws \Rf\Core\Exception\BaseException
+     * @throws \Rf\Core\Exception\DebugException
      */
     public function toCount() {
 

@@ -8,16 +8,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Orm\Exceptions;
 
+use Rf\Core\Base\Exceptions\DebugException;
+use Rf\Core\Log\Log;
 use Rf\Core\Orm\Entity;
 
 /**
  * Class EntityAlreadyExistException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Orm\Exceptions
  */
-class EntityAlreadyExistException extends BaseException {
+class EntityAlreadyExistException extends DebugException {
 
     /** @var Entity $entity */
     protected $entity;
@@ -36,7 +38,7 @@ class EntityAlreadyExistException extends BaseException {
         $this->entity = $entity;
         $finalMessage = $message !== '' ? $message : 'Entity ' . get_class($this->entity) . ' with id ' . $this->entity->getId() . ' already exists';
 
-        parent::__construct($finalMessage, $code, $previous);
+        parent::__construct(Log::TYPE_ERROR, $finalMessage, $code, $previous);
 
     }
 

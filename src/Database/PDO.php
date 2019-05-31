@@ -10,9 +10,10 @@
 
 namespace Rf\Core\Database;
 
+use Rf\Core\Base\Exceptions\DebugException;
 use Rf\Core\Database\QueryEngine\Select;
+use Rf\Core\Log\Log;
 use Rf\Core\Orm\Entity;
-use Rf\Core\Exception\BaseException;
 
 /**
  * Class PDO
@@ -92,7 +93,7 @@ class PDO extends \PDO {
      * @param $valueArray
      *
      * @return int
-     * @throws BaseException
+     * @throws DebugException
      */
     public function execute($query, $valueArray) {
 
@@ -105,7 +106,7 @@ class PDO extends \PDO {
         // Return the result
         if(!$execute) {
 
-            throw new BaseException('SQL', 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
+            throw new DebugException(Log::TYPE_ERROR, 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
 
         } else {
             return $prep->rowCount();
@@ -120,7 +121,7 @@ class PDO extends \PDO {
      * @param array $valueArray
      *
      * @return string
-     * @throws BaseException
+     * @throws DebugException
      */
     public function addAndGetId($query, $valueArray) {
 
@@ -130,7 +131,7 @@ class PDO extends \PDO {
         // Execute the query
         if($prep->execute($valueArray) === false) {
 
-            throw new BaseException('SQL', 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
+            throw new DebugException(Log::TYPE_ERROR, 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
 
         } else {
             return $this->lastInsertId();
@@ -146,7 +147,7 @@ class PDO extends \PDO {
      * @param string $mode assoc|num|default(both)
      *
      * @return array|array[array]
-     * @throws BaseException
+     * @throws DebugException
      */
     public function executeToArray($query, $valueArray = [], $forceArray = false, $mode = 'default') {
 
@@ -156,7 +157,7 @@ class PDO extends \PDO {
         // Execute the query
         if($prep->execute($valueArray) === false) {
 
-            throw new BaseException('SQL', 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
+            throw new DebugException(Log::TYPE_ERROR, 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
 
         } else {
 
@@ -195,7 +196,7 @@ class PDO extends \PDO {
      * @param array $options Options
      *
      * @return object|object[]
-     * @throws BaseException
+     * @throws DebugException
      */
     public function executeToObject($query, $valueArray = [], $className = null, $forceArray = false, array $options = []) {
 
@@ -204,7 +205,7 @@ class PDO extends \PDO {
 
         if($prep->execute($valueArray) === false) {
 
-            throw new BaseException('SQL', 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
+            throw new DebugException(Log::TYPE_ERROR, 'The query couldn\'t be executed, reason: "' . $prep->errorInfo()[2] . '" (' . $query . ' - array(' . implode(', ', $valueArray) . '))');
 
         } else {
 
@@ -232,7 +233,7 @@ class PDO extends \PDO {
                     if(method_exists($row, 'getId')) {
                         $objects[$row->getId()] = $row;
                     } else {
-                        throw new BaseException('SQL', 'Unable to index by id, the object is missing getId method');
+                        throw new DebugException(Log::TYPE_ERROR, 'Unable to index by id, the object is missing getId method');
                     }
 
                 } else {
@@ -253,7 +254,7 @@ class PDO extends \PDO {
     /**
      * Core process to get the table list to generate entity files
      *
-     * @throws BaseException
+     * @throws DebugException
      *
      * @TODO: Add support for multiple databases
      */

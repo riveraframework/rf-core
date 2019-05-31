@@ -10,8 +10,9 @@
 
 namespace Rf\Core\Application\Components;
 
+use Rf\Core\Application\Exceptions\ConfigurationException;
 use Rf\Core\Base\ParameterSet;
-use Rf\Core\Exception\ConfigurationException;
+use Rf\Core\Log\Log;
 
 /**
  * Class Configuration
@@ -54,15 +55,15 @@ class Configuration {
     protected function load($configurationFile) {
 
         if(!file_exists($configurationFile)) {
-            throw new ConfigurationException('Configuration', 'The configuration file does not exist');
+            throw new ConfigurationException(Log::TYPE_ERROR, 'The configuration file does not exist');
         }
 
         // Get configuration file content
         $cfg = include $configurationFile;
 
-        // If the configuration cannot be load it raise a ConfigurationException
+        // If the configuration cannot be loaded it raise a ConfigurationException
         if (empty($cfg)) {
-            throw new ConfigurationException('Configuration', 'The configuration file is empty');
+            throw new ConfigurationException(Log::TYPE_ERROR, 'The configuration file is empty');
         }
 
         // Else we map the data in ParameterSet

@@ -8,14 +8,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
+
+use Rf\Core\Log\Log;
 
 /**
- * Class EntityConstraintException
+ * Class DataValidationException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class EntityConstraintException extends DataValidationException {
+class DataValidationException extends DebugException {
+
+	/** @var array $data */
+	protected $data = [];
 
 	/**
 	 * EntityConstraintException constructor.
@@ -28,9 +33,21 @@ class EntityConstraintException extends DataValidationException {
 	public function __construct(array $data, $message = '', $code = 0, \Exception $previous = null)
 	{
 
-		$finalMessage = $message !== '' ? $message : 'Invalid data passed to entity';
+		$this->data = $data;
+		$finalMessage = $message !== '' ? $message : 'Invalid data';
 
-		parent::__construct($data, $finalMessage, $code, $previous);
+		parent::__construct(Log::TYPE_ERROR, $finalMessage, $code, $previous);
+
+	}
+
+	/**
+	 * Get exception data
+	 *
+	 * @return array
+	 */
+	public function getData() {
+
+		return $this->data;
 
 	}
 

@@ -8,16 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
 
 use Rf\Core\Log\Log;
 
 /**
  * Class BaseException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class BaseException extends \Exception {
+class DebugException extends \Exception {
 
     /** @var string Exception type*/
     public $type;
@@ -52,9 +52,6 @@ class BaseException extends \Exception {
     /**
      *
      *
-     * @since 1.0
-     *
-     * @return void
      */
     protected function call() {
 
@@ -70,10 +67,6 @@ class BaseException extends \Exception {
 
     /**
      * Log the exception
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     protected function log() {
 
@@ -85,10 +78,6 @@ class BaseException extends \Exception {
 
     /**
      * Display debug information
-     *
-     * @since 1.0
-     *
-     * @return void
      */
     protected function debug() {
 

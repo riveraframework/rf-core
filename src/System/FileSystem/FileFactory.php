@@ -10,7 +10,8 @@
 
 namespace Rf\Core\System\FileSystem;
 
-use Rf\Core\Exception\BaseException;
+use Rf\Core\Base\Exceptions\DebugException;
+use Rf\Core\Log\Log;
 
 /**
  * Class FileFactory
@@ -24,14 +25,14 @@ class FileFactory {
      *
      * @param string $path
      *
-     * @throws BaseException
+     * @throws DebugException
      */
     public static function remove($path) {
 
         if(is_file($path)) {
             @unlink($path);
         } else {
-            throw new BaseException(get_called_class(), 'Unable to remove the file: ' . $path);
+            throw new DebugException(Log::TYPE_ERROR, 'Unable to remove the file: ' . $path);
         }
 
     }

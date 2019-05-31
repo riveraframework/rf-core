@@ -13,10 +13,10 @@ namespace Rf\Core\Application;
 use Rf\Core\Application\Components\Configuration;
 use Rf\Core\Application\Components\Directories;
 use Rf\Core\Application\Components\ServiceProvider;
+use Rf\Core\Application\Exceptions\ConfigurationException;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Orm\Architect;
-use Rf\Core\Exception\ConfigurationException;
 use Rf\Core\I18n\I18n;
 use Rf\Core\System\Performance\Benchmark;
 

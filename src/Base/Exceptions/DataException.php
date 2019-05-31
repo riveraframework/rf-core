@@ -8,14 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
+
+use Rf\Core\Log\Log;
 
 /**
  * Class DataException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class DataException extends BaseException  {
+class DataException extends DebugException  {
 
     /** @var mixed Exception data */
     public $data;

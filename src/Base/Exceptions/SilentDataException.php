@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
 
 /**
  * Class SilentDataException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
 class SilentDataException extends DataException  {
 

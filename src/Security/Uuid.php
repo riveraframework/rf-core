@@ -10,7 +10,8 @@
 
 namespace Rf\Core\Security;
 
-use Rf\Core\Exception\BaseException;
+use Rf\Core\Base\Exceptions\DebugException;
+use Rf\Core\Log\Log;
 
 /**
  * Class Uuid
@@ -57,7 +58,7 @@ class Uuid {
      * @param null|int $length
      *
      * @return string
-     * @throws BaseException
+     * @throws DebugException
      */
     public static function generateValue($format, $mask = '', $length = null) {
 
@@ -71,10 +72,9 @@ class Uuid {
                 return self::generateUuidFromMask($mask, $length);
                 break;
 
-
         }
 
-        throw new BaseException('', 'Unknown Uuid format');
+        throw new DebugException(Log::TYPE_WARNING, 'Unknown Uuid format');
 
     }
 

@@ -21,7 +21,7 @@ trait ExecuteInsertTrait {
      * Add a record in database and get the ID
      *
      * @return string
-     * @throws \Rf\Core\Exception\BaseException
+     * @throws \Rf\Core\Exception\DebugException
      */
     public function addAndGetId() {
 

@@ -29,6 +29,9 @@ namespace Rf\Core\System {
 
 namespace {
 
+    use Rf\Core\Base\Exceptions\DebugException;
+    use Rf\Core\Log\Log;
+
     /**
      * Delete a directory, a file or only the directory content
      *
@@ -37,7 +40,7 @@ namespace {
      * </p>
      * @param boolean $content true|false
      *
-     * @throws BaseException
+     * @throws DebugException
      */
     function rf_unlink($path, $content = false) {
 
@@ -50,7 +53,7 @@ namespace {
         }
 
         if(!$content && (file_exists($path) || is_dir($path))) {
-            throw new BaseException(get_called_class(), 'Unable to remove the element "' . $path . '"');
+            throw new DebugException(Log::TYPE_ERROR, 'Unable to remove the element "' . $path . '"');
         }
 
     }

@@ -10,11 +10,12 @@
 
 namespace Rf\Core\Orm;
 
+use Rf\Core\Base\Exceptions\DebugException;
+use Rf\Core\Log\Log;
 use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
 use Rf\Core\Database\Query;
 use Rf\Core\Database\Tools as DatabaseTools;
-use Rf\Core\Exception\BaseException;
 
 /**
  * Class Architect
@@ -100,7 +101,7 @@ class Architect {
                 } elseif(isset($this->currentTableList) && count($this->currentTableList) == 0) {
                     $this->history[] = '<span style="color:green;">La structure de la base de données a été récupérée avec succès mais est vide.</span><br/><br/>';
                 } else {
-                    throw new BaseException(get_called_class(), 'Erreur dans la récupération de la structure de la base de données.');
+                    throw new DebugException(Log::TYPE_ERROR, 'Erreur dans la récupération de la structure de la base de données.');
                 }
 
                 // Update the entity file for each table
@@ -116,7 +117,7 @@ class Architect {
 
 		    return true;
 
-	    } catch(BaseException $e) {
+	    } catch(DebugException $e) {
 
 		    $this->history[] =  '<span style="color:red;">' . $e->getMessage() . '</span><br/>';
 
@@ -279,10 +280,10 @@ class Architect {
                 return $structure;
 
             } else {
-                throw new BaseException('Architect', 'Impossible de récupérer le schéma');
+                throw new DebugException(Log::TYPE_ERROR, 'Impossible de récupérer le schéma');
             }
 
-        } catch(BaseException $e) {
+        } catch(DebugException $e) {
 
             $this->history[] =  '<span style="color:red;">Le schéma de la table "'.$table.'" n\'a pas pu être défini.</span><br/>';
 

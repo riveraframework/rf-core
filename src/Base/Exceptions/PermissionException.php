@@ -8,14 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Exception;
+namespace Rf\Core\Base\Exceptions;
+
+use Rf\Core\Log\Log;
 
 /**
  * Class PermissionException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Base\Exceptions
  */
-class PermissionException extends BaseException {
+class PermissionException extends DebugException {
 
 	/**
 	 * PermissionException constructor.
@@ -29,7 +31,7 @@ class PermissionException extends BaseException {
 
 		$finalMessage = $message !== '' ? $message : 'Unauthorized access';
 
-		parent::__construct('PermissionException', $finalMessage, $code, $previous);
+		parent::__construct(Log::TYPE_ERROR, $finalMessage, $code, $previous);
 
 	}
 
