@@ -11,9 +11,9 @@
 namespace Rf\Core\Application\Components;
 
 use Rf\Core\Base\ParameterSet;
+use Rf\Core\Base\Uri;
 use Rf\Core\Http\Response;
 use Rf\Core\I18n\I18n;
-use Rf\Core\Uri\Uri;
 
 /**
  * Class Router

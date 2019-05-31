@@ -11,7 +11,7 @@
 namespace Rf\Core\Http;
 
 use Rf\Core\Base\ParameterSet;
-use Rf\Core\Uri\Uri;
+use Rf\Core\Base\Uri;
 
 /**
  * Class Request

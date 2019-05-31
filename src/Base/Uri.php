@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Uri;
+namespace Rf\Core\Base;
 
 /**
  * Class Uri
  *
- * @package Rf\Core\Uri
+ * @package Rf\Core\Base
  */
 class Uri {
     
@@ -247,7 +247,7 @@ class Uri {
      * Get/set the protocol part of the current Uri object
      *
      * @param null|string $protocol
-     * @return \Rf\Core\Uri\Uri|string
+     * @return Uri|string
      */
     public function protocol($protocol = null) {
 
@@ -269,7 +269,7 @@ class Uri {
      * Get/set the credentials part of the current Uri object
      *
      * @param null|array $credentials
-     * @return \Rf\Core\Uri\Uri|array
+     * @return Uri|array
      */
     public function credentials($credentials = null) {
 
@@ -291,7 +291,7 @@ class Uri {
      * Get/set the host part of the current Uri object
      *
      * @param null $host
-     * @return \Rf\Core\Uri\Uri|string
+     * @return Uri|string
      */
     public function host($host = null) {
 
@@ -359,7 +359,7 @@ class Uri {
      * Get/set the port of the current Uri object
      *
      * @param null $port
-     * @return \Rf\Core\Uri\Uri|int
+     * @return Uri|int
      */
     public function port($port = null) {
 
@@ -381,7 +381,7 @@ class Uri {
      * Get/set the query part of the current Uri object
      *
      * @param null $query
-     * @return \Rf\Core\Uri\Uri|string
+     * @return Uri|string
      */
     public function query($query = null) {
 
@@ -403,7 +403,7 @@ class Uri {
      * Get/set the query params of the current Uri object
      *
      * @param null $queryString
-     * @return \Rf\Core\Uri\Uri|array
+     * @return Uri|array
      */
     public function queryString($queryString = null) {
 
