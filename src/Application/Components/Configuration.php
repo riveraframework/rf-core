@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Application;
+namespace Rf\Core\Application\Components;
 
 use Rf\Core\Base\ParameterSet;
 use Rf\Core\Exception\ConfigurationException;
@@ -18,7 +18,7 @@ use Rf\Core\Exception\ConfigurationException;
  *
  * @package Rf\Core\Configuration
  */
-class ApplicationConfiguration {
+class Configuration {
 
     /** @var ParameterSet Configuration params */
     protected $configuration;
@@ -27,8 +27,8 @@ class ApplicationConfiguration {
     protected $configurationFile;
 
     /**
-     * Initiate a new configuration object by loading the configuration file into some
-     * ParameterSet in the Configuration object
+     * Initiate a new configuration object
+     * The default configuration file path is `app/config/config.php`
      *
      * @param string $configurationFile Path to configuration file
      *
@@ -39,17 +39,44 @@ class ApplicationConfiguration {
         if(!empty($configurationFile)) {
 	        $this->load($configurationFile);
         } else {
-	        $this->load(rf_dir('config') .'/config.' . APPLICATION_ENV . '.php');
+	        $this->load(rf_dir('config') .'/config.php');
         }
 
     }
 
     /**
+     * Load the configuration file and map the variables in the Configuration object
+     *
+     * @param string $configurationFile
+     *
+     * @throws ConfigurationException
+     */
+    protected function load($configurationFile) {
+
+        if(!file_exists($configurationFile)) {
+            throw new ConfigurationException('Configuration', 'The configuration file does not exist');
+        }
+
+        // Get configuration file content
+        $cfg = include $configurationFile;
+
+        // If the configuration cannot be load it raise a ConfigurationException
+        if (empty($cfg)) {
+            throw new ConfigurationException('Configuration', 'The configuration file is empty');
+        }
+
+        // Else we map the data in ParameterSet
+        $this->configuration = new ParameterSet($cfg);
+
+    }
+
+    /**
      * Get a property in a section of the configuration
+     * This supports recursive lookup, e.g: app.my_section.my_var
      *
      * @param string $section Section name
      *
-     * @return ApplicationConfigurationParameterSet|mixed
+     * @return ParameterSet|mixed
      */
     public function get($section) {
 
@@ -66,7 +93,7 @@ class ApplicationConfiguration {
 
 		    if(
 		        $sectionIndex + 1 < count($sectionParts)
-                && is_a($section, ApplicationConfigurationParameterSet::class)
+                && is_a($section, ParameterSet::class)
             ) {
 		    	continue;
 		    } else {
@@ -80,31 +107,4 @@ class ApplicationConfiguration {
 
     }
 
-    /**
-     * Load the configuration file and map the variables in the Configuration object
-     *
-     * @param string $configurationFile
-     *
-     * @throws ConfigurationException
-     */
-    protected function load($configurationFile) {
-
-    	if(!file_exists($configurationFile)) {
-		    throw new ConfigurationException('Configuration', 'The configuration file does not exist');
-	    }
-
-        // Get configuration file content
-        $cfg = include $configurationFile;
-
-        // If the configuration cannot be load it raise a ConfigurationException
-        if (empty($cfg)) {
-            throw new ConfigurationException('Configuration', 'The configuration file is empty');
-        }
-
-        // Else we map the data in ParameterSet
-        $this->configuration = new ApplicationConfigurationParameterSet($cfg);
-
-    }
-    
-    //@TODO: Add static method avec alias
 }

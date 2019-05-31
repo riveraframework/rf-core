@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Application\Components\Configuration;
 use Rf\Core\Application\Components\Router;
 use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
@@ -51,7 +52,7 @@ class ApplicationMvc extends Application {
     protected $configurationFile;
 
     /**
-     * @var ApplicationConfiguration Current Configuration object
+     * @var Configuration Current Configuration object
      */
     protected $configuration;
 
@@ -103,9 +104,9 @@ class ApplicationMvc extends Application {
 
         // Register application configuration
         if(!empty($this->configurationFile)) {
-            $this->configuration = new ApplicationConfiguration($this->configurationFile);
+            $this->configuration = new Configuration($this->configurationFile);
         } else {
-            $this->configuration = new ApplicationConfiguration();
+            $this->configuration = new Configuration();
         }
 
         Benchmark::log('configuration loaded');
@@ -432,7 +433,7 @@ class ApplicationMvc extends Application {
     /**
      * Get a configuration parameter by name
      *
-     * @return ApplicationConfiguration
+     * @return Configuration
      */
     public function getConfiguration() {
 

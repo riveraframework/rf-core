@@ -14,25 +14,21 @@ namespace Rf\Core\Base;
  * Class ParameterSet
  *
  * @package Rf\Core\Base
- * @version 1.0
- * @since 1.0
  */
 class ParameterSet {
     
-    /**
-     * Array of variable stored in the ParameterSet
-     * @var array
-     */
+    /** @var array Array of variable stored in the ParameterSet */
     public $vars = [];
 
     /**
-     * Constructor
+     * ParameterSet Constructor.
      * 
-     * @param mixed $params 
+     * @param array|object $params
+     * @param bool $skipObjects
      */
-    public function __construct($params) {
+    public function __construct($params, $skipObjects = true) {
 
-        if(is_object($params)) {
+        if(!$skipObjects && is_object($params)) {
 
             foreach(get_object_vars($params) as $prop => $value) {
 

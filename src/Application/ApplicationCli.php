@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Application\Components\Configuration;
 use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
@@ -31,7 +32,7 @@ class ApplicationCli extends Application {
     /** @var string Path to the configuration file */
     protected $configurationFile;
     
-    /** @var ApplicationConfiguration Current Configuration object */
+    /** @var Configuration Current Configuration object */
     protected $configuration;
     
     /** @var ApplicationDirectories Current Directories object */
@@ -77,9 +78,9 @@ class ApplicationCli extends Application {
         
         // Register application configuration
         if(!empty($this->configurationFile)) {
-            $configuration = new ApplicationConfiguration($this->configurationFile);
+            $configuration = new Configuration($this->configurationFile);
         } else {
-            $configuration = new ApplicationConfiguration();
+            $configuration = new Configuration();
         }
         $this->configuration = $configuration;
 
@@ -175,7 +176,7 @@ class ApplicationCli extends Application {
     /**
      * Get a configuration parameter by name
      *
-     * @return ApplicationConfiguration
+     * @return Configuration
      */
     public function getConfiguration() {
 
