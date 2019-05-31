@@ -10,7 +10,7 @@
 
 namespace Rf\Core\Exception;
 
-use Rf\Core\Entity\Entity;
+use Rf\Core\Orm\Entity;
 
 /**
  * Class EntityAlreadyExistException

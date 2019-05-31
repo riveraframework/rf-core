@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Entity;
+namespace Rf\Core\Orm;
 
 /**
  * Class EntityHelpers
  *
- * @package Rf\Core\Entity
+ * @package Rf\Core\Orm
  *
  */
 abstract class EntityHelpers {

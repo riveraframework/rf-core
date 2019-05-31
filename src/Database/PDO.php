@@ -11,7 +11,7 @@
 namespace Rf\Core\Database;
 
 use Rf\Core\Database\QueryEngine\Select;
-use Rf\Core\Entity\Entity;
+use Rf\Core\Orm\Entity;
 use Rf\Core\Exception\BaseException;
 
 /**

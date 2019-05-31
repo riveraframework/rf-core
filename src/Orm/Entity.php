@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Entity;
+namespace Rf\Core\Orm;
 
 use Rf\Core\Base\Date;
+use Rf\Core\Database\PDO;
 use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
-use Rf\Core\Database\Query;
 use Rf\Core\Database\QueryEngine\Delete;
 use Rf\Core\Database\QueryEngine\Insert;
 use Rf\Core\Database\QueryEngine\Select;
@@ -23,7 +23,7 @@ use Rf\Core\Exception\BaseException;
 /**
  * Class Entity
  *
- * @package Rf\Core\Entity
+ * @package Rf\Core\Orm
  *
  * @TODO: refaire le mapper d'objets avec DATETIME qui génère direct un objet date?
  * @TODO: WhereClause commune aux traitements
@@ -44,7 +44,7 @@ abstract class Entity {
     protected $id;
 
     /**
-     * @var \Rf\Core\Entity\Entity $backup Clone of the entity at his initial state (new|get)
+     * @var Entity $backup Clone of the entity at his initial state (new|get)
      */
     protected $backup;
 
@@ -105,7 +105,7 @@ abstract class Entity {
         if(is_null($entity)) {
             $this->backup = null;
         } elseif(!is_a($entity, static::class)) {
-            throw new BaseException(get_called_class(), 'Cannot set a backup of a different entity');
+            throw new \Exception('Cannot set a backup of a different entity');
         } else {
             $this->backup = clone $entity;
             $this->backup->setBackup(null);
@@ -137,7 +137,7 @@ abstract class Entity {
     /**
      * Get connection
      *
-     * @return \Rf\Core\Database\PDO
+     * @return PDO
      * @throws \Exception
      */
     public static function getConnection() {

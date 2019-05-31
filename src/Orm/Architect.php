@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Entity;
+namespace Rf\Core\Orm;
 
 use Rf\Core\Utils\Format\Name;
 use Rf\Core\Database\ConnectionRepository;
@@ -19,7 +19,7 @@ use Rf\Core\Exception\BaseException;
 /**
  * Class Architect
  *
- * @package Rf\Core\Entity
+ * @package Rf\Core\Orm
  */
 class Architect {
 
@@ -179,7 +179,7 @@ class Architect {
         $fileContent .= PHP_EOL;
         $fileContent .= 'namespace App\\Entities\\Models\\C_' . $connName . ';' . PHP_EOL;
         $fileContent .= PHP_EOL;
-        $fileContent .= 'use Rf\Core\\Entity\\Entity;' . PHP_EOL;
+        $fileContent .= 'use Rf\Core\\Orm\\Entity;' . PHP_EOL;
         $fileContent .= PHP_EOL;
 
         $fileContent .= 'abstract class ' . $classNameWithoutNs . 'Model extends Entity {' . PHP_EOL;
