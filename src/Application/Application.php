@@ -20,7 +20,7 @@ use Rf\Core\Cache\CacheService;
  *
  * @package Rf\Core\Application
  */
-abstract class Application {
+abstract class Application implements ApplicationInterface {
 
     /** @var string Application name*/
     protected $name;
@@ -66,13 +66,13 @@ abstract class Application {
     }
 
     /**
-     * Get the current service provider
+     * Get a configuration parameter by name
      *
-     * @return ServiceProvider
+     * @return Configuration
      */
-    public function getServiceProvider() {
+    public function getConfiguration() {
 
-        return $this->serviceProvider;
+        return $this->configuration;
 
     }
 
@@ -102,13 +102,13 @@ abstract class Application {
     }
 
     /**
-     * Get a configuration parameter by name
+     * Get the current service provider
      *
-     * @return Configuration
+     * @return ServiceProvider
      */
-    public function getConfiguration() {
+    public function getServiceProvider() {
 
-        return $this->configuration;
+        return $this->serviceProvider;
 
     }
 
