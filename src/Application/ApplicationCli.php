@@ -19,34 +19,25 @@ use Rf\Core\I18n\I18n;
 use Rf\Core\System\Performance\Benchmark;
 
 /**
- * Class ApplicationCron
+ * Class ApplicationCli
  *
  * @package Rf\Core\Application
  */
-class ApplicationCron extends Application {
+class ApplicationCli extends Application {
     
-    /**
-     * @var string Application name
-     */
+    /** @var string Application name*/
     protected $name;
     
-    /**
-     * @var string Path to the configuration file
-     */
+    /** @var string Path to the configuration file */
     protected $configurationFile;
     
-    /**
-     * @var ApplicationConfiguration Current Configuration object
-     */
+    /** @var ApplicationConfiguration Current Configuration object */
     protected $configuration;
     
-    /**
-     *
-     * @var ApplicationDirectories Current Directories object
-     */
+    /** @var ApplicationDirectories Current Directories object */
     protected $directories;
 
-    /** @var ServiceProvider ServiceProvider intance */
+    /** @var ServiceProvider ServiceProvider instance */
     protected $serviceProvider;
     
     /**

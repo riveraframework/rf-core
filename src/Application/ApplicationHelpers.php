@@ -31,7 +31,7 @@ namespace {
 
     use Rf\Core\Application\Application;
     use Rf\Core\Application\ApplicationConfigurationParameterSet;
-    use Rf\Core\Application\ApplicationCron;
+    use Rf\Core\Application\ApplicationCli;
     use Rf\Core\Application\Components\Route;
     use Rf\Core\Application\Components\ServiceProvider;
     use Rf\Core\Base\ParameterSet;
@@ -422,8 +422,8 @@ namespace {
      */
     function rf_dir($name) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-            return ApplicationCron::getInstance()->getDir($name);
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
+            return ApplicationCli::getInstance()->getDir($name);
         } else {
             return Application::getInstance()->getDir($name);
         }
@@ -438,8 +438,8 @@ namespace {
      */
     function rf_add_dir($name, $path) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-            ApplicationCron::getInstance()->setDir( $name, $path );
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
+            ApplicationCli::getInstance()->setDir( $name, $path );
         } else {
             Application::getInstance()->setDir( $name, $path );
         }
@@ -455,8 +455,8 @@ namespace {
      */
     function rf_config($name) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cron') {
-            return ApplicationCron::getInstance()->getConfiguration()->get( $name );
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
+            return ApplicationCli::getInstance()->getConfiguration()->get( $name );
         } else {
             return Application::getInstance()->getConfiguration()->get( $name );
         }

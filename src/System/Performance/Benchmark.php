@@ -88,7 +88,7 @@ class Benchmark {
     protected static function displayLine($time, $message, $timeSpent) {
 
         echo $time . ' - ' . $message . ' (' . round($timeSpent * 1000, 2) . 'ms)' .
-            (defined('APPLICATION_TYPE') && APPLICATION_TYPE === 'cron' ? PHP_EOL : '<br/>');
+            (defined('APPLICATION_TYPE') && APPLICATION_TYPE === 'cli' ? PHP_EOL : '<br/>');
 
     }
 
