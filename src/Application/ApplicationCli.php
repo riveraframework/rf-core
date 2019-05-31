@@ -11,6 +11,7 @@
 namespace Rf\Core\Application;
 
 use Rf\Core\Application\Components\Configuration;
+use Rf\Core\Application\Components\Directories;
 use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
@@ -35,7 +36,7 @@ class ApplicationCli extends Application {
     /** @var Configuration Current Configuration object */
     protected $configuration;
     
-    /** @var ApplicationDirectories Current Directories object */
+    /** @var Directories Current Directories object */
     protected $directories;
 
     /** @var ServiceProvider ServiceProvider instance */
@@ -68,7 +69,7 @@ class ApplicationCli extends Application {
         Benchmark::log('init start');
 
         // Register directories in current context
-        $this->directories = new ApplicationDirectories();
+        $this->directories = new Directories();
 
         // Init helpers and app classes autoload
         Autoload::init();

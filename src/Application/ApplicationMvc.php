@@ -11,6 +11,7 @@
 namespace Rf\Core\Application;
 
 use Rf\Core\Application\Components\Configuration;
+use Rf\Core\Application\Components\Directories;
 use Rf\Core\Application\Components\Router;
 use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Cache\CacheService;
@@ -57,7 +58,7 @@ class ApplicationMvc extends Application {
     protected $configuration;
 
     /**
-     * @var ApplicationDirectories Current Directories object
+     * @var Directories Current Directories object
      */
     protected $directories;
 
@@ -93,7 +94,7 @@ class ApplicationMvc extends Application {
         Benchmark::log('init start');
 
         // Register directories in current context
-        $this->directories = new ApplicationDirectories();
+        $this->directories = new Directories();
 
         // Init helpers and app classes autoload
         Autoload::init();

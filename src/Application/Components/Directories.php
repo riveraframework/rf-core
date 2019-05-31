@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Application;
+namespace Rf\Core\Application\Components;
 
 /**
- * Class ApplicationDirectories
+ * Class Directories
  *
  * @package Rf\Core\Configuration
  */
-class ApplicationDirectories {
+class Directories {
 
     /**
      * @var string[string] Application additional directory paths
@@ -31,8 +31,9 @@ class ApplicationDirectories {
         $appPath = $basePath . 'app/';
 
         $this->dirs = [
-            'app'      => $appPath,
             'base'     => $basePath,
+            // Application default paths
+            'app'      => $appPath,
             'config'   => $appPath . 'config/',
             'cache'    => $appPath . 'cache/',
             'classes'  => $appPath . 'classes/',
@@ -44,6 +45,7 @@ class ApplicationDirectories {
             'logs'     => $appPath . 'logs/',
             'modules'  => $appPath . 'modules/',
             'tmp'      => $appPath . 'tmp/',
+            // Public default path
             'public'   => $basePath . 'public/',
         ];
 
