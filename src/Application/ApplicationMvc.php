@@ -34,11 +34,6 @@ use Rf\Core\Utils\Debug\ErrorHandler;
 class ApplicationMvc extends Application {
 
     /**
-     * @var string Application name
-     */
-    protected $name;
-
-    /**
      * @var array Hooks for custom actions
      *
      * @TODO: extend the hook system
@@ -47,29 +42,8 @@ class ApplicationMvc extends Application {
         'init' => []
     ];
 
-    /**
-     * @var string Path to the configuration file
-     */
-    protected $configurationFile;
-
-    /**
-     * @var Configuration Current Configuration object
-     */
-    protected $configuration;
-
-    /**
-     * @var Directories Current Directories object
-     */
-    protected $directories;
-
-    /** @var ServiceProvider ServiceProvider instance */
-    protected $serviceProvider;
-
     /** @var Request Current Request object */
     protected $request;
-
-    /** @var CacheService Current cache service */
-    protected $cacheService;
 
     /** @var SessionService $sessionManager */
     protected $sessionManager;
@@ -77,8 +51,8 @@ class ApplicationMvc extends Application {
     /** @var Router Current Router object */
     protected $router;
 
-    /** @var array Vars to debug */
-    protected $debugVars = [];
+    /** @var ApplicationMvc */
+    protected static $applicationInstance;
 
     /**
      * Start the application init process
@@ -200,29 +174,6 @@ class ApplicationMvc extends Application {
     }
 
     /**
-     * Get application name
-     *
-     * @return string
-     */
-    public function getName() {
-
-        return $this->name;
-
-    }
-
-
-    /**
-     * Set the configuration file path
-     *
-     * @param string $path Configuration file path
-     */
-    public function setConfigurationFile($path) {
-
-        $this->configurationFile = $path;
-
-    }
-
-    /**
      * Get the current session manager object
      *
      * @return SessionService
@@ -241,17 +192,6 @@ class ApplicationMvc extends Application {
     public function getRouter() {
 
         return $this->router;
-
-    }
-
-    /**
-     * Get the current service provider
-     *
-     * @return ServiceProvider
-     */
-    public function getServiceProvider() {
-
-        return $this->serviceProvider;
 
     }
 
@@ -374,15 +314,8 @@ class ApplicationMvc extends Application {
      * Get the current request object
      *
      * @return Request
-     * @throws \Exception
      */
     public function getRequest() {
-
-        if(!isset($this->request)) {
-
-            throw new \Exception('Undefined request');
-
-        }
 
         return $this->request;
 
@@ -407,60 +340,19 @@ class ApplicationMvc extends Application {
     }
 
     /**
-     * Get a directory by name
+     * Get the current MVC application instance
      *
-     * @param string $name Directory name
-     *
-     * @return string
+     * @return ApplicationMvc
      */
-    public function getDir($name) {
+    final public static function getInstance() {
 
-        return $this->directories->get($name);
+        if (!isset(self::$applicationInstance)) {
 
-    }
+            self::$applicationInstance = new self();
 
-    /**
-     * Override or add a new directory to the current list
-     *
-     * @param string $name Directory name
-     * @param string $path Directory path
-     */
-    public function setDir($name, $path) {
+        }
 
-        $this->directories->set($name, $path);
-
-    }
-
-    /**
-     * Get a configuration parameter by name
-     *
-     * @return Configuration
-     */
-    public function getConfiguration() {
-
-        return $this->configuration;
-
-    }
-
-    /**
-     * Add a var to the debugVars array
-     *
-     * @param mixed $var
-     */
-    public function addDebugVar($var) {
-
-        $this->debugVars[] = $var;
-
-    }
-
-    /**
-     * Get debug vars
-     *
-     * @return array
-     */
-    public function getDebugVars() {
-
-        return $this->debugVars;
+        return self::$applicationInstance;
 
     }
 

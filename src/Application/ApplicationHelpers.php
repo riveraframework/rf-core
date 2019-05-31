@@ -29,8 +29,8 @@ namespace Rf\Core\Application {
 
 namespace {
 
-    use Rf\Core\Application\Application;
     use Rf\Core\Application\ApplicationCli;
+    use Rf\Core\Application\ApplicationMvc;
     use Rf\Core\Application\Components\Route;
     use Rf\Core\Application\Components\ServiceProvider;
     use Rf\Core\Base\ParameterSet;
@@ -40,13 +40,28 @@ namespace {
     use Rf\Core\Utils\Format\Json;
 
     /**
+     * Get the running app instance
+     *
+     * @return ApplicationCli|ApplicationMvc
+     */
+    function rf_app() {
+
+        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
+            return ApplicationCli::getInstance();
+        } else {
+            return ApplicationMvc::getInstance();
+        }
+
+    }
+
+    /**
      * Get service provider
      *
      * @return ServiceProvider
      */
     function rf_sp() {
 
-        return Application::getInstance()->getServiceProvider();
+        return rf_app()->getServiceProvider();
 
     }
 
@@ -61,7 +76,7 @@ namespace {
      */
     function rf_add_action($hookName, $action) {
 
-        Application::getInstance()->registerAction($hookName, $action);
+        rf_app()->registerAction($hookName, $action);
 
     }
 
@@ -72,7 +87,7 @@ namespace {
      */
     function rf_exec_actions($hookName) {
 
-        Application::getInstance()->executeActions($hookName);
+        rf_app()->executeActions($hookName);
 
     }
 
@@ -86,7 +101,7 @@ namespace {
      */
     function rf_request() {
 
-        return Application::getInstance()->getRequest();
+        return rf_app()->getRequest();
 
     }
 
@@ -97,7 +112,7 @@ namespace {
      */
     function rf_request_query() {
 
-        return Application::getInstance()->getRequest()->get('query');
+        return rf_app()->getRequest()->get('query');
 
     }
 
@@ -114,7 +129,7 @@ namespace {
      */
     function rf_link_to($routeName, $args = []) {
 
-        return Application::getInstance()->getRouter()->link_to($routeName, $args);
+        return rf_app()->getRouter()->link_to($routeName, $args);
 
     }
 
@@ -149,7 +164,7 @@ namespace {
      */
     function rf_current_route() {
 
-        return Application::getInstance()->getRouter()->getCurrentRoute();
+        return rf_app()->getRouter()->getCurrentRoute();
 
     }
 
@@ -421,11 +436,7 @@ namespace {
      */
     function rf_dir($name) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
-            return ApplicationCli::getInstance()->getDir($name);
-        } else {
-            return Application::getInstance()->getDir($name);
-        }
+        return rf_app()->getDir($name);
 
     }
 
@@ -437,11 +448,7 @@ namespace {
      */
     function rf_add_dir($name, $path) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
-            ApplicationCli::getInstance()->setDir( $name, $path );
-        } else {
-            Application::getInstance()->setDir( $name, $path );
-        }
+        rf_app()->setDir($name, $path);
 
     }
 
@@ -454,11 +461,7 @@ namespace {
      */
     function rf_config($name) {
 
-        if(defined('APPLICATION_TYPE') && APPLICATION_TYPE == 'cli') {
-            return ApplicationCli::getInstance()->getConfiguration()->get( $name );
-        } else {
-            return Application::getInstance()->getConfiguration()->get( $name );
-        }
+        return rf_app()->getConfiguration()->get($name);
 
     }
 
@@ -473,7 +476,7 @@ namespace {
      */
     function rf_debug_display() {
 
-        $debugVars = Application::getInstance()->getDebugVars();
+        $debugVars = rf_app()->getDebugVars();
 
         foreach($debugVars as $debugVar) {
             var_dump($debugVar);
@@ -490,7 +493,7 @@ namespace {
     function rf_debug($var, $logType = 'debug') {
 
         if(rf_config('options.debug')) {
-            Application::getInstance()->addDebugVar($var);
+            rf_app()->addDebugVar($var);
         }
 
         if(rf_config('options.log')) {

@@ -39,7 +39,7 @@ namespace {
 	 */
     function rf_session() {
 
-    	$sessionManager = Application::getInstance()->getSessionManager();
+    	$sessionManager = rf_app()->getSessionManager();
     	if(empty($sessionManager)) {
     		return null;
 	    } else {

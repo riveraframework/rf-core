@@ -39,7 +39,7 @@ namespace {
 	 */
     function rf_cache() {
 
-    	$cacheService = Application::getInstance()->getCacheService();
+    	$cacheService = rf_app()->getCacheService();
     	if(empty($cacheService)) {
     		return null;
 	    } else {
@@ -58,7 +58,7 @@ namespace {
 	 */
     function rf_cache_get($key, $cacheIdentifiers = []) {
 
-    	$cacheService = Application::getInstance()->getCacheService();
+    	$cacheService = rf_app()->getCacheService();
     	if(empty($cacheService)) {
     		return false;
 	    } else {
@@ -77,7 +77,7 @@ namespace {
 	 */
     function rf_cache_set($key, $value, $expires = 0, $cacheIdentifiers = []) {
 
-    	$cacheService = Application::getInstance()->getCacheService();
+    	$cacheService = rf_app()->getCacheService();
     	if(!empty($cacheService)) {
     		$cacheService->set($key, $value, $expires, $cacheIdentifiers);
 	    }
@@ -92,7 +92,7 @@ namespace {
 	 */
     function rf_cache_delete($key, $cacheIdentifiers = []) {
 
-    	$cacheService = Application::getInstance()->getCacheService();
+    	$cacheService = rf_app()->getCacheService();
     	if(!empty($cacheService)) {
     		$cacheService->delete($key, $cacheIdentifiers);
 	    }
@@ -104,7 +104,7 @@ namespace {
 	 */
     function rf_cache_flush_all() {
 
-    	$cacheService = Application::getInstance()->getCacheService();
+    	$cacheService = rf_app()->getCacheService();
     	if(!empty($cacheService)) {
     		$cacheService->flushAll();
 	    }
