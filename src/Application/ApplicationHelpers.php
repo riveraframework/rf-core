@@ -30,7 +30,6 @@ namespace Rf\Core\Application {
 namespace {
 
     use Rf\Core\Application\Application;
-    use Rf\Core\Application\ApplicationConfigurationParameterSet;
     use Rf\Core\Application\ApplicationCli;
     use Rf\Core\Application\Components\Route;
     use Rf\Core\Application\Components\ServiceProvider;
@@ -451,7 +450,7 @@ namespace {
      *
      * @param string $name Param name (section.section.param)
      *
-     * @return ApplicationConfigurationParameterSet|mixed
+     * @return ParameterSet|mixed
      */
     function rf_config($name) {
 
@@ -471,8 +470,6 @@ namespace {
 
     /**
      * Display debug vars
-     *
-     * @return ApplicationConfigurationParameterSet|mixed
      */
     function rf_debug_display() {
 
@@ -488,6 +485,7 @@ namespace {
      * Add a var to the debug array if debug is activated
      *
      * @param mixed $var
+     * @param string $logType
      */
     function rf_debug($var, $logType = 'debug') {
 
