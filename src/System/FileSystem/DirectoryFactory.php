@@ -26,6 +26,7 @@ class DirectoryFactory {
      * @param string $path
      * @param int $mode
      * @param bool $recursive
+     * @return bool
      *
      * @throws DebugException
      */
@@ -34,6 +35,8 @@ class DirectoryFactory {
         if(!mkdir($path, $mode, $recursive)) {
             throw new DebugException(Log::TYPE_ERROR, 'Unable to create dir: ' . $path);
         }
+
+        return true;
 
     }
 

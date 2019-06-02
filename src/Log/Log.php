@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Log;
 
+use Rf\Core\System\FileSystem\DirectoryFactory;
 use ZipArchive;
 
 /**
@@ -43,6 +44,8 @@ class Log {
      *
      * @param $type
      * @param $message
+     *
+     * @throws \Exception
      */
     public function __construct($type, $message) {
 
@@ -54,28 +57,30 @@ class Log {
 
     /**
      * Save a new entry in the current log file
+     *
+     * @throws \Exception
      */
     public function save() {
 
         if(!is_dir(rf_dir('logs'))) {
-            if(!mkdir(rf_dir('logs'), 0755) && rf_config('options.debug-mode'))  {
-                echo 'Error: "logs" folder doesn\'t exist.';
+
+            try {
+                DirectoryFactory::create(rf_dir('logs'), 0755, true);
+            } catch (\Exception $e) {
+                throw new \Exception('Unable to create the logs folder');
             }
-        }
-
-        if(is_dir(rf_dir('logs'))) {
-
-            // Get the current log file content
-            $fileName = self::getCurrentLog();
-            $fileOldContent = file_exists($fileName) ? file_get_contents($fileName) : '';
-
-            // Save new entry in the log file
-            $fileOpen = fopen($fileName, 'c');
-            $fileNewContent = '[' . date('Y/m/d H:i:s') . '] - ' . $this->type . ': ' . $this->message;
-            fputs($fileOpen, $fileNewContent . PHP_EOL . $fileOldContent);
-            fclose($fileOpen);
 
         }
+
+        // Get the current log file content
+        $fileName = self::getCurrentLog();
+        $fileOldContent = file_exists($fileName) ? file_get_contents($fileName) : '';
+
+        // Save new entry in the log file
+        $fileOpen = fopen($fileName, 'c');
+        $fileNewContent = '[' . date('Y/m/d H:i:s') . '] - ' . $this->type . ': ' . $this->message;
+        fputs($fileOpen, $fileNewContent . PHP_EOL . $fileOldContent);
+        fclose($fileOpen);
 
     }
 
@@ -121,15 +126,15 @@ class Log {
         self::getLogNb($currentLogName = count($logList = glob(rf_dir('logs').'*_c.log')) > 0 ? $logList[0] : '');
 
         // If the target file exists and its size is above the limit, use the next
-        if(file_exists(self::getFileName(true)) && filesize(self::getFileName(true)) > rf_config('options.max-log-size')) {
+        if(file_exists(self::getFileName(true)) && filesize(self::getFileName(true)) > rf_config('logging.max-size')) {
 
             rename(self::getFileName(true), self::getFileName());
             self::$logNb++;
 
             // If the max number of file is reached
-            if(self::$logNb == rf_config('options.max-log-files')+1) {
+            if(self::$logNb == rf_config('logging.max-files') + 1) {
 
-                if(rf_config('options.archive-log-mode') == true) {
+                if(rf_config('logging.archive') == true) {
 
                     // Archive existing log files if MODE_ARCHIVE_LOG is activated
                     self::archiveLogs();
@@ -151,7 +156,7 @@ class Log {
                     rename(self::getFileName(), self::getFileName(true));
                 }
 
-                if(rf_config('options.archive-log-mode') == false) {
+                if(rf_config('logging.archive') == false) {
                     self::emptyLogFile();
                 }
 

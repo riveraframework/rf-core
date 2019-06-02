@@ -421,7 +421,7 @@ namespace {
             rf_app()->addDebugVar($var);
         }
 
-        if(rf_config('options.log')) {
+        if(rf_config('logging.active')) {
 
             if(is_array($var) || is_object($var)) {
                 try {

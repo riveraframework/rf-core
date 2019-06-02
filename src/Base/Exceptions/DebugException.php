@@ -54,7 +54,7 @@ class DebugException extends \Exception {
      */
     protected function call() {
 
-        if((rf_config('options.log-mode') == true)) {
+        if((rf_config('logging.active') == true)) {
             $this->log();
         }
 
