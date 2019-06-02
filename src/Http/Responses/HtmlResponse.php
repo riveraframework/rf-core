@@ -23,12 +23,14 @@ class HtmlResponse extends Response {
      * HtmlResponse constructor.
      *
      * @param int $code
+     * @param string $html
      */
-    public function __construct($code = 200) {
+    public function __construct($code = 200, $html = '') {
 
 	    parent::__construct($code);
 
-	    $this->setContentType('text/html; charset=utf-8');
+        $this->setContentType('text/html; charset=utf-8');
+	    $this->setBody($html);
 
     }
 
