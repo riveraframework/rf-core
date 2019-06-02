@@ -66,9 +66,7 @@ class ApplicationCli extends Application {
         }
         
         // Multi-lang support
-        if($this->configuration->get('options.i18n') == true) {
-            I18n::init();
-        }
+        I18n::init();
 
         Benchmark::log('init end');
 

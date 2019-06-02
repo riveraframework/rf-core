@@ -104,9 +104,7 @@ class ApplicationMvc extends Application {
         $this->request = new Request();
 
         // Multi-lang support
-        if($this->configuration->get('options.i18n')) {
-            I18n::init();
-        }
+        I18n::init();
 
         // Init router module and verify bad requests (based on requested domain)
         $this->router = new Router();

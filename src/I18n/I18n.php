@@ -34,8 +34,14 @@ abstract class I18n {
      */
     public static function init() {
 
-        self::$defaultLanguage = rf_config('app.default.language');
-        self::$availableLanguages = explode(',', rf_config('app.available-languages'));
+        if(!rf_empty(rf_config('i18n.languages'))) {
+
+            self::$availableLanguages = explode(',', rf_config('i18n.languages'));
+            self::$defaultLanguage = self::$availableLanguages[0];
+
+        } else {
+            self::$defaultLanguage = 'en';
+        }
 
         // Load language files
         array_map(function ($filePath) {
