@@ -72,6 +72,10 @@ class Route {
             $this->controller = $routeParams['controller'];
         }
 
+        if(!empty($routeParams['action'])) {
+            $this->action = $routeParams['action'];
+        }
+
         if(!empty($routeParams['defaults'])) {
             $this->defaults = $routeParams['defaults'];
         }
@@ -112,6 +116,28 @@ class Route {
     public function getMethods() {
 
         return $this->methods;
+
+    }
+
+    /**
+     * Get the controller
+     *
+     * @return string
+     */
+    public function getController() {
+
+        return $this->controller;
+
+    }
+
+    /**
+     * Get the action
+     *
+     * @return string
+     */
+    public function getAction() {
+
+        return $this->action;
 
     }
 

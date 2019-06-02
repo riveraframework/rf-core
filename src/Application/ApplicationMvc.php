@@ -250,6 +250,7 @@ class ApplicationMvc extends Application {
      * Start the application execution using the main controller property
      *
      * @TODO: Add user customizable error handler
+     * @TODO: Add response post-processing e.g: ->after($response)
      *
      * @throws \Exception
      */
@@ -263,13 +264,13 @@ class ApplicationMvc extends Application {
             $route = $this->router->getCurrentRoute();
 
             // Get the controller name
-            $controllerName = $route['controller'];
+            $controllerName = $route->getController();
 
             // Create the controller instance
             $controller = new $controllerName();
 
             // Get the action name
-            $actionName = $route['action'];
+            $actionName = $route->getAction();
 
             // Execute the requested action
             if(method_exists($controller, 'wrapper')) {
@@ -277,11 +278,13 @@ class ApplicationMvc extends Application {
                 Benchmark::log($controllerName . '::' . $actionName . ' started (with wrapper)');
                 $response = $controller->wrapper($actionName);
 
-            } else {
+            } elseif(method_exists($controller, $actionName)) {
 
                 Benchmark::log($controllerName . '::' . $actionName . ' started');
                 $response = $controller->$actionName();
 
+            } else {
+                throw new \Exception('The requested action does not exist');
             }
 
             if(is_a($response, ResponseInterface::class)) {
@@ -309,7 +312,7 @@ class ApplicationMvc extends Application {
 
             } else {
 
-                die($error->getMessage());
+                throw new \Exception($error->getMessage(), $error->getCode(), $error);
 
             }
 
