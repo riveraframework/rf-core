@@ -417,7 +417,7 @@ namespace {
      */
     function rf_debug($var, $logType = 'debug') {
 
-        if(rf_config('options.debug')) {
+        if(rf_config('debug.active')) {
             rf_app()->addDebugVar($var);
         }
 

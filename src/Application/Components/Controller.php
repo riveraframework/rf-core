@@ -349,8 +349,11 @@ abstract class Controller {
         $this->loadTemplate($viewName);
 
         if(
-            (!rf_request()->isAjax() && rf_config('options.debug'))
-            || (rf_request()->isAjax() && rf_config('options.debug-ajax'))
+            rf_config('debug.active')
+            && (
+                !rf_request()->isAjax()
+                || (rf_request()->isAjax() && rf_config('debug.ajax'))
+            )
         ) {
 
             echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
@@ -358,7 +361,7 @@ abstract class Controller {
 
         }
 
-        if(!rf_request()->isAjax() && rf_config('options.benchmark')) {
+        if(!rf_request()->isAjax() && rf_config('debug.benchmark')) {
 
             Benchmark::display();
 
@@ -477,7 +480,7 @@ abstract class Controller {
         switch ($errorCode) {
 
             case 404:
-                $this->html = 'Controller error: Unable to load the template' . (rf_config('options.debug') ? '<br/>' . $errorContent : '');
+                $this->html = 'Controller error: Unable to load the template' . (rf_config('debug.active') ? '<br/>' . $errorContent : '');
                 break;
 
             default:

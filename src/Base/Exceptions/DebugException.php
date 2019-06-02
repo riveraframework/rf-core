@@ -58,7 +58,7 @@ class DebugException extends \Exception {
             $this->log();
         }
 
-        if((rf_config('options.debug-mode') == true)) {
+        if(rf_config('debug.active') && rf_config('debug.display')) {
             $this->debug();
         }
 

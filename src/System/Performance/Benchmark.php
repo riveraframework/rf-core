@@ -49,7 +49,7 @@ class Benchmark {
      */
 	public static function log($message) {
 
-        if(function_exists('rf_config') && !rf_config('options.benchmark')) {
+        if(function_exists('rf_config') && !rf_config('debug.benchmark')) {
             return;
         }
 

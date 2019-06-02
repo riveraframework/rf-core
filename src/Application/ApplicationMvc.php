@@ -290,8 +290,10 @@ class ApplicationMvc extends Application {
         } catch(\Error $error) {
 
             if(
-                (!rf_request()->isAjax() && rf_config('options.debug'))
-                || (rf_request()->isAjax() && rf_config('options.debug-ajax'))
+                rf_config('debug.active')
+                 && (
+                     !rf_request()->isAjax())
+                     || (rf_request()->isAjax() && rf_config('debug.ajax'))
             ) {
 
                 echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
