@@ -41,7 +41,7 @@ abstract class Application implements ApplicationInterface {
     protected $cacheService;
 
     /** @var array Vars to debug */
-    protected $debugVars;
+    protected $debugVars = [];
 
     /**
      * Get application name
