@@ -126,13 +126,13 @@ class Log {
         self::getLogNb($currentLogName = count($logList = glob(rf_dir('logs').'*_c.log')) > 0 ? $logList[0] : '');
 
         // If the target file exists and its size is above the limit, use the next
-        if(file_exists(self::getFileName(true)) && filesize(self::getFileName(true)) > rf_config('logging.max-size')) {
+        if(file_exists(self::getFileName(true)) && filesize(self::getFileName(true)) > rf_config('logging.max_size')) {
 
             rename(self::getFileName(true), self::getFileName());
             self::$logNb++;
 
             // If the max number of file is reached
-            if(self::$logNb == rf_config('logging.max-files') + 1) {
+            if(self::$logNb == rf_config('logging.max_files') + 1) {
 
                 if(rf_config('logging.archive') == true) {
 
