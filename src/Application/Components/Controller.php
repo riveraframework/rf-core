@@ -356,13 +356,13 @@ abstract class Controller {
             )
         ) {
 
-            echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
             rf_debug_display();
 
         }
 
         if(!rf_request()->isAjax() && rf_config('debug.benchmark')) {
 
+            echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
             Benchmark::display();
 
         }
