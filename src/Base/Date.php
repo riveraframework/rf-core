@@ -371,11 +371,9 @@ class Date extends DateTime {
      *
      * @throws \Exception
      */
-    public function add($interval) {
+    public function addFromString($interval) {
 
-        if (!is_a($interval, 'DateInterval')) {
-            $interval = new DateInterval($interval);
-        }
+        $interval = new DateInterval($interval);
 
         parent::add($interval);
 
@@ -388,11 +386,9 @@ class Date extends DateTime {
      *
      * @throws \Exception
      */
-    public function sub($interval) {
+    public function subFromString($interval) {
 
-        if (!is_a($interval, 'DateInterval')) {
-            $interval = new DateInterval($interval);
-        }
+        $interval = new DateInterval($interval);
 
         parent::sub($interval);
 

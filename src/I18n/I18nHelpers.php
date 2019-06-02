@@ -29,15 +29,7 @@ namespace Rf\Core\I18n {
 
 namespace {
 
-    use Rf\Core\Application\ApplicationCli;
-    use Rf\Core\Application\ApplicationMvc;
-    use Rf\Core\Application\Components\Route;
-    use Rf\Core\Application\Components\ServiceProvider;
-    use Rf\Core\Base\ParameterSet;
-    use Rf\Core\Http\Request;
     use Rf\Core\I18n\I18n;
-    use Rf\Core\Utils\Data\Generation\Random;
-    use Rf\Core\Utils\Format\Json;
 
     /**
      * Get the current language

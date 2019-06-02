@@ -40,7 +40,7 @@ class FileDownload {
             die($fileContent);
 
         } else {
-            die('Sorry, This file doesn\'t exist');
+            die('Sorry, This file does not exist');
         }
         
     }

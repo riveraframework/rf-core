@@ -417,7 +417,7 @@ abstract class Entity {
         if(property_exists(get_class($this), 'id') && $forceId !== true) {
             return $this->id = $query->addAndGetId();
         } else {
-            return $query->execute($query);
+            return $query->execute();
         }
 
     }

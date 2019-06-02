@@ -10,8 +10,6 @@
 
 namespace Rf\Core\Base\Exceptions;
 
-use Rf\Core\Log\Log;
-
 /**
  * Class DataException
  *

@@ -434,7 +434,7 @@ class Location {
             $language = $this->language;
         }
         
-        $google_maps_API = new GoogleMaps();
+        $google_maps_API = new GoogleMaps('');
         $location_data = $google_maps_API->getLocationFromAddress($address, $language);
         if($location_data) {
             $this->data = json_encode($location_data);

@@ -38,7 +38,7 @@ class ErrorHandler {
 
 		$content = '
 		  <table>
-			  <thead><th>Item</th><th>Description</th></thead>
+			  <thead><tr><th>Item</th><th>Description</th></tr></thead>
 			  <tbody>
 				  <tr>
 				    <th>Error</th>

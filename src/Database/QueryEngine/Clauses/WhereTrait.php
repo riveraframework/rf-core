@@ -54,7 +54,7 @@ trait WhereTrait {
         // Build clause
         if($type == 'custom') {
 
-            $this->whereClause .= $field; // $field contient la requete car mandatory param
+            $this->whereClause .= $field; // clause located in $field instead
 
         } else {
 

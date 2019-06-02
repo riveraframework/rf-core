@@ -14,11 +14,12 @@
     },
     "suggest": {
         "ext-curl": "*",
+        "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-memcached": "*",
         "ext-memcache": "*",
+        "ext-openssl": "*",
         "ext-pdo": "*",
-        "ext-ssl": "*",
         "ext-zip": "*"
     },
     "autoload": {

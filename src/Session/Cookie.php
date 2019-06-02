@@ -24,7 +24,7 @@ class Cookie {
     /** @var string $name Name of the cookie*/
     public $name;
 
-    /** @var string|int $content Content of the cookiem */
+    /** @var string|int $content Content of the cookie */
     public $content;
 
     /** @var int $expiration Timestamp until when the cookie is considered as valid */

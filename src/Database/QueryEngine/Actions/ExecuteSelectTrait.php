@@ -113,7 +113,7 @@ trait ExecuteSelectTrait {
     }
 
     /**
-     * Get the result of a query as an enity or array of objects. A class name needs to
+     * Get the result of a query as an entity or array of objects. A class name needs to
      * be specified using the `setFetchEntity` method
      *
      * @param bool $forceArray

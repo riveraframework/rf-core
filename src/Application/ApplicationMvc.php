@@ -196,6 +196,8 @@ class ApplicationMvc extends Application {
 
     /**
      * Handle the session
+     *
+     * @throws \Exception
      */
     public function handleSession() {
 

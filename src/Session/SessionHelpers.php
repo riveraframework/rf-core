@@ -29,7 +29,6 @@ namespace Rf\Core\Session {
 
 namespace {
 
-	use Rf\Core\Application\Application;
 	use Rf\Core\Session\SessionService;
 
 	/**

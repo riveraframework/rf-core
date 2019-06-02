@@ -111,7 +111,7 @@ class Log {
      */
     public static function getLogNb($logName) {
 
-        preg_match('#log-[0]*(?<logNb>\d+)_c.log#', $logName, $match);
+        preg_match('/log-[0]*(?<logNb>\d+)_c.log/', $logName, $match);
         self::$logNb = isset($match['logNb']) ? $match['logNb'] : 0;
 
     }

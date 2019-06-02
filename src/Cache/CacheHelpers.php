@@ -29,7 +29,6 @@ namespace Rf\Core\Cache {
 
 namespace {
 
-	use Rf\Core\Application\Application;
 	use Rf\Core\Cache\CacheService;
 
 	/**
