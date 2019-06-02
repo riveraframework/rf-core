@@ -333,10 +333,10 @@ class Architect {
      * @return bool
      */
     public function is_fk($field, $table = NULL, $database = NULL) {
-        $database = $database != NULL ? $database : rf_config('database.name');
-        // On test le mode de clé étrangère
-        if(rf_config('options.fk-mode') == 'sql') {
-            // Si le traitement doit se faire par la base de donnée on test si la vue nécessaire existe
+//        $database = $database != NULL ? $database : rf_config('database.name');
+//        // On test le mode de clé étrangère
+//        if(rf_config('options.fk-mode') == 'sql') {
+//            // Si le traitement doit se faire par la base de donnée on test si la vue nécessaire existe
 //            if(DatabaseTools::tableExist('view_fk', $database) === true) {
 //                // Si oui on prépare la requète
 //                $query = new Query('select', 'view_fk', $database);
@@ -365,9 +365,9 @@ class Architect {
 //                    $this->history[] =  '<span style="color:red;">La table des clés étrangères n\'a pas pu être créée.</span><br/><br/>';
 //                }
 //            }
-        } elseif(rf_config('options.fk-mode') == 'class') {
-            return substr($field, -3, 3) == '_id' ? true : false;
-        }
+//        } elseif(rf_config('options.fk-mode') == 'class') {
+//            return substr($field, -3, 3) == '_id' ? true : false;
+//        }
     }
 
 }
