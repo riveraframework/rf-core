@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Api;
+namespace Rf\Core\Utils\Format;
 
 /**
  * Class Api
  *
- * @package Rf\Core\Api
+ * @package Rf\Core\Utils\Format
  */
 abstract class ApiResponse {
 
