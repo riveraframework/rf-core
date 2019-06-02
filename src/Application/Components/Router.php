@@ -351,7 +351,7 @@ class Router {
      *
      * @return Response|void
      */
-    public static function redirect($url, $type = 301, $return = false) {
+    public static function redirect($url, $type = 302, $return = false) {
 
         $redirect = new Response($type);
         $redirect->addHeader('Location', $url);
