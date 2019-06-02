@@ -35,10 +35,12 @@ abstract class I18n {
     public static function init() {
 
         if(!rf_empty(rf_config('i18n.languages'))) {
-
+            
             $languages = rf_config('i18n.languages');
-            if(!is_array($languages)) {
+            if(is_string($languages)) {
                 $languages = explode(',', $languages);
+            } else {
+                $languages = $languages->toArray();
             }
 
             self::$availableLanguages = $languages;
