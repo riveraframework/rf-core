@@ -21,6 +21,8 @@ trait OrderByTrait {
     public $orderByClause;
 
 	/**
+     * Set the order by clause
+     *
 	 * @param $fields
 	 *
 	 * @return $this

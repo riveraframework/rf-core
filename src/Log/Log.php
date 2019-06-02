@@ -14,6 +14,8 @@ use ZipArchive;
 
 /**
  * Class Log
+ *
+ * @TODO: Move options in a "log" section
  * 
  * @package Rf\Core\Log
  */
@@ -24,24 +26,16 @@ class Log {
     const TYPE_INFO = 'info';
     const TYPE_WARNING = 'warning';
 
-    /**
-     * @var string $type
-     */
+    /** @var string $type */
     protected $type;
 
-    /**
-     * @var string $message
-     */
+    /** @var string $message */
     protected $message;
 
-    /**
-     * @var int $logNb
-     */
+    /** @var int $logNb */
     private static $logNb;
 
-    /**
-     * @var array $logFiles
-     */
+    /** @var array $logFiles */
     private static $logFiles;
 
     /**
@@ -80,7 +74,9 @@ class Log {
             $fileNewContent = '[' . date('Y/m/d H:i:s') . '] - ' . $this->type . ': ' . $this->message;
             fputs($fileOpen, $fileNewContent . PHP_EOL . $fileOldContent);
             fclose($fileOpen);
+
         }
+
     }
 
     /**
@@ -124,29 +120,29 @@ class Log {
 
         self::getLogNb($currentLogName = count($logList = glob(rf_dir('logs').'*_c.log')) > 0 ? $logList[0] : '');
 
-        // Si le fichier cible existe et que sa taille est supérieure à la limite on passe au suivant
+        // If the target file exists and its size is above the limit, use the next
         if(file_exists(self::getFileName(true)) && filesize(self::getFileName(true)) > rf_config('options.max-log-size')) {
 
             rename(self::getFileName(true), self::getFileName());
             self::$logNb++;
 
-            // Mais si l'on a atteinte le nombre max de logs, 2 possibilités
+            // If the max number of file is reached
             if(self::$logNb == rf_config('options.max-log-files')+1) {
 
-                // Si le MODE_ARCHIVE_LOG est activé
                 if(rf_config('options.archive-log-mode') == true) {
 
-                    // On archive les logs existants
+                    // Archive existing log files if MODE_ARCHIVE_LOG is activated
                     self::archiveLogs();
 
                 } else {
 
-                    // Sinon on ré-écrit simplement dans le premier
+                    // Write in the first file
                     self::$logNb = 0;
                     if(file_exists(self::getFileName())) {
                         rename(self::getFileName(), self::getFileName(true));
                     }
-                    self::emptyLogFile(true);
+                    self::emptyLogFile();
+
                 }
 
             } else {
@@ -156,14 +152,16 @@ class Log {
                 }
 
                 if(rf_config('options.archive-log-mode') == false) {
-                    self::emptyLogFile(true);
+                    self::emptyLogFile();
                 }
 
             }
+
         }
 
-        // Enfin on retourne le chemin du fichier courrant
+        // Return the path of the current file
         return self::getFileName(true);
+
     }
 
     /**
@@ -173,25 +171,25 @@ class Log {
 
         self::$logFiles = glob(rf_dir('logs').'*.log');
 
-        // On instancie la classe ZipArchive
+        // Instantiate the ZipArchive class
         $zip = new ZipArchive();
 
         if(!file_exists($zipPath = rf_dir('logs').'archive-log.zip')) {
 
-            // Si le fichier cible n'existe pas on le crée
+            // Create the file if it doesn't exist
             $res = $zip->open($zipPath, ZipArchive::CREATE);
         } else {
 
-            // Sinon on l'ouvre
+            // Open the file
             $res = $zip->open($zipPath);
         }
 
         $error = false;
 
-        // Si l'ouverture/la création a fonctionné on rentre dans la boucle 
+        // If the file was created/opened
         if($res === true) {
 
-            // On défini le chemin du dossier qui va contenir le groupe de logs
+            // Define the folder path the is going to contain the log files
             $path = date('Y').'-'.
                     date('m').'-'.
                     date('d').' '.
@@ -199,17 +197,20 @@ class Log {
                     date('i').':'.
                     date('s');
 
-            // On ajoute le dossier à l'archive
+            // Add the folder to the archive
             if($zip->addEmptyDir($path) !== false) {
 
-                // Pour chaque fichier présent...
+                // Then for each file...
                 foreach(self::$logFiles as $file) {
 
-                    // On récupère le nom
+                    // Get the file name
                     $name = array_pop(explode('/', $file));
 
-                    // Puis on l'ajoute à l'archive
-                    if($zip->locateName($path.'/'.$name) === true || $zip->addFile($file, $path.'/'.$name) === false) {
+                    // Add the file to the archive
+                    if(
+                        $zip->locateName($path . '/' . $name) === true
+                        || $zip->addFile($file, $path.'/'.$name) === false
+                    ) {
                         $error = true;
                     }
 
@@ -221,15 +222,15 @@ class Log {
 
             $zip->close();
 
-            // Si il n'y a pas eu d'erreur
+            // If there is no error
             if($error === false) {
 
-                // On supprime les fichiers
+                // Delete the files
                 foreach(self::$logFiles as $file) {
                     unlink($file);
                 }
 
-                // Et on remet le compteur à 0
+                // Set the counter back to 0
                 self::$logNb = 0;
             }
         }

@@ -10,6 +10,15 @@
 
 namespace Rf\Core\Wrappers\ExternalServices\Google\Models;
 
+/**
+ * Class BaseCountry
+ *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
+ * @package Rf\Core\Wrappers\ExternalServices\Google\Models
+ */
 class BaseCountry {
     
     public $name;

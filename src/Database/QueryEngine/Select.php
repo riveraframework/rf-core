@@ -22,16 +22,20 @@ class Select extends Query {
 
     use ExecuteSelectTrait;
 
+    /** @var string Query type */
     const QUERY_TYPE = 'select';
 
+    /** @var bool  */
     protected $cached = false;
+
+    /** @var int  */
     protected $cachedExpires = 0;
 
 	/**
 	 * Select constructor.
 	 *
-	 * @param string $tables
-	 * @param string $database
+     * @param string|array|Query|null $tables
+     * @param string|null $database
 	 */
     public function __construct($tables = null, $database = null) {
 

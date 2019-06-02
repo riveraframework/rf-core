@@ -33,7 +33,7 @@ namespace {
 	use Rf\Core\Session\SessionService;
 
 	/**
-	 * Get cache service
+	 * Get session service
 	 *
 	 * @return SessionService
 	 */

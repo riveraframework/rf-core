@@ -50,8 +50,7 @@ class DebugException extends \Exception {
 	}
 
     /**
-     *
-     *
+     * Main method
      */
     protected function call() {
 

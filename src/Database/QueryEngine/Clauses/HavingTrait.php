@@ -21,7 +21,7 @@ trait HavingTrait {
     public $havingClause;
 
     /** @var array $havingClauseValues */
-    public $havingClauseValues = array();
+    public $havingClauseValues = [];
     
 	/**
 	 * @return $this

@@ -15,7 +15,7 @@ use Rf\Core\I18n\I18n;
 /**
  * Class Seo
  *
- * @TODO: Add method to generate HTML tags
+ * @TODO: Add methods to generate HTML tags
  *
  * @package Rf\Core\Utils\Html
  */
@@ -39,7 +39,7 @@ abstract class Seo {
     /** @var string $canonicalUrl SEO canonical url */
     public static $canonicalUrl;
 
-    /** @var string $alternateUrls SEO alternate urls */
+    /** @var array $alternateUrls SEO alternate urls */
     public static $alternateUrls;
     
     /**

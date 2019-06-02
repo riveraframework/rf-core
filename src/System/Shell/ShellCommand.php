@@ -32,10 +32,10 @@ class ShellCommand {
     public function __construct($cmd, $path) {
         
         // Init pipes to get stdout and stderr output
-        $descriptorSpec = array(
-            'stdout' => array('pipe', 'w'),
-            'stderr' => array('pipe', 'w')
-        );
+        $descriptorSpec = [
+            'stdout' => ['pipe', 'w'],
+            'stderr' => ['pipe', 'w']
+        ];
         
         // Execute command
         $this->resource = proc_open($cmd, $descriptorSpec, $pipes, $path);

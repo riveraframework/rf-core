@@ -20,9 +20,13 @@ use Rf\Core\Log\Log;
  */
 class Uuid {
 
+    /** @var string  */
     const FORMAT_UUID_V4 = 'uuid-v4';
+
+    /** @var string  */
     const FORMAT_MASK = 'mask';
 
+    /** @var string  */
     protected $value;
 
     /**
@@ -31,9 +35,10 @@ class Uuid {
      * @param string $format
      * @param string $mask
      * @param null|int $length
+     *
+     * @throws DebugException
      */
-    public function __construct($format, $mask = '', $length = null)
-    {
+    public function __construct($format, $mask = '', $length = null) {
 
         $this->value = self::generateValue($format, $mask, $length);
 

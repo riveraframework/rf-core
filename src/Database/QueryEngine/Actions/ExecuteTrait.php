@@ -21,7 +21,7 @@ trait ExecuteTrait {
      * Prepare and execute a SQL query
      *
      * @return int
-     * @throws \Rf\Core\Exception\DebugException
+     * @throws \Exception
      */
     public function execute() {
 

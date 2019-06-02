@@ -12,6 +12,15 @@
     "require": {
         "php": ">=5.6.0"
     },
+    "suggest": {
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-memcached": "*",
+        "ext-memcache": "*",
+        "ext-pdo": "*",
+        "ext-ssl": "*",
+        "ext-zip": "*"
+    },
     "autoload": {
         "psr-4": {
             "Rf\\Core\\": "src/"

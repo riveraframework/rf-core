@@ -19,9 +19,16 @@ use Rf\Core\Database\Query;
  */
 class Delete extends Query {
 
+    /**
+     * Delete constructor.
+     *
+     * @param string|array|Query|null $tables
+     * @param string|null $database
+     */
     public function __construct($tables = null, $database = null) {
 
         parent::__construct('delete', $tables, $database);
 
     }
+
 }

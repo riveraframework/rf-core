@@ -35,8 +35,6 @@ namespace {
     use Rf\Core\Application\Components\ServiceProvider;
     use Rf\Core\Base\ParameterSet;
     use Rf\Core\Http\Request;
-    use Rf\Core\I18n\I18n;
-    use Rf\Core\Utils\Data\Generation\Random;
     use Rf\Core\Utils\Format\Json;
 
     /**
@@ -161,6 +159,7 @@ namespace {
      * Get the current route
      *
      * @return Route
+     * @throws \Exception
      */
     function rf_current_route() {
 
@@ -174,6 +173,7 @@ namespace {
      * @param string $routeName
      *
      * @return bool
+     * @throws \Exception
      */
     function rf_is_current_route($routeName) {
 
@@ -191,6 +191,7 @@ namespace {
      * @param string $format Output date format
      *
      * @return string
+     * @throws \Exception
      */
     function rf_date($format) {
 
@@ -208,71 +209,13 @@ namespace {
      * @param string $date
      *
      * @return string
+     * @throws \Exception
      */
     function rf_date_fromto($formatFrom, $formatTo, $date) {
 
         $date = new Rf\Core\Base\Date($date, $formatFrom);
 
         return $date->format($formatTo);
-
-    }
-
-    /////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-
-    /**
-     * Get the current language
-     *
-     * @return string
-     */
-    function rf_current_language() {
-
-        return Rf\Core\I18n\I18n::$currentLanguage;
-
-    }
-
-    /**
-     * Get the available languages
-     *
-     * @return array
-     */
-    function rf_available_languages() {
-
-        return Rf\Core\I18n\I18n::$availableLanguages;
-
-    }
-
-    /**
-     * Get the translation of a string
-     *
-     * @param string $msgid,...
-     *
-     * @return string
-     */
-    function __($msgid) {
-
-        $args = func_get_args();
-        array_shift($args);
-
-        return I18n::translate($msgid, $args);
-
-    }
-
-    /**
-     * Get the translation of a string from a data set
-     *
-     * @param string $key
-     * @param array $dataset
-     *
-     * @return string
-     */
-    function _t($key, $dataset) {
-
-        $args = func_get_args();
-        array_shift($args);
-        array_shift($args);
-
-        return I18n::translateFromDataSet($key, $dataset, $args);
 
     }
 
@@ -403,24 +346,6 @@ namespace {
         }
 
         return null;
-
-    }
-
-    /////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////
-    ///
-
-    /**
-     * Return a random float number between a min and a max
-     *
-     * @param float|int $min
-     * @param float|int $max
-     *
-     * @return float|int
-     */
-    function rf_rand_float($min = 0, $max = 1) {
-
-        return Random::float($min, $max);
 
     }
 

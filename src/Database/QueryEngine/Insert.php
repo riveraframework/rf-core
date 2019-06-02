@@ -22,6 +22,12 @@ class Insert extends Query {
 
     use ExecuteInsertTrait;
 
+    /**
+     * Insert constructor.
+     *
+     * @param string|array|Query|null $tables
+     * @param string|null $database
+     */
     public function __construct($tables = null, $database = null) {
 
         parent::__construct('insert', $tables, $database);

@@ -12,12 +12,18 @@ namespace Rf\Core\I18n;
 
 /**
  * Class TranslationRepository
+ *
  * @package Rf\Core\I18n
  */
 abstract class TranslationRepository {
 
 	protected static $trans = [];
 
+    /**
+     * Get the available translations
+     *
+     * @return array
+     */
 	public static function get() {
 
 		return static::$trans;

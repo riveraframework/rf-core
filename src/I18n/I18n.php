@@ -17,17 +17,8 @@ namespace Rf\Core\I18n;
  */
 abstract class I18n {
 
-    /**
-     * @var array $STRINGS_
-     * @since 1.0
-     */
+    /** @var array $STRINGS_ */
     public static $STRINGS_;
-
-    /**
-     * @var string $stringsFile
-     * @since 1.0
-     */
-    public static $stringsFile = 'strings.lang.php';
 
     /** @var string Default language */
     public static $defaultLanguage;
@@ -46,8 +37,15 @@ abstract class I18n {
         self::$defaultLanguage = rf_config('app.default.language');
         self::$availableLanguages = explode(',', rf_config('app.available-languages'));
 
-        // Load variables
-        self::$STRINGS_ = @include rf_dir('locale') . self::$stringsFile;
+        // Load language files
+        array_map(function ($filePath) {
+
+            $pathParts = explode('/', $filePath);
+            $fileNameParts = explode('.', $pathParts[count($pathParts) + 1]);
+
+            self::$STRINGS_[$fileNameParts[0]] = include $filePath;
+
+        }, glob(rf_dir('locale') . '/*.php'));
 
     }
 
@@ -99,10 +97,10 @@ abstract class I18n {
      *
      * @return string
      */
-    public static function translate($msgid, $args = array()) {
+    public static function translate($msgid, $args = []) {
 
-        if(isset(self::$STRINGS_[$msgid][self::$currentLanguage])) {
-            return vsprintf(self::$STRINGS_[$msgid][self::$currentLanguage], $args);
+        if(isset(self::$STRINGS_[self::$currentLanguage][$msgid])) {
+            return vsprintf(self::$STRINGS_[self::$currentLanguage][$msgid], $args);
         } else {
             return $msgid;
         }

@@ -16,7 +16,6 @@ use Rf\Core\Application\Components\ServiceProvider;
 use Rf\Core\Application\Exceptions\ConfigurationException;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
-use Rf\Core\Orm\Architect;
 use Rf\Core\I18n\I18n;
 use Rf\Core\System\Performance\Benchmark;
 
@@ -26,14 +25,6 @@ use Rf\Core\System\Performance\Benchmark;
  * @package Rf\Core\Application
  */
 class ApplicationCli extends Application {
-    
-    /**
-     * @var Architect Current architect object
-     *
-     * @TODO: Keep Architect as a normal class?
-     * @TODO: Don't store architect in application
-     */
-    protected $architect;
 
     /** @var ApplicationCli */
     protected static $applicationInstance;
@@ -74,26 +65,12 @@ class ApplicationCli extends Application {
             $this->cacheService = new CacheService(rf_config('cache')->toArray());
         }
         
-        // Load Architect
-        $this->architect = new Architect();
-        
         // Multi-lang support
         if($this->configuration->get('options.i18n') == true) {
             I18n::init();
         }
 
         Benchmark::log('init end');
-
-    }
-
-    /**
-     * Get the current Architect object
-     *
-     * @return Architect
-     */
-    public function architect() {
-
-        return $this->architect;
 
     }
 

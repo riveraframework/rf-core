@@ -14,9 +14,16 @@ use Rf\Core\Database\Query;
 
 class Describe extends Query {
 
+    /**
+     * Describe constructor.
+     *
+     * @param string|array|Query|null $tables
+     * @param string|null $database
+     */
     public function __construct($tables = null, $database = null) {
 
         parent::__construct('describe', $tables, $database);
 
     }
+
 }

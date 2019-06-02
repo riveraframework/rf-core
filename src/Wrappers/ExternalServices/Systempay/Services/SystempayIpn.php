@@ -13,18 +13,35 @@ namespace Rf\Core\Wrappers\ExternalServices\Systempay\Services;
 /**
  * Class SystempayIpn
  *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
  * @package Rf\Core\Wrappers\ExternalServices\Systempay\Services
  */
 class SystempayIpn {
 
+    /** @var array Request parameters */
     protected $requestParams = [];
 
+    /**
+     * SystempayIpn constructor.
+     *
+     * @param array $requestParams
+     */
     public function __construct(array $requestParams) {
 
         $this->requestParams = $requestParams;
 
     }
 
+    /**
+     * Check the request signature
+     *
+     * @param string $certificate
+     *
+     * @return bool
+     */
     public function checkSignature($certificate) {
 
         // Sort fields alphabetically

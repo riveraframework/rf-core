@@ -41,7 +41,7 @@ trait FromTrait {
     /**
      * Set one or more target tables for the current query
      *
-     * @param array $from Table list: array('my_table [AS mt]'[, ...])
+     * @param string|array|Query $from Table list: array('my_table [AS mt]'[, ...])
      */
     public function from($from) {
 
@@ -84,7 +84,7 @@ trait FromTrait {
      */
     protected function setTable($tableName, $tableAlias = null) {
 
-        $this->tables[] = array($tableName, $tableAlias);
+        $this->tables[] = [$tableName, $tableAlias];
 
     }
 

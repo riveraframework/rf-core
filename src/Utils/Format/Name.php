@@ -34,14 +34,15 @@ abstract class Name {
      * Transform a class name to a table name
      *
      * @param string $className Class name to transform
+     * @param bool $useNs Use namespace in the class name
      *
      * @return string
      */
-    public static function classToTable($className, $useFullNs = false) {
+    public static function classToTable($className, $useNs = false) {
 
         $classNameParts = explode('\\', $className);
 
-        if($useFullNs) {
+        if($useNs) {
             $tableName = implode('', $classNameParts);
         } else {
             $tableName = $classNameParts[count($classNameParts) -1];
@@ -143,7 +144,7 @@ abstract class Name {
     public static function fkToTable($fkName) {
 
         $tableName = substr($fkName, 0, -3);
-        $tableName = StringTransform::classToTable($tableName);
+        $tableName = self::classToTable($tableName);
 
         return $tableName;
 

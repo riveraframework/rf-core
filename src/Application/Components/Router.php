@@ -62,8 +62,13 @@ class Router {
      * Get the current route
      *
      * @return Route
+     * @throws \Exception
      */
     public function getCurrentRoute() {
+
+        if(!isset($this->currentRoute)) {
+            $this->route();
+        }
 
         return $this->currentRoute;
 
@@ -323,7 +328,7 @@ class Router {
 
         foreach ($availableDomains as $domain) {
 
-            if (in_array($domain, array('*.' . $currentDomain, rf_request()->getUri()->host()))) { // !!!!
+            if (in_array($domain, ['*.' . $currentDomain, rf_request()->getUri()->host()])) { // !!!!
                 return;
             }
 

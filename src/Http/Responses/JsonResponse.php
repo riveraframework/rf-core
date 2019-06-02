@@ -23,18 +23,28 @@ class JsonResponse extends Response {
 	protected $data;
 
     /**
-     * Create a new JSON Response
+     * JsonResponse constructor.
      *
-     * @param int $httpCode Response HTTP version
+     * @param int $code
+     */
+    public function __construct($code = 200) {
+
+        parent::__construct($code);
+
+        $this->data = [];
+        $this->setContentType('application/json; charset=utf-8');
+
+    }
+
+    /**
+     * Set the response data
+     *
      * @param array $data
      */
-    public function __construct($httpCode, array $data = []) {
+    public function setData(array $data) {
 
-	    parent::__construct($httpCode);
-
-	    $this->data = $data;
-	    $this->body = json_encode($data);
-	    $this->setContentType('application/json; charset=utf-8');
+        $this->data = $data;
+        $this->body = json_encode($data);
 
     }
 

@@ -55,7 +55,7 @@ trait JoinTrait {
 
         } elseif($type == 'outer') {
 
-            if(in_array(strtoupper($direction), array('RIGHT', 'LEFT'))) {
+            if(in_array(strtoupper($direction), ['RIGHT', 'LEFT'])) {
                 $this->joinClause .= strtoupper($direction). ' ';
             }
             $this->joinClause .= 'OUTER JOIN '.$table;

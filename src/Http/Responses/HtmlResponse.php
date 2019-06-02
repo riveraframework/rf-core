@@ -20,16 +20,14 @@ use Rf\Core\Http\Response;
 class HtmlResponse extends Response {
 
     /**
-     * Create a new HTML Response
+     * HtmlResponse constructor.
      *
-     * @param int $httpCode Response HTTP version
-     * @param string $content
+     * @param int $code
      */
-    public function __construct($httpCode, $content) {
+    public function __construct($code = 200) {
 
-	    parent::__construct($httpCode);
+	    parent::__construct($code);
 
-	    $this->setBody($content);
 	    $this->setContentType('text/html; charset=utf-8');
 
     }

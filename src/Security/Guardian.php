@@ -13,8 +13,6 @@ namespace Rf\Core\Security;
 /**
  * Class Guardian
  *
- * @since 1.0
- *
  * @package Rf\Core\Security
  */
 abstract class Guardian {
@@ -25,95 +23,117 @@ abstract class Guardian {
 	const MASK_SYMBOLS = 's';
 	const MASK_SYMBOLS_EXTENDED = 'D';
 
-    /**
-     * @var array
-     * @since 1.0
-     */
-    public static $availableHashes = array(
+    /** @var array */
+    public static $availableHashes = [
         'md5' => 32,
         'sha1' => 40
-    );
+    ];
 
-    /**
-     *
-     * @since 1.0
-     */
+    /** @var string  */
     const HASH_SHA1 = 'sha1';
 
     /**
      *
-     * @since 1.0
-     *
      * @param string $string
      * @param string $method (md5|sha1)
+     *
      * @return string 
      */
     public static function hash($string, $method) {
+
         $method = in_array($method, array_keys(self::$availableHashes)) ? $method : 'md5';
+
         return hash($method, $string);
+
     }
 
     /**
-     *
-     * @since 1.0
      *
      * @return string
      */
     public static function generateTmpPassword() {
+
         $tmpPwd = '';
         $str = 'abcdefghijklmnpqrstuvwxy0123456789';
         srand((double)microtime()*1000000);
-        for($i=0; $i<7; $i++) $tmpPwd .= $str[rand()%strlen($str)];
+
+        for($i = 0; $i < 7; $i++) {
+            $tmpPwd .= $str[rand()%strlen($str)];
+        }
+
         return $tmpPwd;
+
     }
 
     /**
      *
-     * @since 1.0
-     *
-     * @param $tmpPwd
+     * @param string $tmpPwd
      * @param null $method
+     *
      * @return string
      */
-    public static function cryptTmpPassword($tmpPwd, $method = NULL) {
+    public static function cryptTmpPassword($tmpPwd, $method = null) {
+
         $method = in_array($method, array_keys(self::$availableHashes)) ? $method : 'md5';
         $tmpCryptPwd = strrev(hash($method, $tmpPwd));
-        return substr($tmpCryptPwd, self::$availableHashes[$method]/2, self::$availableHashes[$method]/2).substr($tmpCryptPwd, 0, self::$availableHashes[$method]/2);
+
+        return substr(
+                $tmpCryptPwd,
+                self::$availableHashes[$method] / 2,
+                self::$availableHashes[$method] / 2
+            ) . substr(
+                $tmpCryptPwd,
+                0,
+                self::$availableHashes[$method] / 2
+            );
     }
 
     /**
      *
-     * @since 1.0
-     *
-     * @param $tmpPwd
+     * @param string $tmpPwd
      * @param null $method
+     *
      * @return string
      */
-    public static function decryptTmpPassword($tmpPwd, $method = NULL) {
+    public static function decryptTmpPassword($tmpPwd, $method = null) {
+
         $method = in_array($method, array_keys(self::$availableHashes)) ? $method : 'md5';
-        $tmpDecryptPwd = substr($tmpPwd, self::$availableHashes[$method]/2, self::$availableHashes[$method]/2).substr($tmpPwd, 0, self::$availableHashes[$method]/2);
+        $tmpDecryptPwd = substr(
+                $tmpPwd,
+                self::$availableHashes[$method] / 2,
+                self::$availableHashes[$method] / 2
+            ) . substr(
+                $tmpPwd,
+                0,
+                self::$availableHashes[$method] / 2
+            );
+
         return strrev($tmpDecryptPwd);
+
     }
 
     /**
      *
-     * @since 1.0
-     *
      * @param int $charNb
+     *
      * @return string
      */
     public static function generateValidationCode($charNb = 10) {
+
         $validationCode = '';
-        $chaine = 'abcdefghijklmnpqrstuvwxy0123456789';
+        $lettersMinNum = 'abcdefghijklmnpqrstuvwxy0123456789';
         srand((double)microtime()*1000000);
-        for($i=0; $i<$charNb; $i++) $validationCode .= $chaine[rand()%strlen($chaine)];
+
+        for($i = 0; $i < $charNb; $i++) {
+            $validationCode .= $lettersMinNum[rand()%strlen($lettersMinNum)];
+        }
+
         return $validationCode;
+
     }
     
     /**
      * This function generate a random key from a custom character list
-     *
-     * @since 1.0
      *
      * @param int $length
      * @param string $mask 
@@ -122,6 +142,7 @@ abstract class Guardian {
      *      -L: letterMaj A-Z,
      *      -s: symbols1 !-_+,.;:
      *      -S: symbols2 ()[]{}*%?€'"\|/#@<>
+     *
      * @return string
      */
     public static function generateSecurityKey($length = 16, $mask = '-n-l-L-s-S') {
@@ -133,8 +154,8 @@ abstract class Guardian {
         $symbols2 = '()[]{}*%?€\'"\\|/#@<>';
         
         $charPool = str_replace(
-            array('-n', '-l', '-L', '-s', '-S'), 
-            array($numbers, $lettersMin, $lettersMaj, $symbols, $symbols2), 
+            ['-n', '-l', '-L', '-s', '-S'],
+            [$numbers, $lettersMin, $lettersMaj, $symbols, $symbols2],
             $mask
         );
         
@@ -151,7 +172,7 @@ abstract class Guardian {
 	 *
 	 * @return string
 	 */
-    public static function generateSecurityKeyNew($length = 16, array $masks) {
+    public static function generateSecurityKeyNew($length = 16, array $masks = []) {
 
     	$masksArray = [
     		self::MASK_NUMBERS => '0123456789',
@@ -162,6 +183,11 @@ abstract class Guardian {
 	    ];
     	$charPool = '';
     	$key = '';
+
+    	// Set a default mask
+    	if(empty($masks)) {
+            $masks[] = self::MASK_LETTERS;
+        }
 
 	    foreach ($masks as $mask) {
 

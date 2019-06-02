@@ -24,8 +24,13 @@ use Rf\Core\Session\Interfaces\SessionInterface;
  */
 class MemcachedHaSession implements SessionInterface {
 
+    /** @var string  */
     const MAP_TYPE_STATIC = 'static';
+
+    /** @var string  */
     const MAP_TYPE_DYNAMIC = 'dynamic';
+
+    /** @var string  */
     const MAP_TYPE_FLEXIBLE = 'flexible';
 
     /** @var string $sessionName Session name */

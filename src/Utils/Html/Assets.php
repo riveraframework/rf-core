@@ -13,6 +13,8 @@ namespace Rf\Core\Utils\Html;
 /**
  * Class Assets
  *
+ * @TODO: Allow custom base paths for js, css and images
+ *
  * @package Rf\Core\Utils\Html
  */
 class Assets {
@@ -151,7 +153,7 @@ class Assets {
      *
      * @param bool $asHtml
      *
-     * @return string 
+     * @return array|string
      */
     public static function getEnqueuedStylesheets($asHtml = false) {
 

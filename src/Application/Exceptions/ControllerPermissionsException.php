@@ -14,7 +14,6 @@ use Rf\Core\Base\Exceptions\DebugException;
 
 /**
  * Class ControllerPermissionsException
- * @TODO: Improve (does not need a variable message)
  *
  * @package Rf\Core\Application\Exceptions
  */

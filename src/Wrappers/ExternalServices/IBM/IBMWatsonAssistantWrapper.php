@@ -15,6 +15,10 @@ use Rf\Core\Wrappers\ExternalServices\IBM\Services\IBMWatsonAssistant;
 /**
  * Class IBMWatsonAssistantWrapper
  *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
  * @package Rf\Core\Wrappers\ExternalServices\IBM
  */
 class IBMWatsonAssistantWrapper {

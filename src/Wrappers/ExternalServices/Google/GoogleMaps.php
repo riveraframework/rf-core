@@ -15,10 +15,17 @@ use Rf\Core\Base\Exceptions\SilentException;
 /**
  * Class GoogleMaps
  *
+ * @TODO: Refactor module
+ *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
  * @package Rf\Core\Wrappers\ExternalServices\Google
  */
 class GoogleMaps {
 
+    /** @var string Google Maps API key */
     protected $apiKey;
 
     /**
@@ -55,6 +62,7 @@ class GoogleMaps {
             }
 
             // Start CURL
+            // @TODO: Use internal Curl
             $curl_session = curl_init();
             curl_setopt($curl_session, CURLOPT_URL, $curl_url);
             curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, 1);
@@ -78,5 +86,7 @@ class GoogleMaps {
         } catch(SilentException $e) {
             return false;
         }
+
     }
+
 }

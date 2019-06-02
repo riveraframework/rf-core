@@ -250,6 +250,7 @@ class CacheService {
     public function flushAll($cacheIdentifiers = []) {
 
         foreach($this->cacheHandlers as $cacheHandler) {
+
             if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
                 continue;
             } else {

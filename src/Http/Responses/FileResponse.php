@@ -23,15 +23,13 @@ class FileResponse extends Response {
     protected $file;
 
     /**
-     * FileResponse constructor.
+     * Set the path of the file to serve
      *
      * @param string $file Path of the file to serve
      */
-    public function __construct($file) {
+    public function setFile($file) {
 
         $this->file = $file;
-        
-        parent::__construct();
 
     }
 

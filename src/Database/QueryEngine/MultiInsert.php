@@ -25,12 +25,21 @@ class MultiInsert extends Query {
     /** @var bool $updateOnDuplicate */
     public $updateOnDuplicate = false;
 
+    /**
+     * MultiInsert constructor.
+     *
+     * @param string|array|Query|null $tables
+     * @param string|null $database
+     */
     public function __construct($tables = null, $database = null) {
 
         parent::__construct('multi-insert', $tables, $database);
 
     }
 
+    /**
+     * Update on duplicate
+     */
     public function updateOnDuplicate() {
 
     	$this->updateOnDuplicate = true;

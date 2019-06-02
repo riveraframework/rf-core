@@ -14,8 +14,6 @@ namespace Rf\Core\Base;
  * Class ObjectTrait
  *
  * @package Rf\Core\Base
- * @version 1.0
- * @since 1.0
  */
 trait ObjectTrait {
 

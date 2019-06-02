@@ -17,11 +17,10 @@ namespace Rf\Core\Database;
  */
 class ConnectionRepository {
 
+    /** @var string Index type */
     const OPTION_INDEX_BY_ID = 'index-by-id';
 
-    /**
-     * @var PDO[]
-     */
+    /** @var PDO[] */
     public static $connections = [];
 
     /**

@@ -16,16 +16,18 @@ use Rf\Core\Http\Exceptions\CurlException;
 /**
  * Class IBMWatsonAssistant
  *
- * Note: This class is a work in progress
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
  *
  * @package Rf\Core\External\IBM
  */
 class IBMWatsonAssistant {
 
-    /** Watson API url */
+    /** @var string Watson API url */
     const API_URL = 'https://gateway.watsonplatform.net/assistant/api/v1/';
 
-    /** Supported endpoint list */
+    /** @var array Supported endpoint list */
     const ENDPOINTS = [
         'message-send' => '/workspaces/[WORKSPACE_ID]/message/',
         'entities-update' => '/workspaces/[WORKSPACE_ID]/entities/[ENTITY]',

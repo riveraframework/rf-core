@@ -38,6 +38,7 @@ trait QueryConnectionTrait {
      * Get the connection
      *
      * @return PDO
+     * @throws \Exception
      */
     public function getConnection() {
 

@@ -17,75 +17,46 @@ namespace Rf\Core\Base;
  */
 class Uri {
     
-    /**
-     * @var string Uri protocol
-     */
+    /** @var string Uri protocol */
     protected $protocol;
     
-    /**
-     *
-     * @var array Uri credentials
-     */
+    /** @var array Uri credentials */
     protected $credentials;
     
-    /**
-     * @var string Uri host
-     */
+    /** @var string Uri host */
     protected $host;
     
-    /**
-     * @var int Uri host type
-     */
+    /** @var int Uri host type */
     protected $hostType;
     
-    /**
-     * @var int Uri port
-     */
+    /** @var int Uri port */
     protected $port;
     
-    /**
-     * @var string Uri query
-     */
+    /** @var string Uri query */
     protected $query;
     
-    /**
-     * @var array Uri query params
-     */
+    /** @var array Uri query params */
     protected $queryString;
 
-    /**
-     * @var string $tmpUri
-     */
+    /** @var string $tmpUri */
     protected $tmpUri;
 
-    /**
-     *
-     */
+    /** @var int  */
     const INIT_WITH_CURRENT_URI = 1;
 
-    /**
-     *
-     */
+    /** @var int  */
     const HOST_TYPE_DOMAIN = 1;
 
-    /**
-     *
-     */
+    /** @var int  */
     const HOST_TYPE_IPV4 = 2;
 
-    /**
-     *
-     */
+    /** @var int  */
     const HOST_TYPE_IPV6 = 3;
 
-    /**
-     * IPv4 regex pattern
-     */
+    /** @var string IPv4 regex pattern */
     const REGEX_PATTERN_IPV4 = '/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/';
 
-    /**
-     * IPv6 regex pattern
-     */
+    /** @var string IPv6 regex pattern */
     const REGEX_PATTERN_IPV6 = '/^\s*((([0-9A-Fa-f]{1,4}:){7}
                                 (([0-9A-Fa-f]{1,4})|:))|(([0-9A-Fa-f]{1,4}:){6}
                                 (:|((25[0-5]|2[0-4]\d|[01]?\d{1,2})(\.(25[0-5]|2[0-4]\d|
@@ -110,7 +81,7 @@ class Uri {
     /**
      * Create a new Uri object
      *
-     * @param mixed $uri
+     * @param string|null $uri
      *
      * @return Uri
      */
@@ -247,6 +218,7 @@ class Uri {
      * Get/set the protocol part of the current Uri object
      *
      * @param null|string $protocol
+     *
      * @return Uri|string
      */
     public function protocol($protocol = null) {
@@ -269,6 +241,7 @@ class Uri {
      * Get/set the credentials part of the current Uri object
      *
      * @param null|array $credentials
+     *
      * @return Uri|array
      */
     public function credentials($credentials = null) {
@@ -291,6 +264,7 @@ class Uri {
      * Get/set the host part of the current Uri object
      *
      * @param null $host
+     *
      * @return Uri|string
      */
     public function host($host = null) {
@@ -333,6 +307,7 @@ class Uri {
      * Get/set the subdomain part of the current Uri object
      *
      * @param int|string $level [0-9]+|last
+     *
      * @return string|false
      */
     public function subDomain($level = 1) {
@@ -359,6 +334,7 @@ class Uri {
      * Get/set the port of the current Uri object
      *
      * @param null $port
+     *
      * @return Uri|int
      */
     public function port($port = null) {
@@ -381,6 +357,7 @@ class Uri {
      * Get/set the query part of the current Uri object
      *
      * @param null $query
+     *
      * @return Uri|string
      */
     public function query($query = null) {
@@ -403,6 +380,7 @@ class Uri {
      * Get/set the query params of the current Uri object
      *
      * @param null $queryString
+     *
      * @return Uri|array
      */
     public function queryString($queryString = null) {
@@ -463,7 +441,7 @@ class Uri {
         }
         // @TODO: Fix Protocol
 
-        $port = (in_array($_SERVER['SERVER_PORT'], array('80', '443'))) ? '' : (':'.$_SERVER['SERVER_PORT']);
+        $port = (in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? '' : (':'.$_SERVER['SERVER_PORT']);
 
         return $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
 
@@ -497,6 +475,7 @@ class Uri {
      * Get the domain part from an uri
      *
      * @param string $uri
+     *
      * @return string
      */
     public static function getDomainFromUri($uri) {

@@ -54,6 +54,7 @@ class Configuration {
      */
     protected function load($configurationFile) {
 
+        // Check if the configuration file exists
         if(!file_exists($configurationFile)) {
             throw new ConfigurationException(Log::TYPE_ERROR, 'The configuration file does not exist');
         }
@@ -86,7 +87,6 @@ class Configuration {
 	    /** @var ParameterSet|mixed $section */
 	    $section = $this->configuration;
 
-	    // @TODO Replace false by -1?
 	    $value = false;
 	    foreach($sectionParts as $sectionIndex => $sectionName) {
 

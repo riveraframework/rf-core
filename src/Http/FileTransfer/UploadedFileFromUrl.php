@@ -24,6 +24,8 @@ class UploadedFileFromUrl extends UploadedFile {
 	 *
 	 * @param string $url
 	 * @param mixed $key
+     *
+     * @throws \Exception
 	 */
 	public function __construct($url, $key = null) {
 
@@ -33,7 +35,7 @@ class UploadedFileFromUrl extends UploadedFile {
 		$urlParts = parse_url($url);
 		$pathParts = explode('/', $urlParts['path']);
 		$fileName = $pathParts[count($pathParts) - 1];
-		$fileTmpPath = rf_dir('IMGCENTER') . '/tmp/' . $fileName;
+		$fileTmpPath = rf_dir('tmp') . $fileName;
 
 		// Get file content from url
 		$curl = new Curl($url);

@@ -15,6 +15,10 @@ use Rf\Core\Wrappers\ExternalServices\Systempay\Services\SystempayIpn;
 /**
  * Class SystempayIpnWrapper
  *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
  * @package Rf\Core\Wrappers\ExternalServices\Systempay
  */
 class SystempayIpnWrapper {

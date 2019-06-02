@@ -20,6 +20,8 @@ use Rf\Core\Database\Tools as DatabaseTools;
 /**
  * Class Architect
  *
+ * @TODO: Add base classes to the entities/{conn}/classes folder if they don't exist
+ *
  * @package Rf\Core\Orm
  */
 class Architect {
@@ -60,9 +62,12 @@ class Architect {
     /**
      * Update all entity files using the tables
      *
+     * @param array $connectionNames
+     *
      * @return bool
+     * @throws \Exception
      */
-    public function refresh($connectionNames = []) {
+    public function refresh(array $connectionNames = []) {
 
 	    try {
 
@@ -131,11 +136,11 @@ class Architect {
      * Get or display the architect history
      *
      * @param bool $echo false: return (default)|true: display
-     * @return array
+     * @return array|void
      */
     public function history($echo = false) {
 
-        if($echo === true) {
+        if($echo) {
             echo $this->history;
         } else {
             return $this->history;
@@ -146,12 +151,14 @@ class Architect {
     /**
      * Generate the entity file
      *
-     * @param string $connName
-     * @param string $table
-     *
      * @TODO: Add phpDoc to generated files
+     *
+     * @param string $connName
+     * @param array $table
+     *
+     * @throws \Exception
      */
-    private function refreshClassFile($connName, $table) {
+    private function refreshClassFile($connName, array $table) {
 
         // Get table schema
         $structure = $this->getStructure($table['TABLE_NAME'], $table['TABLE_SCHEMA']);
@@ -163,7 +170,7 @@ class Architect {
 	    $fieldNames = DatabaseTools::getTableFieldNames($table['TABLE_NAME'], $table['TABLE_SCHEMA']);
         $propertyNames = Name::fieldsToProperties($fieldNames);
 
-        $this->history[] =  'Structure de la classe ' . ucfirst($classNameWithoutNs) . ' découpée avec succès.<br/>';
+        $this->history[] =  'Class structure for ' . ucfirst($classNameWithoutNs) . ' successfully decomposed.<br/>';
 
         // Create the file
         $fileName = $classNameWithoutNs . 'Model.php';
@@ -233,10 +240,13 @@ class Architect {
     }
 
     /**
+     * Get the table structure
+     *
      * @param string $table
      * @param null|string $schema
      *
      * @return string
+     * @throws \Exception
      */
     protected function getStructure($table, $schema = null) {
 
@@ -254,14 +264,6 @@ class Architect {
 
                     $field['Key'] = $field['Key'] == 'MUL' && Architect::is_fk($field['Field'], $table) ? 'FK' : $field['Key'];
 
-                    if(Entity::isDbStructureException($table, $field['Field'])) {
-
-                        foreach(Entity::getDbStructureException($table, $field['Field']) as $fieldException => $valueException) {
-                            $field[$fieldException] = $valueException;
-                        }
-
-                    }
-
                     $structure .= PHP_EOL;
                     $structure .= $this->tab(2). '\'' . $field['Field'] . '\'=> [' . PHP_EOL .
 		                            $this->tab(3) . '\'Type\'    => \'' . str_replace('\'', '\\\'', $field['Type']) . '\',' . PHP_EOL .
@@ -275,17 +277,17 @@ class Architect {
 
                 $structure = substr($structure, 0, strlen($structure)-1);
                 $structure .=  PHP_EOL . $this->tab(1) . ']';
-                $this->history[] =  '<span style="color:green;">Le schéma de la table "'.$table.'" a été défini avec succès.</span><br/>';
+                $this->history[] =  '<span style="color:green;">The table schema "'.$table.'" has been successfully defined.</span><br/>';
 
                 return $structure;
 
             } else {
-                throw new DebugException(Log::TYPE_ERROR, 'Impossible de récupérer le schéma');
+                throw new DebugException(Log::TYPE_ERROR, 'Unable to retrieve the schema');
             }
 
         } catch(DebugException $e) {
 
-            $this->history[] =  '<span style="color:red;">Le schéma de la table "'.$table.'" n\'a pas pu être défini.</span><br/>';
+            $this->history[] =  '<span style="color:red;">The table schema "'.$table.'" counldn\'t be defined.</span><br/>';
 
 	        return '';
 
@@ -310,16 +312,19 @@ class Architect {
 
         closedir($directoryOpen);
 
+        // @TODO: Check this
         if(count(glob(rf_dir('entities') . '/models/c_' . $connName . '/' . '*.php')) == count($files)) {
-            $this->history[] =  '<span style="color:green;">Les fichiers supplémentaires ont été supprimés avec succès.</span><br/><br/>';
+            $this->history[] =  '<span style="color:green;">The additional files have been removed.</span><br/><br/>';
         } else {
-            $this->history[] =  '<span style="color:red;">Les fichiers supplémentaires n\'ont pas pu être supprimés en totalité (' . count(glob(rf_dir('entities') . '/model/' . '*.php')) . '/' . (count($files)) . ').</span><br/><br/>';
+            $this->history[] =  '<span style="color:red;">The additional files couldn\'t all be removed. (' . count(glob(rf_dir('entities') . '/model/' . '*.php')) . '/' . (count($files)) . ').</span><br/><br/>';
         }
 
     }
     
     /**
-     * Cette fonction permet de tester si le champ est une clé étrangère ou non.
+     * Check if the field is a foreign key
+     *
+     * @TODO: Recreate of remove
      *
      * @param string $field
      * @param string $table

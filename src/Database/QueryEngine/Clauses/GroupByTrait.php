@@ -17,7 +17,7 @@ namespace Rf\Core\Database\QueryEngine\Clauses;
  */
 trait GroupByTrait {
 
-    /** @var string $groupByClause */
+    /** @var array $groupByClause */
     public $groupByClause = [];
 
 	/**

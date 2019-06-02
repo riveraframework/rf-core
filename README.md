@@ -11,9 +11,9 @@ Rivera Framework
 
 This repo contains a light PHP framework supporting :
 
-* Applications (Mvc, Cli)
+* Applications (MVC, Cli)
 * Database connection (MySQL) and query builder
-* ORM with command to generate models from database schema
+* ORM with command to generate models/classes from database schema
 * Cache management (Disk, Memcached) with support for redundancy
 * Session management (PHP, Memcached) with support for redundancy
 * Translations management (Classes, libs, templates)

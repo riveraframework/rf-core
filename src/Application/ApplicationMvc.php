@@ -19,6 +19,7 @@ use Rf\Core\Base\Exceptions\ErrorMessageException;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Cache\Exceptions\CacheConfigurationException;
 use Rf\Core\Http\Request;
+use Rf\Core\Http\ResponseInterface;
 use Rf\Core\I18n\I18n;
 use Rf\Core\Session\SessionService;
 use Rf\Core\Session\Sessions\MemcachedHaSession;
@@ -259,7 +260,6 @@ class ApplicationMvc extends Application {
         try {
 
             // Get the applicable route
-            $this->router->route();
             $route = $this->router->getCurrentRoute();
 
             // Get the controller name
@@ -275,13 +275,18 @@ class ApplicationMvc extends Application {
             if(method_exists($controller, 'wrapper')) {
 
                 Benchmark::log($controllerName . '::' . $actionName . ' started (with wrapper)');
-                $controller->wrapper($actionName);
+                $response = $controller->wrapper($actionName);
 
             } else {
 
                 Benchmark::log($controllerName . '::' . $actionName . ' started');
-                $controller->$actionName();
+                $response = $controller->$actionName();
 
+            }
+
+            if(is_a($response, ResponseInterface::class)) {
+                /** @var ResponseInterface $response */
+                $response->send();
             }
 
         } catch(\Error $error) {

@@ -20,6 +20,10 @@ use Rf\Core\Wrappers\ExternalServices\Google\Models\BaseStreet;
 /**
  * Class Location
  *
+ * *************************************************************************************
+ * **** /!\ The code in this module is experimental/incomplete use with caution /!\ ****
+ * *************************************************************************************
+ *
  * @package Rf\Core\Wrappers\ExternalServices\Google
  */
 class Location {
@@ -130,19 +134,19 @@ class Location {
      * @var array $errors
      * @since 1.0
      */
-    public $errors = array();
+    public $errors = [];
 
     /**
      * @var array $availableAdministrativeAreas
      * @since 1.0
      */
-    public static $availableAdministrativeAreas = array(
+    public static $availableAdministrativeAreas = [
         1 => 'administrative_area_level_1', 
         2 => 'administrative_area_level_2', 
         3 => 'administrative_area_level_3', 
         4 => 'administrative_area_level_4', 
         5 => 'administrative_area_level_5'
-    );
+    ];
 
     /**
      * @return string

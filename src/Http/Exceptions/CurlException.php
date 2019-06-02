@@ -15,7 +15,7 @@ use Rf\Core\Http\Curl;
 /**
  * Class CurlException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Http\Exceptions
  */
 class CurlException extends \Exception {
 

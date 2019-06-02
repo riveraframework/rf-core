@@ -22,7 +22,7 @@ use Rf\Core\Orm\Entity;
  */
 class PDO extends \PDO {
 
-    /** @var string */
+    /** @var string Connection name */
     protected $name;
 
     /** @var string */
@@ -34,8 +34,8 @@ class PDO extends \PDO {
     /**
      * PDO constructor.
      *
-     * @param array $connConfig
-     * @param array $connConfig
+     * @param string $name
+     * @param array $config
      */
     public function __construct($name, array $config) {
 
@@ -89,7 +89,7 @@ class PDO extends \PDO {
     /**
      * Prepare and execute a SQL query
      *
-     * @param \Rf\Core\Database\Query|string $query Query to execute
+     * @param Query|string $query Query to execute
      * @param $valueArray
      *
      * @return int
@@ -117,7 +117,7 @@ class PDO extends \PDO {
     /**
      * Add a record in database and get the ID
      *
-     * @param \Rf\Core\Database\Query|string $query Query to execute
+     * @param Query|string $query Query to execute
      * @param array $valueArray
      *
      * @return string
@@ -141,7 +141,7 @@ class PDO extends \PDO {
     /**
      * Get the result of a query as an array or array of arrays
      *
-     * @param \Rf\Core\Database\Query|string $query Query to execute
+     * @param Query|string $query Query to execute
      * @param array $valueArray Array of the value to use when preparing the query
      * @param bool $forceArray Force the result if unique as an array of array (false by default)
      * @param string $mode assoc|num|default(both)
@@ -189,13 +189,14 @@ class PDO extends \PDO {
      * Get the result of a query as an object or array of objects. A class name can be specified
      * to map the result in an object of this class.
      *
-     * @param \Rf\Core\Database\Query|string $query Query to execute
+     * @param Query|string $query Query to execute
      * @param array $valueArray Array of the value to use when preparing the query
      * @param string $className Class name to map the properties
      * @param bool $forceArray Force the result if unique as an array of array (false by default)
      * @param array $options Options
      *
      * @return object|object[]
+     * @throws \Exception
      * @throws DebugException
      */
     public function executeToObject($query, $valueArray = [], $className = null, $forceArray = false, array $options = []) {
@@ -254,9 +255,12 @@ class PDO extends \PDO {
     /**
      * Core process to get the table list to generate entity files
      *
-     * @throws DebugException
-     *
      * @TODO: Add support for multiple databases
+     *
+     * @param string $databaseName
+     * @return array
+     *
+     * @throws \Exception
      */
     public function getTableList($databaseName) {
 

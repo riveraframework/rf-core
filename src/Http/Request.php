@@ -375,7 +375,7 @@ class Request {
                         $_POST = $postParams; // Objet ou tableau ????
                     } else {
 
-                        $parsedData = array();
+                        $parsedData = [];
                         if(!empty($postParams)) {
                             foreach($postParams as $prop => $field) {
                                 if(isset($prop) && isset($field)) {
@@ -428,7 +428,7 @@ class Request {
     }
 
     /**
-     * Check if the data is form data: object->form === array(...)
+     * Check if the data is form data: object->form === [...]
      *
      * @param object $data
      *

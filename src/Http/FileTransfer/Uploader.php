@@ -20,16 +20,16 @@ class Uploader {
     /**
      * @var array Available extensions by category
      */
-    public $availableExt = array(
-        'img' => array('gif', 'jpg', 'jpeg', 'png')
-    );
+    public $availableExt = [
+        'img' => ['gif', 'jpg', 'jpeg', 'png']
+    ];
 
     /**
      * @var array Available MIME types by category
      */
-    public $availableMime = array(
-        'img' => array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png')
-    );
+    public $availableMime = [
+        'img' => ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/png']
+    ];
 
     /**
      * Check the format of a file
@@ -49,6 +49,8 @@ class Uploader {
             return !in_array(strtolower($ext), $this->availableExt['img']) || !in_array(strtolower($fileMime), $this->availableMime['img']) ? false : true;
         }
 
+        return false;
+
     }
 
     /**
@@ -64,4 +66,5 @@ class Uploader {
         return move_uploaded_file($source, $dest);
 
     }
+
 }

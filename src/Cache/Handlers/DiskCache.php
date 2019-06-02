@@ -10,7 +10,6 @@
 
 namespace Rf\Core\Cache\Handlers;
 
-use Rf\Core\Core\Core;
 use Rf\Core\System\AvailableFunctions;
 use Rf\Core\System\FileSystem\DirectoryFactory;
 
@@ -89,6 +88,8 @@ class DiskCache extends DefaultCache {
 
 	/**
 	 * Flush cache
+     *
+     * @throws \Exception
 	 */
 	public function flush() {
 

@@ -39,6 +39,7 @@ class SessionService {
      * Get a session
      *
      * @param string $name
+     *
      * @return SessionInterface|PhpSession|MemcachedHaSession
      * @throws \Exception
      */

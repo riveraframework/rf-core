@@ -19,7 +19,6 @@ use Rf\Core\System\Performance\Benchmark;
  * @package Rf\Core\Application\Components
  *
  * @TODO: Add a getRequest() method
- * @TODO: Move to Application/Components
  * @TODO: Add a "filter system" in the template e.g: `{string | camel_case}`
  */
 abstract class Controller {
@@ -42,9 +41,6 @@ abstract class Controller {
 
     /** @var string Default output format */
     public $defaultOutputFormat = 'html';
-
-    /** @var mixed Privilege(s) needed to access the controller */
-    public $privilege = null;
 
     /** @var string */
     public $language;
@@ -163,8 +159,6 @@ abstract class Controller {
             $viewFile = $normalFile;
         }
 
-        rf_debug($viewFile);
-
         // Get template path
         if(file_exists($viewFile)) {
 
@@ -202,8 +196,6 @@ abstract class Controller {
         } else {
             $viewFile = $normalFile;
         }
-
-        rf_debug($viewFile);
 
         // Get template path
         if(file_exists($viewFile)) {

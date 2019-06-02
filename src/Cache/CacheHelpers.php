@@ -36,6 +36,7 @@ namespace {
 	 * Get cache service
 	 *
 	 * @return CacheService
+     * @throws \Exception
 	 */
     function rf_cache() {
 
@@ -55,6 +56,7 @@ namespace {
 	 * @param string[] $cacheIdentifiers
 	 *
 	 * @return string
+     * @throws \Exception
 	 */
     function rf_cache_get($key, $cacheIdentifiers = []) {
 
@@ -74,6 +76,8 @@ namespace {
 	 * @param string $value
 	 * @param int $expires
 	 * @param string[] $cacheIdentifiers
+     *
+     * @throws \Exception
 	 */
     function rf_cache_set($key, $value, $expires = 0, $cacheIdentifiers = []) {
 
@@ -89,6 +93,8 @@ namespace {
 	 *
 	 * @param string $key
 	 * @param string[] $cacheIdentifiers
+     *
+     * @throws \Exception
 	 */
     function rf_cache_delete($key, $cacheIdentifiers = []) {
 
@@ -101,6 +107,8 @@ namespace {
 
 	/**
 	 * Flush all caches
+     *
+     * @throws \Exception
 	 */
     function rf_cache_flush_all() {
 

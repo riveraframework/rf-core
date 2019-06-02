@@ -15,7 +15,6 @@ use Rf\Core\Database\QueryEngine\Select;
 
 /**
  * Class Tools
- * Libraries containing useful function relatives to the database
  *
  * @package Rf\Core\Database
  */
@@ -27,7 +26,8 @@ abstract class Tools {
      * @param string $tableName Table name
      * @param string $database Database name
      *
-     * @return array 
+     * @return array
+     * @throws \Exception
      */
     public static function getTableFieldNames($tableName, $database = null) {
 
@@ -38,12 +38,13 @@ abstract class Tools {
 
         $result = $query->toArray(true);
 
-        $a_fields = array();
+        $fields = [];
         for($i = 0 ; $i < count($result) ; $i++) {
-            array_push($a_fields, $result[$i]['Field']);
+            array_push($fields, $result[$i]['Field']);
         }
 
-        return $a_fields;
+        return $fields;
+
     }
     
     /**
@@ -53,6 +54,7 @@ abstract class Tools {
      * @param string $database Database name
      *
      * @return bool
+     * @throws \Exception
      */
     public static function tableExist($tableName, $database = null) {
 
@@ -67,6 +69,7 @@ abstract class Tools {
         $result = $query->toArrayAssoc(true);
 
         return count($result) > 0 ? true : false;
+
     }
     
     /**
@@ -77,6 +80,7 @@ abstract class Tools {
      * @param string $tableName Table name
      *
      * @return int|false
+     * @throws \Exception
      */
     public static function rowCount($field, $value, $tableName) {
 
@@ -87,5 +91,7 @@ abstract class Tools {
         $result = $query->toArrayAssoc();
 
         return isset($result['count']) && is_numeric($result['count']) ? (int) $result['count'] : false;
+
     }
+
 }

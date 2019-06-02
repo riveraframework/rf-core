@@ -13,7 +13,7 @@ namespace Rf\Core\Utils\Format\Exceptions;
 /**
  * Class JsonDecodeException
  *
- * @package Rf\Core\Exception
+ * @package Rf\Core\Utils\Format\Exceptions
  */
 class JsonDecodeException extends \Exception {
 
@@ -23,6 +23,7 @@ class JsonDecodeException extends \Exception {
     /**
      * Create a new Exception
      *
+     * @param string $jsonString
      * @param string $message
      * @param int $code
      * @param \Exception $previous

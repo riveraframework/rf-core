@@ -31,6 +31,8 @@ namespace {
 
     use Rf\Core\Base\Exceptions\DebugException;
     use Rf\Core\Log\Log;
+    use Rf\Core\System\FileSystem\DirectoryFactory;
+    use Rf\Core\System\FileSystem\FileFactory;
 
     /**
      * Delete a directory, a file or only the directory content
@@ -44,14 +46,11 @@ namespace {
      */
     function rf_unlink($path, $content = false) {
 
-        if(!$content) {
-            is_file($path)
-                ? @unlink($path)
-                : array_map('rf_unlink', glob($path . '/*')) !== @rmdir($path);
-        } else {
-            array_map('rf_unlink', glob($path . '/*'));
-        }
+        is_file($path)
+            ? FileFactory::remove($path)
+            : DirectoryFactory::remove($path, $content);
 
+        // @TODO: Improve check
         if(!$content && (file_exists($path) || is_dir($path))) {
             throw new DebugException(Log::TYPE_ERROR, 'Unable to remove the element "' . $path . '"');
         }

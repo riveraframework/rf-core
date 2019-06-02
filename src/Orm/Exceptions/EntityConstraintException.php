@@ -27,8 +27,7 @@ class EntityConstraintException extends DataValidationException {
 	 * @param int $code
 	 * @param \Exception|null $previous
 	 */
-	public function __construct(array $data, $message = '', $code = 0, \Exception $previous = null)
-	{
+	public function __construct(array $data, $message = '', $code = 0, \Exception $previous = null) {
 
 		$finalMessage = $message !== '' ? $message : 'Invalid data passed to entity';
 

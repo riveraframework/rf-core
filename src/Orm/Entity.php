@@ -26,8 +26,7 @@ use Rf\Core\Database\QueryEngine\Update;
  *
  * @package Rf\Core\Orm
  *
- * @TODO: refaire le mapper d'objets avec DATETIME qui génère direct un objet date?
- * @TODO: WhereClause commune aux traitements
+ * @TODO: Option to retrieve DATETIME as Date objects
  *
  */
 abstract class Entity {
@@ -44,23 +43,17 @@ abstract class Entity {
     /** @var int */
     protected $id;
 
-    /**
-     * @var Entity $backup Clone of the entity at his initial state (new|get)
-     */
+    /** @var Entity $backup Clone of the entity at his initial state (new|get) */
     protected $backup;
 
     /** @var array $dbStructure Table structure in database */
     protected static $dbStructure;
 
-    /** @var array $dbStructureExceptions */
-    protected static $dbStructureExceptions = [];
-
     /**
      * Create an entity
      *
      * @param bool $backup
-     *
-     * @TODO: mettre les entités en cache dans des fichiers XML ? /entities/db
+     * @throws \Exception
      */
     public function __construct($backup = true) {
 
@@ -71,12 +64,22 @@ abstract class Entity {
 
     }
 
+    /**
+     * Get the entity ID
+     *
+     * @return int
+     */
     public function getId() {
 
         return $this->id;
 
     }
 
+    /**
+     * Set the entity ID
+     *
+     * @param int $id
+     */
     public function setId($id) {
 
         $this->id = $id;
@@ -99,27 +102,38 @@ abstract class Entity {
      *
      * @param Entity $entity
      *
-     * @throws DebugException
+     * @throws \Exception
      */
-    public function setBackup($entity = null) {
+    public function setBackup(Entity $entity = null) {
 
         if(is_null($entity)) {
+
             $this->backup = null;
+
         } elseif(!is_a($entity, static::class)) {
+
             throw new \Exception('Cannot set a backup of a different entity');
+
         } else {
+
             $this->backup = clone $entity;
             $this->backup->setBackup(null);
+
         }
 
     }
 
     /**
      * Create the backup entity
+     *
+     * @throws \Exception
      */
     public function createBackup() {
 
+        // Create the backup by cloning the current object
         $this->backup = clone $this;
+
+        // Remove the clone's backup
         $this->backup->setBackup(null);
 
     }
@@ -176,45 +190,6 @@ abstract class Entity {
     }
 
     /**
-     *
-     * @param $tableName
-     * @param $colName
-     *
-     * @return bool
-     */
-    public static function isDbStructureException($tableName, $colName) {
-
-        return isset(Entity::$dbStructureExceptions[$tableName][$colName]) ? true : false;
-
-    }
-
-    /**
-     *
-     * @param $tableName
-     * @param $colName
-     *
-     * @return array
-     */
-    public static function getDbStructureException($tableName, $colName) {
-
-        return isset(Entity::$dbStructureExceptions[$tableName][$colName]) ? Entity::$dbStructureExceptions[$tableName][$colName] : [];
-
-    }
-
-    /**
-     *
-     * @param $tableName
-     * @param $colName
-     * @param $field
-     * @param $value
-     */
-    public static function setDbStructureException($tableName, $colName, $field, $value) {
-
-        Entity::$dbStructureExceptions[$tableName][$colName][$field] = $value;
-
-    }
-
-    /**
      * Check if the property has a default value
      *
      * @param string $field Property name
@@ -223,7 +198,7 @@ abstract class Entity {
      */
     private function hasDefaultValue($field) {
 
-        return $this->getDbStructure($field, 'Default') != null ? true : false;
+        return $this->getDbStructure($field, 'Default') != null;
 
     }
 
@@ -249,7 +224,7 @@ abstract class Entity {
      */
     private function isNotNull($field) {
 
-        return $this->getDbStructure($field, 'Null') == 'NO' ? true : false;
+        return $this->getDbStructure($field, 'Null') == 'NO';
 
     }
 
@@ -262,7 +237,7 @@ abstract class Entity {
      */
     protected function isPrimaryKey($field) {
 
-        return $this->getDbStructure($field, 'Key') == 'PRI' ? true : false;
+        return $this->getDbStructure($field, 'Key') == 'PRI';
 
     }
 
@@ -273,9 +248,9 @@ abstract class Entity {
      *
      * @return bool
      */
-    private function isForeignKey($field) {
+    protected function isForeignKey($field) {
 
-        return $this->getDbStructure($field, 'Key')  == 'FK' ? true : false;
+        return $this->getDbStructure($field, 'Key')  == 'FK';
 
     }
 
@@ -288,13 +263,7 @@ abstract class Entity {
      */
     public static function isForeignKeyNew($fieldName) {
 
-        if(strpos($fieldName, '_id') && class_exists(Name::fkToClass($fieldName))) {
-
-            return true;
-
-        }
-
-        return false;
+        return strpos($fieldName, '_id') && class_exists(Name::fkToClass($fieldName));
 
     }
 
@@ -302,8 +271,6 @@ abstract class Entity {
      * Unset a property
      *
      * @param string $propertyName Property name
-     *
-     * @return void
      */
     public function unsetProperty($propertyName) {
 
@@ -312,24 +279,23 @@ abstract class Entity {
     }
 
     /**
-     * Get the primary key(s)
+     * Get the primary key(s), indexed by field name
      *
      * @return int|array
      */
     public function getPrimaryKeys() {
 
-        $pri = [];
+        $pks = [];
 
         foreach(get_object_vars($this) as $key => $value) {
 
             if($this->isPrimaryKey(Name::propertyToField($key))) {
-                $pri[$key] = $value;
-                $last = $key;
+                $pks[$key] = $value;
             }
 
         }
 
-        return count($pri) === 1 ? $pri[$last] : $pri;
+        return $pks;
 
     }
 
@@ -347,9 +313,7 @@ abstract class Entity {
     }
 
     /**
-     * Cette fonction retourne une chaine de caractère contenant la
-     * liste des champs de l'objet passé en paramètre et une seconde
-     * contenant la liste des valeurs correspondantes.
+     * Get an array of the params tu update during save
      *
      * @param bool $forceId (default:false)
      *
@@ -376,7 +340,7 @@ abstract class Entity {
             }
 
             $object = false;
-            // @TODO: gestion INT = 0
+            // @TODO: case where INT = 0
             if(
                 !isset($vars[$key])
                 || is_object($vars[$key])
@@ -387,7 +351,7 @@ abstract class Entity {
 
                 if(is_object($vars[$key])) {
 
-                    // Si son ID est null on commence par l'enregistrer en base.
+                    // Save in database if ID is null
                     if(is_a($vars[$key], Date::class)) {
                         $vars[$key] = $vars[$key]->format('sql');
                     } elseif(!isset($vars[$key]->id)) {
@@ -436,19 +400,20 @@ abstract class Entity {
      * @param bool $forceId
      *
      * @return int|string
+     * @throws \Exception
      */
     private function addEntity($forceId = false) {
 
-        // On récupère les champs et les valeurs à insérer
+        // Get fields and values to insert
         $params = $this->getParamsForSave($forceId);
 
-        // On prépare la requète
+        // Prepare query
         $query = new Insert(Name::classToTable(get_class($this)));
         $query->setConnection(ConnectionRepository::getConnection(static::conn_name));
         $query->fields($params['fields']);
         $query->values($params['values']);
 
-        // On l'exécute et on met à jour l'ID de l'entity avec celui qui vient d'être inséré
+        // Execute query and update the ID in the current object
         if(property_exists(get_class($this), 'id') && $forceId !== true) {
             return $this->id = $query->addAndGetId();
         } else {
@@ -458,17 +423,18 @@ abstract class Entity {
     }
 
     /**
-     * Cette fonction de modifier automatiquement une entité.
+     * Update an entity in database
      *
      * @param bool $forceId
      *
-     * @return int
+     * @return int|void
+     * @throws \Exception
      *
-     * @TODO: Sauver les objets en chaines !!
+     * @TODO: Update objects recursively
      */
     private function updateEntity($forceId = false) {
 
-        // On récupère les champs et les valeurs à modifier
+        // Get fields and values to update
         $params = $this->getParamsForSave($forceId);
 
         if(count($params['fields']) > 0) {
@@ -479,33 +445,22 @@ abstract class Entity {
             $query->values($params['values']);
             $uk = $this->getPrimaryKeys();
 
-            if(!is_array($uk)) {
+            foreach($uk as $property => $value) {
 
-                if(is_numeric($uk)) {
-                    $query->addWhereClauseEqual('id', $uk);
-                } elseif(!is_numeric($uk) && property_exists(get_class($this), 'username')) {
-                    $query->addWhereClauseEqual('username', $uk);
-                } elseif(!is_numeric($uk) && property_exists(get_class($this), 'slug')) {
-                    $query->addWhereClauseEqual('slug', $uk);
+                if(property_exists(get_class($this), $property)) {
+                    $query->whereAnd();
+                    $query->whereEqual(Name::propertyToField($property), $value);
                 }
 
-            } else {
-
-                $count = 1;
-                foreach($uk as $property => $value) {
-
-                    if(property_exists(get_class($this), $property)) {
-                        $count == 1
-                            ? $query->addWhereClauseEqual(Name::propertyToField($property), $value)
-                            : $query->addWhereClauseAndEqual(Name::propertyToField($property), $value);
-                        $count++;
-                    }
-
-                }
             }
 
             return $query->execute();
+
+        } else {
+            // No need to update
+            return;
         }
+
     }
 
     /**
@@ -631,10 +586,12 @@ abstract class Entity {
     }
 
     /**
-     * Cette fonction permet de déterminer si on est en train de tenter d'ajouter un
-     * nouvel objet ou si l'on tente de modifier un existant.
+     * Save the current entity in the database
+     * Automatically detect if the entity needs to be added or updated.
      *
      * @TODO: Add a flag when entity is retrieved from DB
+     *
+     * @throws DebugException
      */
     public function save() {
 
@@ -652,8 +609,8 @@ abstract class Entity {
 
             $this->backup = clone $this;
 
-        } catch(DebugException $e) {
-            throw new DebugException(Log::TYPE_ERROR, 'Impossible de sauver l\'entité (' . get_class($this) . ') :' . $e->getMessage());
+        } catch(\Exception $e) {
+            throw new DebugException(Log::TYPE_ERROR, 'Unable to save entity (' . self::class . ') :' . $e->getMessage());
         }
 
     }
@@ -663,6 +620,7 @@ abstract class Entity {
     /**
      * Delete an entity in database
      *
+     * @throws \Exception
      * @throws DebugException
      */
     public function remove() {
@@ -674,7 +632,7 @@ abstract class Entity {
 
             // Default process (primary key = id)
             if(!isset($this->id)) {
-                throw new DebugException(Log::TYPE_ERROR, 'Erreur de clé primaire (id)');
+                throw new DebugException(Log::TYPE_ERROR, 'Primary key error (id)');
             }
 
             $deleteQuery->whereEqual('id', $this->id);
@@ -704,7 +662,7 @@ abstract class Entity {
 
         // Throw an exception if the where clause is empty
         if(empty($deleteQuery->whereClause)) {
-            throw new DebugException(Log::TYPE_ERROR, 'Erreur de clé primaire');
+            throw new DebugException(Log::TYPE_ERROR, 'Primary key error');
         }
 
         // Execute query
@@ -713,11 +671,14 @@ abstract class Entity {
     }
 
     /**
-     * Cette fonction permet de supprimer l'entité cible. Il est possible de passer
-     * un tableau de clés primaires par la variable $uk.
+     * Delete an entity
+     *
+     * @TODO: Replace by a delete query
      *
      * @param string $className
      * @param mixed $uk
+     *
+     * @throws \Exception
      */
     public static function deleteEntity($className, $uk) {
 
@@ -726,11 +687,7 @@ abstract class Entity {
 
         if(!is_array($uk)) {
 
-            if(is_numeric($uk)) {
-                $object->id = $uk;
-            } elseif(!is_numeric($uk) && property_exists($className, 'slug')) {
-                $object->slug = $uk;
-            }
+            $object->id = $uk;
 
         } else {
 
@@ -750,7 +707,7 @@ abstract class Entity {
     public function unsigned() {
 
         $this->id = null;
-        $this->backup = clone new static(null, 'default', false);
+        $this->backup = clone new static(false);
 
     }
 
@@ -759,6 +716,7 @@ abstract class Entity {
      *
      * @param Entity $entity
      *
+     * @throws \Exception
      * @throws DebugException
      */
     public function replace($entity) {
@@ -805,6 +763,7 @@ abstract class Entity {
      * @param string $propertyName
      *
      * @return bool
+     * @throws \Exception
      */
     public static function exists($value, $propertyName = 'id') {
 
@@ -812,7 +771,7 @@ abstract class Entity {
             ->whereEqual($propertyName, $value)
             ->toCount();
 
-        return $count > 0 ? true : false;
+        return $count > 0;
 
     }
 
@@ -822,6 +781,7 @@ abstract class Entity {
      * @param string $alias
      *
      * @return Select
+     * @throws \Exception
      */
     public static function select($alias = '') {
 
@@ -839,6 +799,7 @@ abstract class Entity {
      * @param string $alias
      *
      * @return Update
+     * @throws \Exception
      */
     public static function update($alias = '') {
 
@@ -855,6 +816,7 @@ abstract class Entity {
      * @param string $alias
      *
      * @return Delete
+     * @throws \Exception
      */
     public static function delete($alias = '') {
 

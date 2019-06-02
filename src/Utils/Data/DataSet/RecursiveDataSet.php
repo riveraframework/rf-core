@@ -24,6 +24,8 @@ class RecursiveDataSet {
 	protected $children = [];
 
 	/**
+     * Get data
+     *
 	 * @return mixed
 	 */
 	public function getData() {
@@ -35,6 +37,13 @@ class RecursiveDataSet {
 
 	}
 
+    /**
+     * Add data
+     *
+     * @param int|string $identifier
+     * @param mixed $item
+     * @param int|string|null $parentIdentifier
+     */
 	public function addData($identifier, $item, $parentIdentifier = null) {
 
 		if(isset($parentIdentifier)) {
@@ -49,6 +58,8 @@ class RecursiveDataSet {
 	}
 
 	/**
+     * Get flat ordered data
+     *
 	 * @return array
 	 */
 	public function getFlatOrderedElements() {
@@ -67,7 +78,14 @@ class RecursiveDataSet {
 
 	}
 
-	public function addChildren(&$flatOrderedElements, $parentIdentifier, $level) {
+    /**
+     * Build the flat ordered data
+     *
+     * @param array $flatOrderedElements
+     * @param int|string $parentIdentifier
+     * @param int $level
+     */
+	protected function addChildren(&$flatOrderedElements, $parentIdentifier, $level) {
 
 		$level += 1;
 

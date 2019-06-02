@@ -38,7 +38,7 @@ abstract class ApiResponse {
      */
     public static function build($type, array $data = [], $message = '', $errCode = '') {
 
-        $response = array();
+        $response = [];
 
         if(in_array($type, [
             self::TYPE_SUCCESS,
