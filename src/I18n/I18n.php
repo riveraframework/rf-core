@@ -36,8 +36,13 @@ abstract class I18n {
 
         if(!rf_empty(rf_config('i18n.languages'))) {
 
-            self::$availableLanguages = explode(',', rf_config('i18n.languages'));
-            self::$defaultLanguage = self::$availableLanguages[0];
+            $languages = rf_config('i18n.languages');
+            if(!is_array($languages)) {
+                $languages = explode(',', $languages);
+            }
+
+            self::$availableLanguages = $languages;
+            self::$defaultLanguage = $languages[0];
 
         } else {
             self::$defaultLanguage = 'en';
