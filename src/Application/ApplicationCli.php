@@ -10,13 +10,11 @@
 
 namespace Rf\Core\Application;
 
-use Rf\Core\Application\Components\Configuration;
-use Rf\Core\Application\Components\Directories;
-use Rf\Core\Application\Components\ServiceProvider;
-use Rf\Core\Application\Exceptions\ConfigurationException;
-use Rf\Core\Cache\CacheService;
-use Rf\Core\Cache\Exceptions\CacheConfigurationException;
-use Rf\Core\I18n\I18n;
+use \Exception;
+
+use Rf\Core\Application\Interfaces\ApplicationInterface;
+use Rf\Core\Config\DirectoriesSet;
+use Rf\Core\Service\ServiceProvider;
 use Rf\Core\System\Performance\Benchmark;
 
 /**
@@ -24,7 +22,10 @@ use Rf\Core\System\Performance\Benchmark;
  *
  * @package Rf\Core\Application
  */
-class ApplicationCli extends Application {
+class ApplicationCli extends Application implements ApplicationInterface {
+
+    /** @var string  */
+    const TYPE = 'cli';
 
     /** @var ApplicationCli */
     protected static $applicationInstance;
@@ -32,42 +33,35 @@ class ApplicationCli extends Application {
     /**
      * Start the application init process
      *
-     * @throws ConfigurationException
-     * @throws CacheConfigurationException
+     * @throws Exception
      */
     public function init() {
+
+        // Define the application type
+        define('APPLICATION_TYPE', self::TYPE);
 
         // Start Benchmark tool
         Benchmark::init();
         Benchmark::log('init start');
-
-        // Register directories in current context
-        $this->directories = new Directories();
 
         // Init helpers and app classes autoload
         Autoload::init();
 
         // Register the service provider
         $this->serviceProvider = new ServiceProvider();
-        
+
+        // Register directories in current context
+        $this->directories = new DirectoriesSet();
+
         // Register application configuration
-        if(!empty($this->configurationFile)) {
-            $configuration = new Configuration($this->configurationFile);
-        } else {
-            $configuration = new Configuration();
-        }
-        $this->configuration = $configuration;
+        $this->registerDefaultConfigService();
 
         Benchmark::log('configuration loaded');
 
-        // Load cache handler
-        if(!rf_empty(rf_config('cache'))) {
-            $this->cacheService = new CacheService(rf_config('cache')->toArray());
-        }
-        
-        // Multi-lang support
-        I18n::init();
+        // Load services
+        $this->loadServices();
 
+        Benchmark::log('services loaded');
         Benchmark::log('init end');
 
     }
@@ -77,7 +71,7 @@ class ApplicationCli extends Application {
      *
      * @return ApplicationCli
      */
-    final public static function getInstance() {
+    final public static function getApp() {
 
         if (!isset(self::$applicationInstance)) {
 

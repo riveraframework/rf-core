@@ -10,7 +10,7 @@
 
 namespace Rf\Core\Base\Exceptions;
 
-use Rf\Core\Log\Log;
+use Rf\Core\Log\LogService;
 
 /**
  * Class PermissionException
@@ -31,7 +31,7 @@ class PermissionException extends DebugException {
 
 		$finalMessage = $message !== '' ? $message : 'Unauthorized access';
 
-		parent::__construct(Log::TYPE_ERROR, $finalMessage, $code, $previous);
+		parent::__construct(LogService::TYPE_ERROR, $finalMessage, $code, $previous);
 
 	}
 

@@ -17,26 +17,19 @@ namespace Rf\Core\Cache\Interfaces;
  */
 interface CacheInterface {
 
-	/**
-	 * Get cache identifier
-	 *
-	 * @return string
-	 */
-	public function getIdentifier();
-
-	/**
-	 * Set cache identifier
-	 *
-	 * @param string $identifier
-	 */
-	public function setIdentifier($identifier);
-
     /**
      * Get cache type
      *
      * @return string
      */
     public function getType();
+
+    /**
+     * Add endpoint
+     *
+     * @param string $endpoint
+     */
+    public function addEndpoint($endpoint);
 
     /**
      * Get cache endpoints

@@ -11,7 +11,7 @@
 namespace Rf\Core\System\FileSystem;
 
 use Rf\Core\Base\Exceptions\DebugException;
-use Rf\Core\Log\Log;
+use Rf\Core\Log\LogService;
 
 /**
  * Class FileFactory
@@ -19,6 +19,23 @@ use Rf\Core\Log\Log;
  * @package Rf\Core\System\FileSystem
  */
 class FileFactory {
+
+    /**
+     * Empty a file
+     *
+     * @param string $path
+     *
+     * @throws DebugException
+     */
+    public static function clear($path) {
+
+        if(is_file($path)) {
+            @unlink($path);
+        } else {
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to remove the file: ' . $path);
+        }
+
+    }
 
     /**
      * Delete a file
@@ -32,7 +49,7 @@ class FileFactory {
         if(is_file($path)) {
             @unlink($path);
         } else {
-            throw new DebugException(Log::TYPE_ERROR, 'Unable to remove the file: ' . $path);
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to remove the file: ' . $path);
         }
 
     }

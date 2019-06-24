@@ -10,8 +10,12 @@
 
 namespace Rf\Core\Session;
 
+use Rf\Core\Config\Exceptions\ConfigException;
+use Rf\Core\Log\LogService;
+use Rf\Core\Service\Service;
 use Rf\Core\Session\Interfaces\SessionInterface;
-use Rf\Core\Session\Sessions\MemcachedHaSession;
+use Rf\Core\Session\Sessions\MemcachedSession;
+use Rf\Core\Session\Sessions\MemcacheSession;
 use Rf\Core\Session\Sessions\PhpSession;
 
 /**
@@ -19,54 +23,116 @@ use Rf\Core\Session\Sessions\PhpSession;
  *
  * @package Rf\Core\Session
  */
-class SessionService {
+class SessionService extends Service {
 
-    /** @var array  */
-    protected $sessions = [];
+    /** @var string  */
+    const TYPE = 'session';
+
+    const HANDLER_TYPE_PHP = 'php';
+    const HANDLER_TYPE_MEMCACHE = 'memcache';
+    const HANDLER_TYPE_MEMCACHED = 'memcached';
+
+    /** @var SessionConfiguration */
+    protected $configuration;
+
+    /** @var SessionInterface[] $handlers */
+    protected $handlers;
 
     /**
-     * Add a session
+     * Load the cache configuration
      *
-     * @param SessionInterface $session
-     */
-    public function add(SessionInterface $session) {
-
-        $this->sessions[$session->getName()] = $session;
-
-    }
-
-    /**
-     * Get a session
+     * @param array $configuration
      *
-     * @param string $name
-     *
-     * @return SessionInterface|PhpSession|MemcachedHaSession
+     * @throws ConfigException
      * @throws \Exception
      */
-    public function get($name) {
+    public function loadConfiguration(array $configuration) {
 
-        if(isset($this->sessions[(string)$name])) {
+        $this->configuration = new SessionConfiguration($configuration);
 
-            return $this->sessions[(string)$name];
+        if(!empty($cacheConfig['handlers'])) {
 
-        } else {
+            foreach ($cacheConfig['handlers'] as $handlerIdentifier => $handlerConfig) {
 
-            throw new \Exception('Session not found');
+                // Check if the handler type is authorized
+                $handlerType = !empty($handlerConfig['type']) ? $handlerConfig['type'] : '';
+                if (!in_array($handlerType, [
+                    self::HANDLER_TYPE_PHP,
+                    self::HANDLER_TYPE_MEMCACHE,
+                    self::HANDLER_TYPE_MEMCACHED,
+                ])) {
+                    throw new ConfigException(LogService::TYPE_ERROR, 'Cache setup error: the cache type `' . $handlerType . '` does not exists');
+                }
+
+                switch ($handlerType) {
+
+                    // Create php session handler
+                    case self::HANDLER_TYPE_PHP:
+
+                        $phpSession = new PhpSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+
+                        if(!empty($sessionConfig['autostart'])) {
+                            $phpSession->start();
+                        }
+
+                        $this->handlers[] = $phpSession;
+                        break;
+
+                    // Create Memcache handler
+                    case self::HANDLER_TYPE_MEMCACHE:
+                    case self::HANDLER_TYPE_MEMCACHED:
+
+                        if($handlerType === self::HANDLER_TYPE_MEMCACHE) {
+                            $handler = new MemcacheSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                        } else {
+                            $handler = new MemcachedSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                        }
+
+                        // Check if the Memcached server list is empty
+                        $servers = $handlerConfig['servers'];
+                        if (empty($servers)) {
+                            throw new ConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached server list is empty');
+                        }
+
+                        // Add listed server to the Memcached handler
+                        foreach ($servers as $server) {
+
+                            if (empty($server['host']) || empty($server['port'])) {
+                                throw new ConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached configuration is invalid');
+                            }
+
+                            $handler->addServer($server['host'], $server['port']);
+
+                        }
+
+                        // Check that the memcached server support the common operations
+                        if (!empty($handlerConfig['required'])) {
+                            $handler->checkService();
+                        }
+
+                        if(!empty($sessionConfig['autostart'])) {
+                            $handler->start();
+                        }
+
+                        $this->handlers[] = $handler;
+                        break;
+
+                }
+
+            }
 
         }
 
     }
 
     /**
-     * Remove a session (does not destroy the session)
+     * Get available session handlers
      *
-     * @param string $name
+     * @return SessionInterface[]
      */
-    public function remove($name) {
+    public function getHandlers() {
 
-        if(isset($this->sessions[(string)$name])) {
-            unset($this->sessions[(string)$name]);
-        }
+        return $this->handlers;
 
     }
 

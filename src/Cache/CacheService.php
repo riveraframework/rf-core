@@ -12,9 +12,11 @@ namespace Rf\Core\Cache;
 
 use Rf\Core\Cache\Handlers\DiskCache;
 use Rf\Core\Cache\Handlers\MemcacheCache;
-use Rf\Core\Cache\Exceptions\CacheConfigurationException;
+use Rf\Core\Cache\Exceptions\CacheConfigException;
 use Rf\Core\Cache\Handlers\MemcachedCache;
 use Rf\Core\Cache\Interfaces\CacheInterface;
+use Rf\Core\Log\LogService;
+use Rf\Core\Service\Service;
 
 /**
  * Class Cache
@@ -23,29 +25,39 @@ use Rf\Core\Cache\Interfaces\CacheInterface;
  *
  * @package Rf\Core\Cache
  */
-class CacheService {
+class CacheService extends Service {
+
+    const TYPE = 'cache';
 
     const HANDLER_TYPE_DISK = 'disk';
     const HANDLER_TYPE_MEMCACHE = 'memcache';
     const HANDLER_TYPE_MEMCACHED = 'memcached';
     const HANDLER_TYPE_REDIS = 'redis';
 
+    /** @var CacheConfiguration */
+    protected $configuration;
+
     /** @var CacheInterface[] $cacheHandlers  */
     protected $cacheHandlers = [];
 
     /**
-     * Memcache constructor.
+     * Load the cache configuration
      *
-     * @param array $cacheConfig
+     * @param array $configuration
      *
-     * @throws CacheConfigurationException
+     * @throws CacheConfigException
      * @throws \Exception
      */
-    public function __construct(array $cacheConfig) {
+    public function loadConfiguration(array $configuration) {
 
-        if(!empty($cacheConfig['handlers'])) {
+        $this->configuration = new CacheConfiguration($configuration);
 
-            foreach ($cacheConfig['handlers'] as $handlerIdentifier => $handlerConfig) {
+        // Get handlers
+        $handlers = $this->configuration->getHandlers();
+
+        if(!empty($handlers)) {
+
+            foreach ($handlers as $handlerIdentifier => $handlerConfig) {
 
                 // Check if the handler type is authorized
                 $handlerType = !empty($handlerConfig['type']) ? $handlerConfig['type'] : '';
@@ -54,79 +66,51 @@ class CacheService {
                     self::HANDLER_TYPE_MEMCACHE,
                     self::HANDLER_TYPE_MEMCACHED,
                 ])) {
-                    throw new CacheConfigurationException('Cache setup error: the cache type `' . $handlerType . '` does not exists');
+                    throw new CacheConfigException(LogService::TYPE_ERROR, 'Cache setup error: the cache type `' . $handlerType . '` does not exists');
                 }
 
                 switch ($handlerType) {
 
                     // Create Memcache handler
                     case self::HANDLER_TYPE_MEMCACHE:
-
-                        $memcache = new MemcacheCache();
-                        $memcache->setIdentifier($handlerIdentifier);
-
-                        // Check if the Memcache server list is empty
-                        $servers = $handlerConfig['servers'];
-                        if (empty($servers)) {
-                            throw new CacheConfigurationException('Cache setup error: the Memcache server list is empty');
-                        }
-
-                        // Add listed server to the Memcache handler
-                        foreach ($servers as $server) {
-
-                            if (empty($server['host']) || empty($server['port'])) {
-                                throw new CacheConfigurationException('Cache setup error: the Memcache configuration is invalid');
-                            }
-
-                            $memcache->addServer($server['host'], $server['port']);
-
-                        }
-
-                        // Check that the memcached server support the common operations
-                        if (!empty($handlerConfig['required'])) {
-                            $memcache->checkService();
-                        }
-
-                        $this->cacheHandlers[] = $memcache;
-                        break;
-
-                    // Create Memcached handler
                     case self::HANDLER_TYPE_MEMCACHED:
 
-                        $memcached = new MemcachedCache(!empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
-                        $memcached->setIdentifier($handlerIdentifier);
+                        if($handlerType === self::HANDLER_TYPE_MEMCACHE) {
+                            $handler = new MemcacheCache(!empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                        } else {
+                            $handler = new MemcachedCache(!empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                        }
 
                         // Check if the Memcached server list is empty
                         $servers = $handlerConfig['servers'];
                         if (empty($servers)) {
-                            throw new CacheConfigurationException('Cache setup error: the Memcached server list is empty');
+                            throw new CacheConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached server list is empty');
                         }
 
                         // Add listed server to the Memcached handler
                         foreach ($servers as $server) {
 
                             if (empty($server['host']) || empty($server['port'])) {
-                                throw new CacheConfigurationException('Cache setup error: the Memcached configuration is invalid');
+                                throw new CacheConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached configuration is invalid');
                             }
 
-                            $memcached->addServer($server['host'], $server['port']);
+                            $handler->addServer($server['host'], $server['port']);
 
                         }
 
                         // Check that the memcached server support the common operations
                         if (!empty($handlerConfig['required'])) {
-                            $memcached->checkService();
+                            $handler->checkService();
                         }
 
-                        $this->cacheHandlers[] = $memcached;
+                        $this->cacheHandlers[] = $handler;
                         break;
 
                     // Create disk handler
                     case self::HANDLER_TYPE_DISK:
 
                         // Create disk cache handler
-                        $diskCache = new DiskCache();
-                        $diskCache->setIdentifier($handlerIdentifier);
+                        $diskCache = new DiskCache(!empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
                         $this->cacheHandlers[] = $diskCache;
                         break;
 
@@ -150,46 +134,20 @@ class CacheService {
     }
 
     /**
-     * Get a specific cache handler
-     *
-     * @return CacheInterface
-     */
-    public function getHandler($identifier) {
-
-        foreach($this->cacheHandlers as $handler) {
-
-            if($handler->getIdentifier() === $identifier) {
-
-                return $handler;
-
-            }
-
-        }
-
-        return null;
-
-    }
-
-    /**
      * Get value from cache
      *
      * @param string $key
-     * @param string[] $cacheIdentifiers
      *
      * @return string
      */
-    public function get($key, $cacheIdentifiers = []) {
+    public function get($key) {
 
         foreach($this->cacheHandlers as $cacheHandler) {
 
-            if(empty($cacheIdentifier) || in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
+            $value = $cacheHandler->get($key);
 
-                $value = $cacheHandler->get($key);
-
-                if($value !== false) {
-                    return $value;
-                }
-
+            if($value !== false) {
+                return $value;
             }
 
         }
@@ -206,17 +164,12 @@ class CacheService {
      * @param string $key
      * @param string $value
      * @param int $expires
-     * @param string[] $cacheIdentifiers
      */
-    public function set($key, $value, $expires = 0, $cacheIdentifiers = []) {
+    public function set($key, $value, $expires = 0) {
 
         foreach($this->cacheHandlers as $cacheHandler) {
 
-            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-                continue;
-            } else {
-                $cacheHandler->set($key, $value, $expires);
-            }
+            $cacheHandler->set($key, $value, $expires);
 
         }
 
@@ -226,17 +179,12 @@ class CacheService {
      * Delete value
      *
      * @param string $key
-     * @param string[] $cacheIdentifiers
      */
-    public function delete($key, $cacheIdentifiers = []) {
+    public function delete($key) {
 
         foreach($this->cacheHandlers as $cacheHandler) {
 
-            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-                continue;
-            } else {
-                $cacheHandler->delete($key);
-            }
+            $cacheHandler->delete($key);
 
         }
 
@@ -244,20 +192,41 @@ class CacheService {
 
     /**
      * Flush all caches
-     *
-     * @param string[] $cacheIdentifiers
      */
-    public function flushAll($cacheIdentifiers = []) {
+    public function flushAll() {
 
         foreach($this->cacheHandlers as $cacheHandler) {
 
-            if(!empty($cacheIdentifiers) && !in_array($cacheHandler->getIdentifier(), $cacheIdentifiers)) {
-                continue;
-            } else {
-                $cacheHandler->flush();
-            }
+            $cacheHandler->flush();
 
         }
+
+    }
+
+    /**
+     * Generate a basic cache key
+     *
+     * @param string[] $params
+     *
+     * @return string
+     */
+    public static function generateBasicCacheKey(array $params) {
+
+        return md5(implode('-', $params));
+
+    }
+
+    /**
+     * Generate a basic cache key with a prefix
+     *
+     * @param string $prefix
+     * @param string[] $params
+     *
+     * @return string
+     */
+    public static function generateBasicCacheKeyWithPrefix($prefix, array $params) {
+
+        return $prefix . md5(implode('-', $params));
 
     }
 

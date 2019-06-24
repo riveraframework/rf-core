@@ -172,8 +172,9 @@ abstract class Name {
      */
     public static function controllerToModule($controllerName) {
 
-        $moduleName = explode('Controller', $controllerName);
-        $moduleName = strtolower($moduleName[0]);
+        $controllerWithNsNameParts = explode('\\', $controllerName);
+        $controllerNameParts = explode('Controller', $controllerWithNsNameParts[count($controllerWithNsNameParts) - 1]);
+        $moduleName = strtolower($controllerNameParts[0]);
 
         return $moduleName;
 
@@ -188,9 +189,10 @@ abstract class Name {
      */
     public static function moduleToController($moduleName) {
 
-        $controllerName = StringTransform::toPascalCase($moduleName);
+        $controllerNs = 'App\\Module\\' . StringTransform::toPascalCase($moduleName);
+        $controllerName = StringTransform::toPascalCase($moduleName) . 'Controller';
 
-        return $controllerName . 'Controller';
+        return $controllerNs . '\\' . $controllerName;
 
     }
 }

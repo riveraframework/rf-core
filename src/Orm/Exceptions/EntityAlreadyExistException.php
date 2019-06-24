@@ -11,7 +11,7 @@
 namespace Rf\Core\Orm\Exceptions;
 
 use Rf\Core\Base\Exceptions\DebugException;
-use Rf\Core\Log\Log;
+use Rf\Core\Log\LogService;
 use Rf\Core\Orm\Entity;
 
 /**
@@ -37,7 +37,7 @@ class EntityAlreadyExistException extends DebugException {
         $this->entity = $entity;
         $finalMessage = $message !== '' ? $message : 'Entity ' . get_class($this->entity) . ' with id ' . $this->entity->getId() . ' already exists';
 
-        parent::__construct(Log::TYPE_ERROR, $finalMessage, $code, $previous);
+        parent::__construct(LogService::TYPE_ERROR, $finalMessage, $code, $previous);
 
     }
 

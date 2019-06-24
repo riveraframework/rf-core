@@ -13,7 +13,7 @@ namespace Rf\Core\Log {
     /**
      * Class SessionHelpers
      *
-     * @package Rf\Core\Session
+     * @package Rf\Core\Log
      */
     class LogHelpers {
 
@@ -37,7 +37,7 @@ namespace {
 	 */
     function rf_log($type, $message) {
 
-    	new Rf\Core\Log\Log($type, $message);
+    	new Rf\Core\Log\LogService($type, $message);
 
     }
 

@@ -10,127 +10,141 @@
 
 namespace Rf\Core\Cache\Handlers;
 
-use Rf\Core\System\AvailableFunctions;
+use Rf\Core\Cache\Interfaces\CacheInterface;
 use Rf\Core\System\FileSystem\DirectoryFactory;
+use Rf\Core\System\FileSystem\DiskPathWriter;
 
 /**
  * Class DiskCache
  *
  * @package Rf\Core\Cache\Handlers
  */
-class DiskCache extends DefaultCache {
-
-    /** @var string $type */
-    protected $type = 'disk';
-
-	/**
-	 * DiskCache constructor.
-	 */
-	public function __construct() {}
-
-	/**
-	 * Get value from disk cache
-	 *
-	 * @param string $key
-	 * @param int $expires
-	 *
-	 * @return string <p>
-	 * Returns a string or false on failure or if expired
-	 * </p>
-	 */
-	public function get($key, $expires = 0) {
-
-		// Get the file cache path
-		$cacheFilePath = $this->buildCachePath($key);
-
-		if(file_exists($cacheFilePath) && (filemtime($cacheFilePath) + $expires > time())) {
-			return file_get_contents($cacheFilePath);
-		}
-
-	    return false;
-
-	}
-
-	/**
-	 * Set value in disk cache
-	 *
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function set($key, $value) {
-
-		// Get the file cache path
-		$cacheFilePath = $this->buildCachePath($key);
-
-		if(!is_dir(dirname($cacheFilePath))) {
-			mkdir(dirname($cacheFilePath), 0775, true);
-		}
-
-		file_put_contents($cacheFilePath, $value);
-
-	}
-
-	/**
-	 * Delete value
-	 *
-	 * @param string $key
-	 */
-	public function delete($key) {
-
-		// Get the file cache path
-		$cacheFilePath = $this->buildCachePath($key);
-
-		if(file_exists($cacheFilePath)) {
-			unlink($cacheFilePath);
-		}
-
-	}
-
-	/**
-	 * Flush cache
-     *
-     * @throws \Exception
-	 */
-	public function flush() {
-
-		if(AvailableFunctions::isShellExecEnabled() === true) {
-
-			$cmd = 'rm -rf ' . rf_dir('cache') . '/*';
-			shell_exec($cmd);
-
-		} else {
-
-            rf_unlink(rf_dir('cache'), true);
-
-		}
-
-	}
+class DiskCache extends DiskPathWriter implements CacheInterface {
 
     /**
-     * Get cache stats
+     * Get the cache type
+     *
+     * @return string
+     */
+    public function getType() {
+
+        return 'disk';
+
+    }
+
+    /**
+     * Add an endpoint
+     *
+     * @param string $endpoint
+     */
+    public function addEndpoint($endpoint) {
+
+        $this->addPath($endpoint);
+
+    }
+
+    /**
+     * Get cache endpoints
      *
      * @return array
      */
-	public function getStats() {
+    public function getEndpoints() {
 
-	    // @TODO: Add different paths for the disk cache handler (equiv. of memcached servers)
-	    // @TODO: Count files and folders
-	    return [
-	        // Return stats for each path
-        ];
+        return $this->paths;
+
+    }
+    /**
+     * Get value from disk cache
+     *
+     * @param string $key
+     * @param int $expires
+     *
+     * @return string <p>
+     * Returns a string or false on failure or if expired
+     * </p>
+     */
+    public function get($key, $expires = 0) {
+
+        foreach($this->paths as $path) {
+
+            // Get the file cache path
+            $cacheFilePath = $this->buildCachePath($path, $key);
+
+            $cachedResponse = parent::getFile($cacheFilePath, $expires);
+
+            if($cachedResponse) {
+                return $cachedResponse;
+            }
+
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Set value in disk cache
+     *
+     * @param string $key
+     * @param string $value
+     */
+    public function set($key, $value) {
+
+        foreach($this->paths as $path) {
+
+            // Get the file cache path
+            $cacheFilePath = $this->buildCachePath($path, $key);
+
+            parent::writeFile($cacheFilePath, $value);
+
+        }
+
+    }
+
+    /**
+     * Delete value
+     *
+     * @param string $key
+     */
+    public function delete($key) {
+
+        foreach($this->paths as $path) {
+
+            // Get the file cache path
+            $cacheFilePath = $this->buildCachePath($path, $key);
+
+            parent::deleteFile($cacheFilePath);
+
+        }
+
+    }
+
+    /**
+     * Flush cache
+     *
+     * @throws \Exception
+     */
+    public function flush() {
+
+        foreach($this->paths as $path) {
+
+            parent::flushPath($path);
+
+        }
 
     }
 
     /**
 	 * Build the cache file path
 	 *
+	 * @param string $basePath
 	 * @param string $key
 	 *
 	 * @return string
 	 */
-	protected function buildCachePath($key) {
+	protected function buildCachePath($basePath, $key) {
 
-		$path = rf_dir('cache');
+		$path = $basePath;
 		$path .= DirectoryFactory::buildRelativePathFromString($key);
 		$path .= $key . '.cache';
 

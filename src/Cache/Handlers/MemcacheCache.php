@@ -10,6 +10,7 @@
 
 namespace Rf\Core\Cache\Handlers;
 
+use Rf\Core\Cache\Interfaces\CacheInterface;
 use Rf\Core\Wrappers\InternalServices\Memcache\MemcacheWrapper;
 
 /**
@@ -19,123 +20,40 @@ use Rf\Core\Wrappers\InternalServices\Memcache\MemcacheWrapper;
  *
  * @package Rf\Core\Cache\Handlers
  */
-class MemcacheCache extends DefaultCache {
-
-    /** @var string $type */
-    protected $type = 'memcache';
-
-    /** @var MemcacheWrapper $memcached */
-	protected $memcache;
-
-	/**
-	 * MemcacheCache constructor.
-	 */
-	public function __construct() {
-
-		$this->memcache = new MemcacheWrapper();
-
-	}
+class MemcacheCache extends MemcacheWrapper implements CacheInterface {
 
     /**
-     * Get memcache
+     * Get the cache type
      *
-     * @return MemcacheWrapper
+     * @return string
      */
-    public function getMemcache() {
+    public function getType() {
 
-        return $this->memcache;
+        return 'memcache';
 
     }
 
-	/**
-	 * Add a server
-	 *
-	 * @param string $host
-	 * @param string $port
-	 */
-	public function addServer($host, $port) {
-
-		$this->memcache->getService()->addServer($host, $port);
-        $this->endpoints[] = $host . ':' . $port;
-
-	}
-
     /**
-     * Check if the write/read operations work
+     * Add an endpoint
      *
-     * @throws \Exception
+     * @param string $endpoint
      */
-    public function checkService() {
+    public function addEndpoint($endpoint) {
 
-        $check = $this->memcache->getService()->get('memcached-check');
+        list($host, $port) = explode(':', $endpoint);
 
-        if(!$check) {
-
-            $this->memcache->getService()->set('memcached-check', 1, 3600);
-            $check = $this->memcache->getService()->get('memcached-check');
-
-        }
-
-        if(!$check) {
-            throw new \Exception('The Memcached servers are not accessible.');
-        }
+        $this->addServer($host, $port);
 
     }
 
-	/**
-	 * Get value
-	 *
-	 * @param string $key
-	 *
-	 * @return string
-	 */
-	public function get($key) {
-
-		return $this->memcache->getService()->get($key);
-
-	}
-
-	/**
-	 * Set value
-	 *
-	 * @param string $key
-	 * @param string $value
-	 * @param int $expires
-	 */
-	public function set($key, $value, $expires = 0) {
-
-		$this->memcache->getService()->set($key, $value, null, $expires);
-
-	}
-
-	/**
-	 * Delete value
-	 *
-	 * @param string $key
-	 */
-	public function delete($key) {
-
-		$this->memcache->getService()->delete($key);
-
-	}
-
-	/**
-	 * Flush cache
-	 */
-	public function flush() {
-
-		$this->memcache->getService()->flush();
-
-	}
-
     /**
-     * Get cache stats
+     * Get cache endpoints
      *
      * @return array
      */
-    public function getStats() {
+    public function getEndpoints() {
 
-        return $this->memcache->getService()->getExtendedStats();
+        return $this->servers;
 
     }
 

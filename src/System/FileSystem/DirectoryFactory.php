@@ -11,7 +11,7 @@
 namespace Rf\Core\System\FileSystem;
 
 use Rf\Core\Base\Exceptions\DebugException;
-use Rf\Core\Log\Log;
+use Rf\Core\Log\LogService;
 
 /**
  * Class DirectoryFactory
@@ -33,7 +33,7 @@ class DirectoryFactory {
     public static function create($path, $mode = 0755, $recursive = false) {
 
         if(!mkdir($path, $mode, $recursive)) {
-            throw new DebugException(Log::TYPE_ERROR, 'Unable to create dir: ' . $path);
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to create dir: ' . $path);
         }
 
         return true;
@@ -59,7 +59,7 @@ class DirectoryFactory {
             }
 
         } else {
-            throw new DebugException(Log::TYPE_ERROR, 'Unable to remove dir: ' . $path);
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to remove dir: ' . $path);
         }
 
     }

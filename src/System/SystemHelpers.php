@@ -30,7 +30,7 @@ namespace Rf\Core\System {
 namespace {
 
     use Rf\Core\Base\Exceptions\DebugException;
-    use Rf\Core\Log\Log;
+    use Rf\Core\Log\LogService;
     use Rf\Core\System\FileSystem\DirectoryFactory;
     use Rf\Core\System\FileSystem\FileFactory;
 
@@ -52,7 +52,7 @@ namespace {
 
         // @TODO: Improve check
         if(!$content && (file_exists($path) || is_dir($path))) {
-            throw new DebugException(Log::TYPE_ERROR, 'Unable to remove the element "' . $path . '"');
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to remove the element "' . $path . '"');
         }
 
     }

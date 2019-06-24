@@ -10,9 +10,12 @@
 
 namespace Rf\Core\Application;
 
+use Rf\Core\Base\BaseHelpers;
 use Rf\Core\Cache\CacheHelpers;
+use Rf\Core\Http\HttpHelpers;
 use Rf\Core\I18n\I18nHelpers;
 use Rf\Core\Log\LogHelpers;
+use Rf\Core\Route\RouterHelpers;
 use Rf\Core\Session\SessionHelpers;
 use Rf\Core\System\SystemHelpers;
 
@@ -32,9 +35,12 @@ abstract class Autoload {
 
         // Load helpers
         ApplicationHelpers::init();
+        BaseHelpers::init();
         CacheHelpers::init();
+        HttpHelpers::init();
         I18nHelpers::init();
         LogHelpers::init();
+        RouterHelpers::init();
         SessionHelpers::init();
         SystemHelpers::init();
 

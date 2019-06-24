@@ -33,18 +33,15 @@ namespace {
 
 	/**
 	 * Get cache service
+     *
+     * @param string $name
 	 *
 	 * @return CacheService
-     * @throws \Exception
+     * @throws Exception
 	 */
-    function rf_cache() {
+    function rf_cache($name = '') {
 
-    	$cacheService = rf_app()->getCacheService();
-    	if(empty($cacheService)) {
-    		return null;
-	    } else {
-    		return $cacheService;
-	    }
+    	return rf_sp()->getCache($name);
 
     }
 
@@ -55,16 +52,29 @@ namespace {
 	 * @param string[] $cacheIdentifiers
 	 *
 	 * @return string
-     * @throws \Exception
+     * @throws Exception
 	 */
     function rf_cache_get($key, $cacheIdentifiers = []) {
 
-    	$cacheService = rf_app()->getCacheService();
-    	if(empty($cacheService)) {
-    		return false;
-	    } else {
-    		return $cacheService->get($key, $cacheIdentifiers);
-	    }
+        // Use default cache if no identifiers are provided
+        if(empty($cacheIdentifiers)) {
+            $cacheIdentifiers = [''];
+        }
+
+        // Look for the key in every requested cache service
+        foreach($cacheIdentifiers as $cacheIdentifier) {
+
+            // Try to get the value
+            $cachedValue = rf_sp()->getCache($cacheIdentifier)->get($key);
+
+            // Return the value if we found it
+            if($cachedValue !== false) {
+                return $cachedValue;
+            }
+
+        }
+
+        return false;
 
     }
 
@@ -76,14 +86,23 @@ namespace {
 	 * @param int $expires
 	 * @param string[] $cacheIdentifiers
      *
-     * @throws \Exception
+     * @throws Exception
 	 */
     function rf_cache_set($key, $value, $expires = 0, $cacheIdentifiers = []) {
 
-    	$cacheService = rf_app()->getCacheService();
-    	if(!empty($cacheService)) {
-    		$cacheService->set($key, $value, $expires, $cacheIdentifiers);
-	    }
+        // Use default cache if no identifiers are provided
+        if(empty($cacheIdentifiers)) {
+            $cacheIdentifiers = [''];
+        }
+
+        // Look for the key in every requested cache service
+        foreach($cacheIdentifiers as $cacheIdentifier) {
+
+            // Try to get the value
+            $cacheService = rf_sp()->getCache($cacheIdentifier);
+            $cacheService->set($key, $value, $expires);
+
+        }
 
     }
 
@@ -93,28 +112,46 @@ namespace {
 	 * @param string $key
 	 * @param string[] $cacheIdentifiers
      *
-     * @throws \Exception
+     * @throws Exception
 	 */
     function rf_cache_delete($key, $cacheIdentifiers = []) {
 
-    	$cacheService = rf_app()->getCacheService();
-    	if(!empty($cacheService)) {
-    		$cacheService->delete($key, $cacheIdentifiers);
-	    }
+        // Use default cache if no identifiers are provided
+        if(empty($cacheIdentifiers)) {
+            $cacheIdentifiers = [''];
+        }
+
+        // Look for the key in every requested cache service
+        foreach($cacheIdentifiers as $cacheIdentifier) {
+
+            // Try to get the value
+            $cacheService = rf_sp()->getCache($cacheIdentifier);
+            $cacheService->delete($key);
+
+        }
 
     }
 
 	/**
 	 * Flush all caches
      *
-     * @throws \Exception
+     * @throws Exception
 	 */
     function rf_cache_flush_all() {
 
-    	$cacheService = rf_app()->getCacheService();
-    	if(!empty($cacheService)) {
-    		$cacheService->flushAll();
-	    }
+        // Use default cache if no identifiers are provided
+        if(empty($cacheIdentifiers)) {
+            $cacheIdentifiers = [''];
+        }
+
+        // Look for the key in every requested cache service
+        foreach($cacheIdentifiers as $cacheIdentifier) {
+
+            // Try to get the value
+            $cacheService = rf_sp()->getCache($cacheIdentifier);
+            $cacheService->flushAll();
+
+        }
 
     }
 

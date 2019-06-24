@@ -10,16 +10,14 @@
 
 namespace Rf\Core\Session;
 
-use Rf\Core\Base\ObjectTrait;
+use Rf\Core\Base\BaseObject;
 
 /**
  * Class Cookie
  *
  * @package Rf\Core\Session
  */
-class Cookie {
-
-    use ObjectTrait;
+class Cookie extends BaseObject {
 
     /** @var string $name Name of the cookie*/
     public $name;

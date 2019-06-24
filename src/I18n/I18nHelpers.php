@@ -29,43 +29,49 @@ namespace Rf\Core\I18n {
 
 namespace {
 
-    use Rf\Core\I18n\I18n;
+    use Rf\Core\I18n\I18nContext;
 
     /**
      * Get the current language
      *
+     * @param string $serviceName
+     *
      * @return string
+     * @throws \Exception
      */
-    function rf_current_language() {
+    function rf_current_language($serviceName = '') {
 
-        return Rf\Core\I18n\I18n::$currentLanguage;
+        return rf_sp()->getI18n($serviceName)->getCurrentLanguage();
 
     }
 
     /**
      * Get the available languages
      *
+     * @param string $serviceName
+     *
      * @return array
+     * @throws \Exception
      */
-    function rf_available_languages() {
+    function rf_available_languages($serviceName = '') {
 
-        return Rf\Core\I18n\I18n::$availableLanguages;
+        return rf_sp()->getI18n($serviceName)->getConfiguration()->getAvailableLanguages();
 
     }
 
     /**
-     * Get the translation of a string
+     * Get the translation of a string from a data set
      *
-     * @param string $msgid,...
+     * @param string $key
+     * @param I18nContext $context
+     * @param array $vars
      *
      * @return string
+     * @throws \Exception
      */
-    function __($msgid) {
+    function rf_t($key, I18nContext $context, array $vars = []) {
 
-        $args = func_get_args();
-        array_shift($args);
-
-        return I18n::translate($msgid, $args);
+        return rf_sp()->getI18n($context->getServiceName())->translateFromDataSet($key, $context->getDataset(), $vars);
 
     }
 
@@ -76,6 +82,7 @@ namespace {
      * @param array $dataset
      *
      * @return string
+     * @throws \Exception
      */
     function _t($key, $dataset) {
 
@@ -83,7 +90,7 @@ namespace {
         array_shift($args);
         array_shift($args);
 
-        return I18n::translateFromDataSet($key, $dataset, $args);
+        return rf_sp()->getI18n()->translateFromDataSet($key, $dataset, $args);
 
     }
 

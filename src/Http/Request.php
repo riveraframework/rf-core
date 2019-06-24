@@ -171,7 +171,7 @@ class Request {
 
             if(!empty($subParam)) {
 
-                if(!is_a($this->{$param}, 'ParameterSet')) {
+                if(!is_a($this->{$param}, ParameterSet::class)) {
                     return false;
                 } else {
                     return $this->{$param}->get($subParam);
@@ -332,17 +332,15 @@ class Request {
             $this->isHttps = false;
         }
 
-        if($this->uri->host() == rf_config('app.domain-mobile')) {
+        // @TODO: strpos check
+        if($this->uri->host() == rf_config('app.url-mobile')) {
             $this->isMobile = true;
         } else {
             $this->isMobile = false;
         }
 
-        if($this->uri->host() == rf_config('app.domain-api')) {
+        if($this->uri->host() == rf_config('app.url-api')) {
             $this->isApi = true;
-            header('Allow: OPTIONS, GET, POST, PUT, DELETE');
-            header('Access-Control-Allow-Origin: *'); // http://' . rf_config('api.domain')
-            header('Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, DELETE');
         } else {
             $this->isApi = false;
         }
@@ -363,16 +361,19 @@ class Request {
 
             case 'POST':
             case 'PUT':
+            case 'PATCH':
 
                 if($this->getContentType() == 'application/json') {
 
+                    // @TODO: Refactor
                     $phpInput = file_get_contents('php://input');
                     $postParams = json_decode($phpInput);
 
+                    // @TODO: Add an option in app to prevent automatic processing
                     if($this->isFormData($postParams) === true) {
                         $_POST = $this->parseFormData(json_decode($phpInput, true));
                     } elseif($this->isApi()) {
-                        $_POST = $postParams; // Objet ou tableau ????
+                        $_POST = $postParams; // @TODO: Object or table ????
                     } else {
 
                         $parsedData = [];
@@ -401,10 +402,6 @@ class Request {
                 }
 
                 $this->deleteData = new ParameterSet($deleteParamsParsed);
-
-                break;
-
-            case 'PATCH':
                 break;
 
             case 'HEAD':
@@ -502,11 +499,22 @@ class Request {
     }
 
     /**
+     * Detect if the visitor is a known user agent (bot)
+     *
+     * @return bool
+     */
+    public function is_bot() {
+
+        return (preg_match('([bB]ot|[sS]pider|[yY]ahoo)', $_SERVER['HTTP_USER_AGENT'])) ? true : false;
+
+    }
+
+    /**
      * Check is the current request is an API request
      *
      * @return bool
      */
-    final public function isApi() {
+    public function isApi() {
 
         return $this->isApi;
 
@@ -517,7 +525,7 @@ class Request {
      *
      * @return bool
      */
-    final public function isAjax() {
+    public function isAjax() {
 
         return $this->isAjax;
 
@@ -528,7 +536,7 @@ class Request {
      *
      * @return bool
      */
-    final public function isMobile() {
+    public function isMobile() {
 
         return $this->isMobile;
 

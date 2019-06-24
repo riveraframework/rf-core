@@ -10,17 +10,24 @@
 
 namespace Rf\Core\Application;
 
-use Rf\Core\Application\Components\Configuration;
-use Rf\Core\Application\Components\Directories;
-use Rf\Core\Application\Components\ServiceProvider;
+use \Exception;
+
 use Rf\Core\Cache\CacheService;
+use Rf\Core\Config\ConfigService;
+use Rf\Core\Config\DirectoriesSet;
+use Rf\Core\I18n\I18nService;
+use Rf\Core\Log\LogService;
+use Rf\Core\Orm\OrmService;
+use Rf\Core\Route\RouterService;
+use Rf\Core\Service\ServiceLauncher;
+use Rf\Core\Service\ServiceProvider;
 
 /**
  * Class Application
  *
  * @package Rf\Core\Application
  */
-abstract class Application implements ApplicationInterface {
+abstract class Application {
 
     /** @var string Application name*/
     protected $name;
@@ -28,10 +35,7 @@ abstract class Application implements ApplicationInterface {
     /** @var string Path to the configuration file */
     protected $configurationFile;
 
-    /** @var Configuration Current Configuration object */
-    protected $configuration;
-
-    /** @var Directories Current Directories object */
+    /** @var DirectoriesSet Current Directories object */
     protected $directories;
 
     /** @var ServiceProvider ServiceProvider instance */
@@ -42,6 +46,17 @@ abstract class Application implements ApplicationInterface {
 
     /** @var array Vars to debug */
     protected $debugVars = [];
+
+    /**
+     * @var array Hooks for custom actions
+     *
+     * @TODO: extend the hook system
+     */
+    protected $hooks = [
+        'init' => [],
+        'before_handle_request' => [],
+        'after_handle_request' => [],
+    ];
 
     /**
      * Get application name
@@ -66,13 +81,148 @@ abstract class Application implements ApplicationInterface {
     }
 
     /**
-     * Get a configuration parameter by name
-     *
-     * @return Configuration
+     * Register the default config service
      */
-    public function getConfiguration() {
+    public function registerDefaultConfigService() {
 
-        return $this->configuration;
+        // Define the config service configuration
+        if(!empty($this->configurationFile)) {
+            $configuration = [
+                'file' => $this->configurationFile
+            ];
+        } else {
+            $configuration = [
+                'file' => rf_dir('config') . 'config.php'
+            ];
+        }
+
+        // Create a new config service launcher
+        $launcher = new ServiceLauncher(function () use ($configuration) {
+
+            return new ConfigService(ConfigService::TYPE, 'default', $configuration, true);
+
+        });
+
+        // Register the service
+        $this->serviceProvider->add(ConfigService::TYPE, 'default', $launcher, true);
+
+    }
+
+    /**
+     * Load the services from the config file
+     *
+     * @throws Exception
+     */
+    public function loadServices() {
+
+        // Get the services from the configuration
+        $services = $this->serviceProvider->getConfig()->getServices();
+
+        foreach ($services as $service) {
+
+            // Define definition args
+            $type = isset($service['definition']['type']) ? $service['definition']['type'] : '';
+            $name = isset($service['definition']['name']) ? $service['definition']['name'] : '';
+            $enabled = empty($service['definition']['enabled']) ? false : true;
+            $default = !empty($service['definition']['default']) ? true : false;
+            $configuration = !empty($service['configuration']) ? $service['configuration'] : [];
+
+            // Skip disabled services
+            if(!$enabled) {
+                continue;
+            }
+
+            switch ($type) {
+
+                case 'cache':
+
+                    // Create a new cache service launcher
+                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+
+                        return new CacheService($type, $name, $configuration, $default);
+
+                    });
+
+                    break;
+
+                case 'i18n':
+
+                    // Create a new i18n service launcher
+                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+
+                        return new I18nService($type, $name, $configuration, $default);
+
+                    });
+
+                    break;
+
+                case 'log':
+
+                    // Create a new log service launcher
+                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+
+                        return new LogService($type, $name, $configuration, $default);
+
+                    });
+
+                    break;
+
+                case 'orm':
+
+                    // Create a new orm service launcher
+                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+
+                        return new OrmService($type, $name, $configuration, $default);
+
+                    });
+
+                    break;
+
+                case 'router':
+
+                    // Create a new router service launcher
+                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+
+                        return new RouterService($type, $name, $configuration, $default);
+
+                    });
+
+                    break;
+
+                default:
+
+                    if(class_exists($type)) {
+
+                        // In this case the type is supposed to be a class name so we need to get the real type using
+                        // the value of the class constant TYPE. If the constant in not defined we use the class name
+                        // as service type.
+                        if(defined($type . '::TYPE')) {
+                            $realType = $type::TYPE;
+                        } else {
+                            $realType = $type;
+                        }
+
+                        // Create a new custom service launcher
+                        $launcher = new ServiceLauncher(function () use ($type, $realType, $name, $configuration, $default) {
+
+                            return new $type($realType, $name, $configuration, $default);
+
+                        });
+
+                    }
+
+                    break;
+
+            }
+
+            // Register the service launcher
+            if(isset($launcher)) {
+
+                $this->serviceProvider->add($type, $name, $launcher, $default);
+
+            }
+
+        }
 
     }
 
@@ -131,6 +281,64 @@ abstract class Application implements ApplicationInterface {
     public function getDebugVars() {
 
         return $this->debugVars;
+
+    }
+
+    /**
+     * Register a function|method to be executed at some points of the application execution using hooks
+     *
+     * @param string $timing Hook name
+     * @param string $action Action name (function or static method)
+     *
+     * @return boolean
+     */
+    public function registerAction($timing, $action) {
+
+        if(in_array($timing, array_keys($this->hooks))) {
+
+            $this->hooks[$timing][] = $action;
+
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * Get the actions registered for a specific hook
+     *
+     * @param string $hookName Hook name
+     *
+     * @return array
+     */
+    public function getHooks($hookName) {
+
+        return !empty($this->hooks[$hookName]) ? $this->hooks[$hookName] : [];
+
+    }
+
+    /**
+     * Execute the functions|methods for a specific hook
+     *
+     * @param $hookName
+     */
+    public function executeActions($hookName) {
+
+        foreach($this->getHooks($hookName) as $action) {
+
+            if(is_string($action) && preg_match('#::#', $action)) {
+
+                $actionParts = explode('::', $action);
+
+                $actionParts[0]::$actionParts[1]();
+
+            } else {
+                $action();
+            }
+
+        }
 
     }
     

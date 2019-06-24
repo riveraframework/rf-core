@@ -12,14 +12,12 @@ namespace Rf\Core\Orm;
 
 use Rf\Core\Base\Date;
 use Rf\Core\Base\Exceptions\DebugException;
-use Rf\Core\Database\PDO;
-use Rf\Core\Log\Log;
+use Rf\Core\Database\MySQL\MySQLConnection;
+use Rf\Core\Database\MySQL\QueryBuilder\Delete;
+use Rf\Core\Database\MySQL\QueryBuilder\Select;
+use Rf\Core\Database\MySQL\QueryBuilder\Update;
+use Rf\Core\Log\LogService;
 use Rf\Core\Utils\Format\Name;
-use Rf\Core\Database\ConnectionRepository;
-use Rf\Core\Database\QueryEngine\Delete;
-use Rf\Core\Database\QueryEngine\Insert;
-use Rf\Core\Database\QueryEngine\Select;
-use Rf\Core\Database\QueryEngine\Update;
 
 /**
  * Class Entity
@@ -27,6 +25,7 @@ use Rf\Core\Database\QueryEngine\Update;
  * @package Rf\Core\Orm
  *
  * @TODO: Option to retrieve DATETIME as Date objects
+ * @TODO: Method to getAsFk passing an id and a classname
  *
  */
 abstract class Entity {
@@ -43,8 +42,8 @@ abstract class Entity {
     /** @var int */
     protected $id;
 
-    /** @var Entity $backup Clone of the entity at his initial state (new|get) */
-    protected $backup;
+    /** @var Entity $previousState Clone of the entity at his initial state (new|get) */
+    protected $previousState;
 
     /** @var array $dbStructure Table structure in database */
     protected static $dbStructure;
@@ -91,9 +90,9 @@ abstract class Entity {
      *
      * @return static
      */
-    public function getBackup() {
+    public function getPreviousState() {
 
-        return $this->backup;
+        return $this->previousState;
 
     }
 
@@ -104,11 +103,11 @@ abstract class Entity {
      *
      * @throws \Exception
      */
-    public function setBackup(Entity $entity = null) {
+    public function setPreviousState(Entity $entity = null) {
 
         if(is_null($entity)) {
 
-            $this->backup = null;
+            $this->previousState = null;
 
         } elseif(!is_a($entity, static::class)) {
 
@@ -116,8 +115,8 @@ abstract class Entity {
 
         } else {
 
-            $this->backup = clone $entity;
-            $this->backup->setBackup(null);
+            $this->previousState = clone $entity;
+            $this->previousState->setPreviousState(null);
 
         }
 
@@ -131,33 +130,10 @@ abstract class Entity {
     public function createBackup() {
 
         // Create the backup by cloning the current object
-        $this->backup = clone $this;
+        $this->previousState = clone $this;
 
         // Remove the clone's backup
-        $this->backup->setBackup(null);
-
-    }
-
-    /**
-     * Get table name
-     *
-     * @return string
-     */
-    public static function getTableName() {
-
-        return static::table_name;
-
-    }
-
-    /**
-     * Get connection
-     *
-     * @return PDO
-     * @throws \Exception
-     */
-    public static function getConnection() {
-
-        return ConnectionRepository::getConnection(static::conn_name);
+        $this->previousState->setPreviousState(null);
 
     }
 
@@ -344,9 +320,9 @@ abstract class Entity {
             if(
                 !isset($vars[$key])
                 || is_object($vars[$key])
-                || (!is_object($vars[$key]) && is_object($this->backup->$key))
-                || $vars[$key] != $this->backup->$key
-                || (!$vars[$key] && !isset($this->backup->$key))
+                || (!is_object($vars[$key]) && is_object($this->previousState->$key))
+                || $vars[$key] != $this->previousState->$key
+                || (!$vars[$key] && !isset($this->previousState->$key))
             ) {
 
                 if(is_object($vars[$key])) {
@@ -376,7 +352,7 @@ abstract class Entity {
 
                 } else {
 
-                    if($object === true || ($this->isNotNull($key) === false && $vars[$key] == $this->backup->$key)) {
+                    if($object === true || ($this->isNotNull($key) === false && $vars[$key] == $this->previousState->$key)) {
                         // Do nothing
                     } elseif($this->isNotNull($key) === true  && $this->hasDefaultValue($key) === true) {
                         array_push($params['fields'], Name::propertyToField($key));
@@ -408,8 +384,9 @@ abstract class Entity {
         $params = $this->getParamsForSave($forceId);
 
         // Prepare query
-        $query = new Insert(Name::classToTable(get_class($this)));
-        $query->setConnection(ConnectionRepository::getConnection(static::conn_name));
+        // @TODO: Replace by $this->getConnection()?
+        $conn = rf_sp()->getDatabase(static::conn_name)->getConnection();
+        $query = $conn->getQueryBuilder()->insert(static::table_name);
         $query->fields($params['fields']);
         $query->values($params['values']);
 
@@ -439,8 +416,8 @@ abstract class Entity {
 
         if(count($params['fields']) > 0) {
 
-            $query = new Update(Name::classToTable(get_class($this)));
-            $query->setConnection(ConnectionRepository::getConnection(static::conn_name));
+            $conn = rf_sp()->getDatabase(static::conn_name)->getConnection();
+            $query = $conn->getQueryBuilder()->update(static::table_name);
             $query->fields($params['fields']);
             $query->values($params['values']);
             $uk = $this->getPrimaryKeys();
@@ -607,10 +584,10 @@ abstract class Entity {
                 $this->addEntity();
             }
 
-            $this->backup = clone $this;
+            $this->previousState = clone $this;
 
         } catch(\Exception $e) {
-            throw new DebugException(Log::TYPE_ERROR, 'Unable to save entity (' . self::class . ') :' . $e->getMessage());
+            throw new DebugException(LogService::TYPE_ERROR, 'Unable to save entity (' . self::class . ') :' . $e->getMessage());
         }
 
     }
@@ -632,7 +609,7 @@ abstract class Entity {
 
             // Default process (primary key = id)
             if(!isset($this->id)) {
-                throw new DebugException(Log::TYPE_ERROR, 'Primary key error (id)');
+                throw new DebugException(LogService::TYPE_ERROR, 'Primary key error (id)');
             }
 
             $deleteQuery->whereEqual('id', $this->id);
@@ -662,7 +639,7 @@ abstract class Entity {
 
         // Throw an exception if the where clause is empty
         if(empty($deleteQuery->whereClause)) {
-            throw new DebugException(Log::TYPE_ERROR, 'Primary key error');
+            throw new DebugException(LogService::TYPE_ERROR, 'Primary key error');
         }
 
         // Execute query
@@ -707,7 +684,7 @@ abstract class Entity {
     public function unsigned() {
 
         $this->id = null;
-        $this->backup = clone new static(false);
+        $this->previousState = clone new static(false);
 
     }
 
@@ -722,12 +699,12 @@ abstract class Entity {
     public function replace($entity) {
 
         if(!is_a($entity, static::class)) {
-            throw new DebugException(Log::TYPE_ERROR, 'Cannot replace and entity with a different type of entity');
+            throw new DebugException(LogService::TYPE_ERROR, 'Cannot replace and entity with a different type of entity');
         }
 
         $entity->setId($this->id);
-        $entity->setBackup($this);
-        $entity->getBackup()->setBackup(null);
+        $entity->setPreviousState($this);
+        $entity->getPreviousState()->setPreviousState(null);
         $entity->save();
 
     }
@@ -753,6 +730,29 @@ abstract class Entity {
         }
 
         return $array;
+
+    }
+
+    /**
+     * Get table name
+     *
+     * @return string
+     */
+    public static function getTableName() {
+
+        return static::table_name;
+
+    }
+
+    /**
+     * Get connection
+     *
+     * @return MySQLConnection
+     * @throws \Exception
+     */
+    public static function getConnection() {
+
+        return rf_sp()->getDatabase(static::conn_name)->getConnection();
 
     }
 
@@ -785,8 +785,8 @@ abstract class Entity {
      */
     public static function select($alias = '') {
 
-        $select = new Select(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $select->setConnection(static::getConnection());
+        $conn = rf_sp()->getDatabase(static::conn_name)->getConnection();
+        $select = $conn->getQueryBuilder()->select(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
         $select->setFetchEntity(static::class);
 
         return $select;
@@ -803,8 +803,8 @@ abstract class Entity {
      */
     public static function update($alias = '') {
 
-        $update = new Update(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $update->setConnection(static::getConnection());
+        $conn = rf_sp()->getDatabase(static::conn_name)->getConnection();
+        $update = $conn->getQueryBuilder()->update(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
 
         return $update;
 
@@ -820,8 +820,8 @@ abstract class Entity {
      */
     public static function delete($alias = '') {
 
-        $delete = new Delete(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
-        $delete->setConnection(static::getConnection());
+        $conn = rf_sp()->getDatabase(static::conn_name)->getConnection();
+        $delete = $conn->getQueryBuilder()->delete(static::table_name . ($alias != '' ? ' AS ' . $alias : ''));
 
         return $delete;
 

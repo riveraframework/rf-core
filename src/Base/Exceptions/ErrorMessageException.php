@@ -10,7 +10,7 @@
 
 namespace Rf\Core\Base\Exceptions;
 
-use Rf\Core\Log\Log;
+use Rf\Core\Log\LogService;
 
 /**
  * Class ErrorMessageException
@@ -29,7 +29,7 @@ class ErrorMessageException extends DebugException {
 	public function __construct($message = '', $code = 0, \Exception $previous = null)
 	{
 
-		parent::__construct(Log::TYPE_ERROR, $message, $code, $previous);
+		parent::__construct(LogService::TYPE_ERROR, $message, $code, $previous);
 
 	}
 

@@ -10,6 +10,8 @@
 
 namespace Rf\Core\Http;
 
+use Rf\Core\Http\Interfaces\ResponseInterface;
+
 /**
  * Class Response
  *
