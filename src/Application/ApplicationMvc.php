@@ -44,7 +44,7 @@ class ApplicationMvc extends Application implements ApplicationInterface {
 
         // Start Benchmark tool
         Benchmark::init();
-        Benchmark::log('init start');
+        //Benchmark::log('init start');
 
         // Init helpers and app classes autoload
         Autoload::init();
@@ -58,17 +58,17 @@ class ApplicationMvc extends Application implements ApplicationInterface {
         // Register application configuration
         $this->registerDefaultConfigService();
 
-        Benchmark::log('configuration loaded');
-
-        // Get request info
-        $this->request = new Request();
-
-        Benchmark::log('request parsed');
+        //Benchmark::log('configuration loaded');
 
         // Load services
         $this->loadServices();
 
         Benchmark::log('services loaded');
+
+        // Get request info
+        $this->request = new Request();
+
+        //Benchmark::log('request parsed');
         Benchmark::log('init end');
 
     }

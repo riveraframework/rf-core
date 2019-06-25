@@ -25,4 +25,15 @@ class Query extends BaseQuery {
 
     use QueryConnectionTrait, GenerateTrait, ExecuteTrait, ExecuteSelectTrait, ExecuteInsertTrait;
 
+    /**
+     * Magic method toString
+     *
+     * @return string
+     */
+    public function __toString() {
+
+        return $this->compile();
+
+    }
+
 }

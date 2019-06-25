@@ -13,12 +13,12 @@ namespace Rf\Core\Route;
 use Rf\Core\Base\Exceptions\ErrorMessageException;
 use Rf\Core\Base\ParameterSet;
 use Rf\Core\Base\Uri;
+use Rf\Core\Http\Interfaces\ResponseInterface;
 use Rf\Core\Http\Request;
 use Rf\Core\Http\Response;
-use Rf\Core\Http\ResponseInterface;
 use Rf\Core\Service\Service;
 use Rf\Core\System\Performance\Benchmark;
-use Rf\Core\Utils\Debug\ErrorHandler;
+use Rf\Core\Debug\ErrorHandler;
 
 /**
  * Class Router
@@ -139,10 +139,10 @@ class RouterService extends Service {
         } catch(\Error $error) {
 
             if(
-                rf_config('debug.enabled')
+                rf_sp()->getLog()->isEnabled()
                 && (
                 !rf_request()->isAjax())
-                || (rf_request()->isAjax() && rf_config('debug.ajax'))
+                || (rf_request()->isAjax() && rf_sp()->getDebug()->getConfiguration()->isAjaxDebugEnabled())
             ) {
 
                 echo 'Execution time: ' . (microtime(true) - APPLICATION_START) . 's';
@@ -174,7 +174,7 @@ class RouterService extends Service {
         $prefix = $this->isDefault() ? '' : $this->getName() . '.';
 
         // Add routes for routing
-        $routingFiles = glob(rf_dir('modules') . '/*/config/' . $prefix . 'routing*.php');
+        $routingFiles = glob(rf_dir('modules') . '*/config/' . $prefix . 'routing*.php');
         foreach ($routingFiles as $routingFile) {
             $moduleRoutingRoutes = include $routingFile;
             foreach($moduleRoutingRoutes as $routeName => $routeParams) {
@@ -183,7 +183,7 @@ class RouterService extends Service {
         }
 
         // Add route for links
-        $linksFiles = glob(rf_dir('modules') . '/*/config/' . $prefix . 'links*.php');
+        $linksFiles = glob(rf_dir('modules') . '*/config/' . $prefix . 'links*.php');
         foreach ($linksFiles as $linksFile) {
             $moduleLinksRoutes = include $linksFile;
             foreach($moduleLinksRoutes as $routeName => $routeParams) {
@@ -243,11 +243,11 @@ class RouterService extends Service {
             if($uriMatches) {
 
                 // Check if the request method matches the route
-	            $methodMatches = $route->matchMethod(rf_request()->getMethod());
+                $methodMatches = $route->matchMethod(rf_request()->getMethod());
 
-	            if($methodMatches) {
+                if($methodMatches) {
 
-	                // @TODO: Keep?
+                    // @TODO: Keep?
 //	            	if(!empty($route['redirect-route'])) {
 //
 //	            		$args = !empty($route['defaults']) ? $route['defaults'] : [];
@@ -257,19 +257,19 @@ class RouterService extends Service {
 //
 //		            }
 
-	                $this->currentRoute = $route;
+                    $this->currentRoute = $route;
 
-		            foreach ($foundParams as $key => $value) {
-			            if (is_int($key)) {
-				            unset($foundParams[$key]);
-			            }
-		            }
+                    foreach ($foundParams as $key => $value) {
+                        if (is_int($key)) {
+                            unset($foundParams[$key]);
+                        }
+                    }
 
-	                $this->buildRequestQuery($this->currentRoute, $foundParams);
-		            $this->updateLanguage();
-	                return;
+                    $this->buildRequestQuery($this->currentRoute, $foundParams);
+                    $this->updateLanguage();
+                    return;
 
-	            }
+                }
 
             }
 
@@ -293,10 +293,10 @@ class RouterService extends Service {
         }
 
     }
-    
+
     /**
      * Build the request query matching route available params
-     * 
+     *
      * @param Route $route
      * @param array $params
      */
@@ -330,13 +330,13 @@ class RouterService extends Service {
         }
 
         // Update the current language
-        I18n::setCurrentLanguage($language);
+        rf_sp()->getI18n()->setCurrentLanguage($language);
 
         // Update the language in the query object
         rf_request_query()->set('language', $language);
 
     }
-    
+
     /**
      * Reset the query for current request
      */
@@ -420,19 +420,19 @@ class RouterService extends Service {
 
         } elseif(!empty($args['language'])) {
 
-        	// Switch language process (no route name provided, only a language)
+            // Switch language process (no route name provided, only a language)
             // This will only work with route using the language suffix
             // e.g: my_current_route_en
 
             // Create new route params
-	        $newArgs = rf_request_query()->toArray();
-	        $newArgs['language'] = $args['language'];
+            $newArgs = rf_request_query()->toArray();
+            $newArgs['language'] = $args['language'];
 
             // Get new route name
             $currentRoute = $this->getCurrentRoute();
-	        $newRouteName = substr($currentRoute->getName(), 0, -3);
+            $newRouteName = substr($currentRoute->getName(), 0, -3);
 
-	        return $this->link_to($newRouteName, $newArgs);
+            return $this->link_to($newRouteName, $newArgs);
 
         }
 
@@ -479,7 +479,7 @@ class RouterService extends Service {
 
     /**
      * Redirect
-     * 
+     *
      * @param string $url
      * @param int $type 301|302
      * @param bool $return

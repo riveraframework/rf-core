@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\Utils\Debug;
+namespace Rf\Core\Debug;
 
 /**
  * Class ErrorHandler

@@ -59,7 +59,7 @@ class Route {
 
         $this->name = $name;
 
-        if(empty($routeParams['type']) && in_array($routeParams['type'], [
+        if(!empty($routeParams['type']) && in_array($routeParams['type'], [
             self::ROUTE_TYPE_DEFAULT,
             self::ROUTE_TYPE_REDIRECT
         ])) {

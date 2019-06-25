@@ -63,32 +63,27 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
      * Session constructor.
      *
      * @param string $sessionName
+     * @param array $sessionOptions
      * @param array $options
      *
      * @throws \Exception
      */
-    public function __construct($sessionName, $options = []) {
+    public function __construct($sessionName, $sessionOptions = [], $options = []) {
 
         parent::__construct($options);
 
         $this->sessionName = $sessionName;
 
-        if(!empty($options['map'])) {
+        if(!empty($sessionOptions['map'])) {
 
-            $this->map = $options['map'];
+            $this->map = $sessionOptions['map'];
             $this->mapType = self::MAP_TYPE_STATIC;
 
         }
 
-        if(!empty($options['handler'])) {
+        if(!empty($sessionOptions['duration'])) {
 
-            $this->handler = $options['handler'];
-
-        }
-
-        if(!empty($options['duration'])) {
-
-            $this->duration = $options['duration'];
+            $this->duration = $sessionOptions['duration'];
 
         }
 
@@ -113,17 +108,6 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
     public function getId() {
 
         return $this->sessionId;
-
-    }
-
-    /**
-     * Add a handler
-     *
-     * @param MemcachedCache $handler
-     */
-    public function setHandler(MemcachedCache $handler) {
-
-        $this->handler = $handler;
 
     }
 
@@ -298,7 +282,7 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
         $value = null;
         try {
 
-            $value = $this->handler->get($this->getFullKey($key), time() + $this->duration);
+            $value = parent::get($this->getFullKey($key), time() + $this->duration);
             $this->data[$key] = $value;
 
         } catch (\Exception $e) {
@@ -346,12 +330,12 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
         // Prevent setting the key if not authorized in map
         if(!in_array($key, $map)) {
 
-            throw new \Exception('Not authorized to set this key');
+            throw new \Exception('Not authorized to set this key in session: missing in map');
 
         }
 
         // Set key/value for each handler
-        $this->handler->set($this->getFullKey($key), $value, $expiration);
+        parent::set($this->getFullKey($key), $value, $expiration);
 
     }
 
@@ -363,7 +347,7 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
     public function delete($key) {
 
         // Remove key for each handler
-        $this->handler->delete($this->getFullKey($key));
+        parent::delete($this->getFullKey($key));
 
     }
 
@@ -381,7 +365,7 @@ class MemcachedSession extends MemcachedWrapper implements SessionInterface {
         // Remove every key for each handler
         foreach($this->getMap() as $key) {
 
-            $this->handler->delete($key);
+            $this->delete($key);
 
         }
 

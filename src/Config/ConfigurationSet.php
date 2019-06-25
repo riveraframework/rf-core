@@ -20,8 +20,21 @@ use Rf\Core\Base\ParameterSet;
 class ConfigurationSet extends ParameterSet {
 
     /**
+     * ParameterSet Constructor.
+     *
+     * @param array|object $params
+     * @param bool $skipObjects
+     * @param ConfigurationSet|null $sharedConfigs
+     */
+    public function __construct($params, $skipObjects = true, $sharedConfigs = null) {
+
+        $this->buildSet($params, $skipObjects, $sharedConfigs);
+
+    }
+
+    /**
      * Get a property in a section of the configuration
-     * This supports recursive lookup, e.g: app.my_section.my_var
+     * This supports recursive lookup, e.g: my_section.my_sub_section.my_var
      *
      * @param string $section Section name
      *
@@ -29,29 +42,108 @@ class ConfigurationSet extends ParameterSet {
      */
     public function get($section) {
 
-    	$sectionParts = explode('.', $section);
+        $sectionParts = explode('.', $section);
 
-	    /** @var ParameterSet|mixed $section */
-	    $section = $this->vars;
+        /** @var ParameterSet|mixed $section */
+        $section = $this->vars;
 
-	    $value = false;
-	    foreach($sectionParts as $sectionIndex => $sectionName) {
+        $value = false;
+        foreach($sectionParts as $sectionIndex => $sectionName) {
 
-		    $section = $section->get($sectionName);
+            if(is_array($section)) {
 
-		    if(
-		        $sectionIndex + 1 < count($sectionParts)
-                && is_a($section, ParameterSet::class)
+                if(!isset($section[$sectionName])) {
+                    return $value;
+                }
+
+                $section = $section[$sectionName];
+            } elseif(is_a($section, static::class)) {
+
+                $section = $section->get($sectionName);
+
+            } else {
+                break;
+            }
+
+            if(
+                $sectionIndex + 1 < count($sectionParts)
+                && (
+                    is_a($section, static::class)
+                    || is_array($section)
+                )
             ) {
-		    	continue;
-		    } else {
-		    	$value = $section;
-		    	break;
-		    }
+                continue;
+            } else {
+                $value = $section;
+                break;
+            }
 
-	    }
+        }
 
         return $value;
+
+    }
+
+    /**
+     * Build the set
+     *
+     * @param mixed $params
+     * @param bool $skipObjects
+     * @param ConfigurationSet|null $sharedConfigs
+     */
+    protected function buildSet($params, $skipObjects, $sharedConfigs = null) {
+
+        if(!$skipObjects && is_object($params)) {
+
+            foreach(get_object_vars($params) as $prop => $value) {
+
+                if((is_array($value) || is_object($value)) && !empty($value)) {
+                    $this->vars[$prop] = new static($value, $skipObjects, $sharedConfigs);
+                } else {
+                    $this->vars[$prop] = $value;
+                }
+
+            }
+
+        } elseif(is_array($params)) {
+
+            if(isset($params['shared_configs'])) {
+
+                $sharedConfigs = new static($params['shared_configs']);
+
+            }
+
+            foreach($params as $prop => $value) {
+
+                if($prop === 'shared_configs') {
+                    continue;
+                }
+
+                if((is_array($value) || is_object($value)) && !empty($value)) {
+                    $this->vars[$prop] = new static($value, $skipObjects, $sharedConfigs);
+                } else {
+
+                    if(is_string($value) && strpos($value, 'shared_configs') === 0) {
+                        $name = str_replace('shared_configs:', '', $value);
+                        $this->vars[$prop] = $sharedConfigs->get($name);
+                    } else {
+                        $this->vars[$prop] = $value;
+                    }
+
+                }
+
+            }
+
+        } else {
+
+            if(is_string($params) && strpos($params, 'shared_configs') === 0) {
+                $name = str_replace('shared_configs:', '', $params);
+                $this->vars = $sharedConfigs->get($name);
+            } else {
+                $this->vars = $params;
+            }
+
+        }
 
     }
 

@@ -333,13 +333,13 @@ class Request {
         }
 
         // @TODO: strpos check
-        if($this->uri->host() == rf_config('app.url-mobile')) {
+        if($this->uri->host() == rf_sp()->getRouter()->getConfiguration()->get('url-mobile')) {
             $this->isMobile = true;
         } else {
             $this->isMobile = false;
         }
 
-        if($this->uri->host() == rf_config('app.url-api')) {
+        if($this->uri->host() == rf_sp()->getRouter()->getConfiguration()->get('url-api')) {
             $this->isApi = true;
         } else {
             $this->isApi = false;

@@ -97,10 +97,11 @@ class MemcacheWrapper {
      * Get value
      *
      * @param string $key
+     * @param int $expires
      *
      * @return string
      */
-    public function get($key) {
+    public function get($key, $expires = 0) {
 
         return $this->getService()->get($key);
 

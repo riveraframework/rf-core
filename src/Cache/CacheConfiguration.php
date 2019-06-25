@@ -22,7 +22,7 @@ class CacheConfiguration extends ConfigurationSet {
     /**
      * Get the handlers
      *
-     * @return array
+     * @return CacheConfiguration
      */
     public function getHandlers() {
 

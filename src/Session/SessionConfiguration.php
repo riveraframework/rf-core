@@ -22,7 +22,7 @@ class SessionConfiguration extends ConfigurationSet {
     /**
      * Get the handlers
      *
-     * @return array
+     * @return SessionConfiguration
      */
     public function getHandlers() {
 

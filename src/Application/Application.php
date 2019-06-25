@@ -15,11 +15,7 @@ use \Exception;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Config\ConfigService;
 use Rf\Core\Config\DirectoriesSet;
-use Rf\Core\I18n\I18nService;
-use Rf\Core\Log\LogService;
-use Rf\Core\Orm\OrmService;
-use Rf\Core\Route\RouterService;
-use Rf\Core\Service\ServiceLauncher;
+use Rf\Core\Service\ServiceLauncherFactory;
 use Rf\Core\Service\ServiceProvider;
 
 /**
@@ -97,14 +93,10 @@ abstract class Application {
         }
 
         // Create a new config service launcher
-        $launcher = new ServiceLauncher(function () use ($configuration) {
-
-            return new ConfigService(ConfigService::TYPE, 'default', $configuration, true);
-
-        });
+        $launcher = ServiceLauncherFactory::createConfigServiceLauncher(ConfigService::TYPE, 'config', $configuration, true);
 
         // Register the service
-        $this->serviceProvider->add(ConfigService::TYPE, 'default', $launcher, true);
+        $this->serviceProvider->add(ConfigService::TYPE, 'config', $launcher, true);
 
     }
 
@@ -123,8 +115,8 @@ abstract class Application {
             // Define definition args
             $type = isset($service['definition']['type']) ? $service['definition']['type'] : '';
             $name = isset($service['definition']['name']) ? $service['definition']['name'] : '';
-            $enabled = empty($service['definition']['enabled']) ? false : true;
-            $default = !empty($service['definition']['default']) ? true : false;
+            $enabled = isset($service['definition']['enabled']) && !$service['definition']['enabled'] ? false : true;
+            $default = isset($service['definition']['default']) && $service['definition']['default'] ? true : false;
             $configuration = !empty($service['configuration']) ? $service['configuration'] : [];
 
             // Skip disabled services
@@ -137,55 +129,49 @@ abstract class Application {
                 case 'cache':
 
                     // Create a new cache service launcher
-                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+                    $launcher = ServiceLauncherFactory::createCacheServiceLauncher($type, $name, $configuration, $default);
 
-                        return new CacheService($type, $name, $configuration, $default);
+                    break;
 
-                    });
+                case 'debug':
+
+                    // Create a new debug service launcher
+                    $launcher = ServiceLauncherFactory::createDebugServiceLauncher($type, $name, $configuration, $default);
 
                     break;
 
                 case 'i18n':
 
                     // Create a new i18n service launcher
-                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
-
-                        return new I18nService($type, $name, $configuration, $default);
-
-                    });
+                    $launcher = ServiceLauncherFactory::createI18nServiceLauncher($type, $name, $configuration, $default);
 
                     break;
 
                 case 'log':
 
                     // Create a new log service launcher
-                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
-
-                        return new LogService($type, $name, $configuration, $default);
-
-                    });
+                    $launcher = ServiceLauncherFactory::createLogServiceLauncher($type, $name, $configuration, $default);
 
                     break;
 
                 case 'orm':
 
                     // Create a new orm service launcher
-                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
-
-                        return new OrmService($type, $name, $configuration, $default);
-
-                    });
+                    $launcher = ServiceLauncherFactory::createOrmServiceLauncher($type, $name, $configuration, $default);
 
                     break;
 
                 case 'router':
 
                     // Create a new router service launcher
-                    $launcher = new ServiceLauncher(function () use ($type, $name, $configuration, $default) {
+                    $launcher = ServiceLauncherFactory::createRouterServiceLauncher($type, $name, $configuration, $default);
 
-                        return new RouterService($type, $name, $configuration, $default);
+                    break;
 
-                    });
+                case 'session':
+
+                    // Create a new session service launcher
+                    $launcher = ServiceLauncherFactory::createSessionServiceLauncher($type, $name, $configuration, $default);
 
                     break;
 
@@ -203,11 +189,7 @@ abstract class Application {
                         }
 
                         // Create a new custom service launcher
-                        $launcher = new ServiceLauncher(function () use ($type, $realType, $name, $configuration, $default) {
-
-                            return new $type($realType, $name, $configuration, $default);
-
-                        });
+                        $launcher = ServiceLauncherFactory::createCustomServiceLauncher($type, $realType, $name, $configuration, $default);
 
                     }
 
@@ -341,5 +323,5 @@ abstract class Application {
         }
 
     }
-    
+
 }

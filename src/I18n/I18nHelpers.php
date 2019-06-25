@@ -76,7 +76,7 @@ namespace {
     }
 
     /**
-     * Get the translation of a string from a data set
+     * Get the translation of a string from a data set using the default i18n service
      *
      * @param string $key
      * @param array $dataset

@@ -36,7 +36,7 @@ class SessionService extends Service {
     protected $configuration;
 
     /** @var SessionInterface[] $handlers */
-    protected $handlers;
+    protected $handlers = [];
 
     /**
      * Load the cache configuration
@@ -50,9 +50,11 @@ class SessionService extends Service {
 
         $this->configuration = new SessionConfiguration($configuration);
 
-        if(!empty($cacheConfig['handlers'])) {
+        $handlers = $this->configuration->getHandlers()->toArray();
 
-            foreach ($cacheConfig['handlers'] as $handlerIdentifier => $handlerConfig) {
+        if(!empty($handlers)) {
+
+            foreach ($handlers as $handlerIdentifier => $handlerConfig) {
 
                 // Check if the handler type is authorized
                 $handlerType = !empty($handlerConfig['type']) ? $handlerConfig['type'] : '';
@@ -69,7 +71,10 @@ class SessionService extends Service {
                     // Create php session handler
                     case self::HANDLER_TYPE_PHP:
 
-                        $phpSession = new PhpSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                        $phpSession = new PhpSession(
+                            $this->getName(),
+                            $this->configuration->getOptions()->toArray()
+                        );
 
                         if(!empty($sessionConfig['autostart'])) {
                             $phpSession->start();
@@ -83,22 +88,30 @@ class SessionService extends Service {
                     case self::HANDLER_TYPE_MEMCACHED:
 
                         if($handlerType === self::HANDLER_TYPE_MEMCACHE) {
-                            $handler = new MemcacheSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                            $handler = new MemcacheSession(
+                                $this->getName(),
+                                $this->configuration->getOptions()->toArray(),
+                                !empty($handlerConfig['options']) ? $handlerConfig['options'] : []
+                            );
                         } else {
-                            $handler = new MemcachedSession($this->getName(), !empty($handlerConfig['options']) ? $handlerConfig['options'] : []);
+                            $handler = new MemcachedSession(
+                                $this->getName(),
+                                $this->configuration->getOptions()->toArray(),
+                                !empty($handlerConfig['options']) ? $handlerConfig['options'] : []
+                            );
                         }
 
                         // Check if the Memcached server list is empty
                         $servers = $handlerConfig['servers'];
                         if (empty($servers)) {
-                            throw new ConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached server list is empty');
+                            throw new ConfigException(LogService::TYPE_ERROR, 'Session setup error: the Memcached server list is empty');
                         }
 
                         // Add listed server to the Memcached handler
                         foreach ($servers as $server) {
 
                             if (empty($server['host']) || empty($server['port'])) {
-                                throw new ConfigException(LogService::TYPE_ERROR, 'Cache setup error: the Memcached configuration is invalid');
+                                throw new ConfigException(LogService::TYPE_ERROR, 'Session setup error: the Memcached configuration is invalid');
                             }
 
                             $handler->addServer($server['host'], $server['port']);
@@ -133,6 +146,87 @@ class SessionService extends Service {
     public function getHandlers() {
 
         return $this->handlers;
+
+    }
+
+    /**
+     * Start the session for all handlers
+     */
+    public function start() {
+
+        foreach ($this->handlers as $handler) {
+
+            $handler->start();
+
+        }
+
+    }
+
+    /**
+     * Stop the session for all handlers
+     */
+    public function stop() {
+
+        foreach ($this->handlers as $handler) {
+
+            $handler->stop();
+
+        }
+
+    }
+
+    /**
+     * Get a value from the session (any handler)
+     *
+     * @param string $key
+     *
+     * @return mixed|string|null
+     */
+    public function get($key, $expire = 0) {
+
+        foreach ($this->handlers as $handler) {
+
+            $value = $handler->get($key, $expire);
+
+            if(isset($value)) {
+                return $value;
+            }
+
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Set an item in the session
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $duration
+     *
+     * @throws \Exception
+     */
+    public function set($key, $value, $duration = null) {
+
+        foreach ($this->handlers as $handler) {
+
+            $handler->set($key, $value, $duration);
+
+        }
+
+    }
+
+    /**
+     * Destroy the session
+     */
+    public function destroy() {
+
+        foreach ($this->handlers as $handler) {
+
+            $handler->destroy();
+
+        }
 
     }
 

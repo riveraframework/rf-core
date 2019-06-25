@@ -10,8 +10,6 @@
 
 namespace Rf\Core\Base\Exceptions;
 
-use Rf\Core\Log\LogService;
-
 /**
  * Class BaseException
  *
@@ -54,11 +52,11 @@ class DebugException extends \Exception {
      */
     protected function call() {
 
-        if((rf_config('logging.enabled') == true)) {
+        if(rf_sp()->getLog()->isEnabled()) {
             $this->log();
         }
 
-        if(rf_config('debug.enabled') && rf_config('debug.display')) {
+        if(rf_sp()->getDebug()->isEnabled() && rf_sp()->getDebug()->getConfiguration()->isDisplayEnabled()) {
             $this->debug();
         }
 
@@ -69,7 +67,7 @@ class DebugException extends \Exception {
      */
     protected function log() {
 
-        new LogService(
+        rf_sp()->getLog()->log(
             $this->type,
             'File: ' . $this->getFile() . ' (' . $this->getLine() . ') - ' . $this->getMessage() . ' (' . $this->code . ')'
         );

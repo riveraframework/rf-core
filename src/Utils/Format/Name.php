@@ -166,15 +166,14 @@ abstract class Name {
     /**
      * Transform a controller name to a module name
      *
-     * @param string $controllerName Controller name to transform
+     * @param string $controllerClass Controller name to transform
      *
      * @return string
      */
-    public static function controllerToModule($controllerName) {
+    public static function controllerToModule($controllerClass) {
 
-        $controllerWithNsNameParts = explode('\\', $controllerName);
-        $controllerNameParts = explode('Controller', $controllerWithNsNameParts[count($controllerWithNsNameParts) - 1]);
-        $moduleName = strtolower($controllerNameParts[0]);
+        $controllerWithNsNameParts = explode('\\', $controllerClass);
+        $moduleName = lcfirst($controllerWithNsNameParts[count($controllerWithNsNameParts) - 2]);
 
         return $moduleName;
 

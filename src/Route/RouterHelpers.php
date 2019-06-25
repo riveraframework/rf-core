@@ -29,6 +29,8 @@ namespace Rf\Core\Route {
 
 namespace {
 
+    use Rf\Core\Route\Route;
+
     /**
      * Generate a link
      *
@@ -39,7 +41,7 @@ namespace {
      */
     function rf_link_to($routeName, $args = []) {
 
-        return rf_app()->getRouter()->link_to($routeName, $args);
+        return rf_sp()->getRouter()->link_to($routeName, $args);
 
     }
 
@@ -63,7 +65,7 @@ namespace {
      */
     function rf_current_url() {
 
-        return rf_config('app.url') . rf_switch_language(rf_current_language());
+        return rf_sp()->getRouter()->getConfiguration()->get('url') . rf_switch_language(rf_current_language());
 
     }
 
@@ -75,7 +77,7 @@ namespace {
      */
     function rf_current_route() {
 
-        return rf_app()->getRouter()->getCurrentRoute();
+        return rf_sp()->getRouter()->getCurrentRoute();
 
     }
 

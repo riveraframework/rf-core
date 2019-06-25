@@ -8,29 +8,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Rf\Core\I18n\Interfaces;
+namespace Rf\Core\I18n;
+
+use Rf\Core\I18n\Interfaces\TranslationSetInterface;
 
 /**
- * Class TranslationRepositoryInterface
+ * Class TranslationSet
  *
- * @package Rf\Core\I18n\Interfaces
+ * @package Rf\Core\I18n
  */
-interface TranslationSetInterface {
+abstract class TranslationSet implements TranslationSetInterface {
 
     /**
      * Get the translation for a string
      *
      * @param string $string
+     * @param array $params
      *
-     * @return array
+     * @return string
      */
-	public function t($string);
+	public function t($string, array $params = []) {
 
-    /**
-     * Get the available translations
-     *
-     * @return array
-     */
-	public function getTranslations();
+	    return _t($string, $this->getTranslations(), $params);
+
+    }
 
 }

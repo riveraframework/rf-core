@@ -16,51 +16,25 @@ namespace Rf\Core\Base;
  * @package Rf\Core\Base
  */
 class ParameterSet {
-    
+
     /** @var array Array of variable stored in the ParameterSet */
     public $vars = [];
 
     /**
      * ParameterSet Constructor.
-     * 
+     *
      * @param array|object $params
      * @param bool $skipObjects
      */
     public function __construct($params, $skipObjects = true) {
 
-        if(!$skipObjects && is_object($params)) {
-
-            foreach(get_object_vars($params) as $prop => $value) {
-
-                if((is_array($value) || is_object($value)) && !empty($value)) {
-                    $this->vars[$prop] = new ParameterSet($value);
-                } else {
-                    $this->vars[$prop] = $value;
-                }
-
-            }
-
-        } elseif(is_array($params)) {
-
-            foreach($params as $prop => $value) {
-
-                if((is_array($value) || is_object($value)) && !empty($value)) {
-                    $this->vars[$prop] = new ParameterSet($value);
-                } else {
-                    $this->vars[$prop] = $value;
-                }
-
-            }
-
-        } else {
-            $this->vars = $params;
-        }
+        $this->buildSet($params, $skipObjects);
 
     }
-    
+
     /**
      * Get a property
-     * 
+     *
      * @param string $key Property name
      *
      * @return ParameterSet|mixed
@@ -74,10 +48,10 @@ class ParameterSet {
         }
 
     }
-    
+
     /**
      * Set a property
-     * 
+     *
      * @param string $key Property name
      * @param mixed $value
      */
@@ -94,9 +68,9 @@ class ParameterSet {
      */
     public function remove($key) {
 
-    	if(isset($this->vars[$key])) {
-		    unset($this->vars[$key]);
-	    }
+        if(isset($this->vars[$key])) {
+            unset($this->vars[$key]);
+        }
 
     }
 
@@ -120,18 +94,18 @@ class ParameterSet {
      */
     public function toArray() {
 
-    	$vars = [];
+        $vars = [];
 
-	    foreach ($this->vars as $key => $var) {
+        foreach ($this->vars as $key => $var) {
 
-	    	/** @var ParameterSet|mixed $var */
-	    	if(is_a($var, self::class)) {
-			    $vars[$key] = $var->toArray();
-		    } else {
-			    $vars[$key] = $var;
-		    }
+            /** @var ParameterSet|mixed $var */
+            if(is_a($var, static::class)) {
+                $vars[$key] = $var->toArray();
+            } else {
+                $vars[$key] = $var;
+            }
 
-	    }
+        }
 
         return $vars;
 
@@ -145,6 +119,44 @@ class ParameterSet {
     public function count() {
 
         return count($this->vars);
+
+    }
+
+    /**
+     * Build the set
+     *
+     * @param mixed $params
+     * @param bool $skipObjects
+     */
+    protected function buildSet($params, $skipObjects) {
+
+        if(!$skipObjects && is_object($params)) {
+
+            foreach(get_object_vars($params) as $prop => $value) {
+
+                if((is_array($value) || is_object($value)) && !empty($value)) {
+                    $this->vars[$prop] = new static($value);
+                } else {
+                    $this->vars[$prop] = $value;
+                }
+
+            }
+
+        } elseif(is_array($params)) {
+
+            foreach($params as $prop => $value) {
+
+                if((is_array($value) || is_object($value)) && !empty($value)) {
+                    $this->vars[$prop] = new static($value);
+                } else {
+                    $this->vars[$prop] = $value;
+                }
+
+            }
+
+        } else {
+            $this->vars = $params;
+        }
 
     }
 

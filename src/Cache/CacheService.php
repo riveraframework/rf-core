@@ -53,7 +53,7 @@ class CacheService extends Service {
         $this->configuration = new CacheConfiguration($configuration);
 
         // Get handlers
-        $handlers = $this->configuration->getHandlers();
+        $handlers = $this->configuration->getHandlers()->toArray();
 
         if(!empty($handlers)) {
 

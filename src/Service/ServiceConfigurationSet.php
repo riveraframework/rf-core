@@ -21,7 +21,7 @@ class ServiceConfigurationSet extends ParameterSet {
 
     /**
      * Get a property in a section of the configuration
-     * This supports recursive lookup, e.g: app.my_section.my_var
+     * This supports recursive lookup, e.g: my_section.my_sub_section.my_var
      *
      * @param string $section Section name
      *

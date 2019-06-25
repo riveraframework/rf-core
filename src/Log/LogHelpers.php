@@ -11,7 +11,7 @@
 namespace Rf\Core\Log {
 
     /**
-     * Class SessionHelpers
+     * Class LogHelpers
      *
      * @package Rf\Core\Log
      */

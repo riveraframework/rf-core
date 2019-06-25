@@ -26,7 +26,7 @@ class I18nConfiguration extends ConfigurationSet {
      */
     public function getAvailableLanguages() {
 
-        return $this->get('options.languages');
+        return $this->get('options.languages')->toArray();
 
     }
 

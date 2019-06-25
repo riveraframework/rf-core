@@ -28,8 +28,8 @@ abstract class Controller {
     /** @var string $generatedContent Controller HTML content */
     public $generatedContent = '';
 
-    /** @var array $dictionary Controller dictionary */
-    public $dictionary = [];
+    /** @var Dictionary $dictionary Controller dictionary */
+    public $dictionary;
 
     /** @var string $moduleName Module name */
     public $moduleName;
@@ -52,16 +52,22 @@ abstract class Controller {
     /**
      * Create a new controller
      *
-     * @param array $dictionary
+     * @param array|Dictionary $dictionary
      */
-    public function __construct(array $dictionary = []) {
+    public function __construct($dictionary = []) {
 
         $this->moduleName = Name::controllerToModule(get_class($this));
         $this->moduleDir = rf_dir('modules') . $this->moduleName . '/';
 
         // Set default dictionary
         if(!empty($dictionary)) {
-            $this->dictionary = $dictionary;
+
+            if(is_array($dictionary)) {
+                $this->dictionary = new Dictionary($dictionary);
+            } else {
+                $this->dictionary = $dictionary;
+            }
+
         }
 
     }
@@ -71,9 +77,22 @@ abstract class Controller {
      *
      * @return string
      */
-    final public function __toString() {
+    public function __toString() {
 
         return $this->generatedContent;
+
+    }
+
+    /**
+     * Return a value from the dictionary
+     *
+     * @param $key
+     *
+     * @return mixed|\Rf\Core\Base\ParameterSet
+     */
+    public function d($key) {
+
+        return $this->dictionary->get($key);
 
     }
 
@@ -85,14 +104,20 @@ abstract class Controller {
      * Get a partial view
      *
      * @param string $partialName
-     * @param array $dictionary
+     * @param array|Dictionary $dictionary
      *
      * @return string
      */
     final public function getPartial($partialName, $dictionary = []) {
 
         if(!empty($dictionary)) {
-            $this->dictionary = $dictionary;
+
+            if(is_array($dictionary)) {
+                $this->dictionary = new Dictionary($dictionary);
+            } else {
+                $this->dictionary = $dictionary;
+            }
+
         }
 
         $methodName = 'partial' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $partialName)));
@@ -333,10 +358,10 @@ abstract class Controller {
         $this->loadTemplate($viewName);
 
         if(
-            rf_config('debug.enabled')
+            rf_sp()->getDebug()->isEnabled()
             && (
                 !rf_request()->isAjax()
-                || (rf_request()->isAjax() && rf_config('debug.ajax'))
+                || (rf_request()->isAjax() && rf_sp()->getDebug()->getConfiguration()->isAjaxDebugEnabled())
             )
         ) {
 
@@ -355,7 +380,7 @@ abstract class Controller {
 
         }
 
-        if(!rf_request()->isAjax() && rf_config('debug.benchmark')) {
+        if(!rf_request()->isAjax() && rf_sp()->getDebug()->getConfiguration()->isBenchmarkEnabled()) {
 
             if($display) {
 
@@ -493,7 +518,7 @@ abstract class Controller {
         switch ($errorCode) {
 
             case 404:
-                $this->generatedContent = 'Controller error: Unable to load the template' . (rf_config('debug.enabled') ? '<br/>' . $errorContent : '');
+                $this->generatedContent = 'Controller error: Unable to load the template' . (rf_sp()->getDebug()->isEnabled() ? '<br/>' . $errorContent : '');
                 break;
 
             default:

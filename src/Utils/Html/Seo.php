@@ -10,8 +10,6 @@
 
 namespace Rf\Core\Utils\Html;
 
-use Rf\Core\I18n\I18n;
-
 /**
  * Class Seo
  *
@@ -164,9 +162,9 @@ abstract class Seo {
 	 */
     public static function setCanonicalUrl($routeName, array $args) {
 
-    	$args['language'] = I18n::$defaultLanguage;
+    	$args['language'] = rf_sp()->getI18n()->getConfiguration()->getDefaultLanguage();
 
-        self::$canonicalUrl = rf_config('app.url') . rf_link_to($routeName, $args);
+        self::$canonicalUrl = rf_sp()->getRouter()->getConfiguration()->get('url-mobile') . rf_link_to($routeName, $args);
 
     }
 
@@ -189,8 +187,8 @@ abstract class Seo {
 	 */
     public static function setAlternateUrls($routeName, array $args) {
 
-    	$defaultLanguage = I18n::$defaultLanguage;
-	    $availableLanguages = I18n::$availableLanguages;
+    	$defaultLanguage = rf_sp()->getI18n()->getConfiguration()->getDefaultLanguage();
+	    $availableLanguages = rf_sp()->getI18n()->getConfiguration()->getAvailableLanguages();
 
 	    foreach ($availableLanguages as $language) {
 
@@ -199,7 +197,7 @@ abstract class Seo {
 			    $args['language'] = $language;
 			    self::$alternateUrls[] = [
 			    	'language' => $language,
-			    	'url' => rf_config('app.url') . rf_link_to($routeName, $args)
+			    	'url' => rf_sp()->getRouter()->getConfiguration()->get('url-mobile') . rf_link_to($routeName, $args)
 			    ];
 
 		    }

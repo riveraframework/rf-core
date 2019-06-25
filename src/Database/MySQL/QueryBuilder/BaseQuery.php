@@ -45,37 +45,12 @@ abstract class BaseQuery {
         if(isset($database)) {
             $this->database($database);
         } else {
-            $this->database(rf_config('database.name'));
+            $this->database(rf_sp()->getDatabase()->getConfiguration()->getConnectionConfig()->getDatabaseName());
         }
 
         if(isset($tables)) {
             $this->from($tables);
         }
-
-    }
-    
-    /**
-     * Magic method toString
-     *
-     * @return string
-     */
-    public function __toString() {
-
-        return $this->compile();
-
-    }
-
-    /**
-     * Create a new query object
-     *
-     * @param null $tables
-     * @param null $database
-     *
-     * @return BaseQuery
-     */
-    public static function create($tables = null, $database = null) {
-
-        return new static($tables, $database);
 
     }
 

@@ -33,17 +33,14 @@ namespace {
 
 	/**
 	 * Get session service
+     *
+     * @param string $name
 	 *
 	 * @return SessionService
 	 */
-    function rf_session() {
+    function rf_session($name = '') {
 
-    	$sessionManager = rf_app()->getSessionManager();
-    	if(empty($sessionManager)) {
-    		return null;
-	    } else {
-    		return $sessionManager;
-	    }
+    	return rf_sp()->getSession($name);
 
     }
 

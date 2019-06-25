@@ -15,10 +15,12 @@ use \Exception;
 use Rf\Core\Cache\CacheService;
 use Rf\Core\Config\ConfigService;
 use Rf\Core\Database\DatabaseService;
+use Rf\Core\Debug\DebugService;
 use Rf\Core\I18n\I18nService;
 use Rf\Core\Log\LogService;
 use Rf\Core\Orm\OrmService;
 use Rf\Core\Route\RouterService;
+use Rf\Core\Session\SessionService;
 
 /**
  * Class ServiceProvider
@@ -108,7 +110,7 @@ class ServiceProvider {
         }
 
         throw new Exception('No service found');
-        
+
     }
 
     /**
@@ -138,11 +140,17 @@ class ServiceProvider {
 
                 return $this->services[$serviceName];
 
+            } elseif(isset($this->launchers[$serviceName])) {
+
+                $this->services[$serviceName] = $this->launchers[$serviceName]->launch();
+
+                return $this->services[$serviceName];
+
             }
 
         }
 
-        throw new Exception('No default service found');
+        throw new Exception('No default ' . $type . ' service found');
 
     }
 
@@ -279,6 +287,32 @@ class ServiceProvider {
     }
 
     /**
+     * Get a debug service
+     *
+     * @param string $name
+     * @param bool $shared
+     *
+     * @return DebugService
+     * @throws Exception
+     */
+    public function getDebug($name = '', $shared = true) {
+
+        if($name !== '') {
+
+            $debugService = $this->get($name, $shared);
+
+        } else {
+
+            $debugService = $this->getDefault(DebugService::TYPE, $shared);
+
+        }
+
+        /** @var DebugService $debugService */
+        return $debugService;
+
+    }
+
+    /**
      * Get a i18n service
      *
      * @param string $name
@@ -353,6 +387,32 @@ class ServiceProvider {
 
         /** @var CacheService $cacheService */
         return $cacheService;
+
+    }
+
+    /**
+     * Get a session service
+     *
+     * @param string $name
+     * @param bool $shared
+     *
+     * @return SessionService
+     * @throws Exception
+     */
+    public function getSession($name = '', $shared = true) {
+
+        if($name !== '') {
+
+            $sessionService = $this->get($name, $shared);
+
+        } else {
+
+            $sessionService = $this->getDefault(SessionService::TYPE, $shared);
+
+        }
+
+        /** @var SessionService $sessionService */
+        return $sessionService;
 
     }
 

@@ -126,47 +126,6 @@ namespace {
     }
 
     /**
-     * Display debug vars
-     */
-    function rf_debug_display() {
-
-        $debugVars = rf_app()->getDebugVars();
-
-        foreach($debugVars as $debugVar) {
-            var_dump($debugVar);
-        }
-
-    }
-
-    /**
-     * Add a var to the debug array if debug is activated
-     *
-     * @param mixed $var
-     * @param string $logType
-     */
-    function rf_debug($var, $logType = 'debug') {
-
-        if(rf_config('debug.enabled')) {
-            rf_app()->addDebugVar($var);
-        }
-
-        if(rf_config('logging.enabled')) {
-
-            if(is_array($var) || is_object($var)) {
-                try {
-                    $var = Json::encode($var);
-                } catch (\Exception $e) {
-                    $var = 'Debug error: ' . $e->getMessage();
-                }
-            }
-
-            rf_log($logType, $var);
-
-        }
-
-    }
-
-    /**
      * Format template params
      *
      * @TODO: Move or remove

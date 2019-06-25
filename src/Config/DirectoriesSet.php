@@ -27,7 +27,7 @@ class DirectoriesSet {
      */
     public function __construct() {
 
-        $basePath = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/';
+        $basePath = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/';
         $appPath = $basePath . 'app/';
 
         $this->dirs = [

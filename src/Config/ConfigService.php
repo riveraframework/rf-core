@@ -62,6 +62,17 @@ class ConfigService extends Service {
     }
 
     /**
+     * Get a value by key
+     *
+     * @return array
+     */
+    public function get($key) {
+
+        return $this->configuration->get($key);
+
+    }
+
+    /**
      * Get the service included in the configuration
      *
      * @return array

@@ -41,13 +41,13 @@ class PhpSession implements SessionInterface {
      * @param string $sessionName
      * @param array $options
      */
-    public function __construct($sessionName, $options = []) {
+    public function __construct($sessionName, $sessionOptions = []) {
 
         $this->sessionName = $sessionName;
 
-        if(!empty($options['duration'])) {
+        if(!empty($sessionOptions['duration'])) {
 
-            $this->duration = $options['duration'];
+            $this->duration = $sessionOptions['duration'];
 
         }
 
